@@ -1,0 +1,241 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "hostingPlanName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "F1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      }
+    },
+    "skuCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "metadata": {
+        "description": "Describes plan's instance count"
+      }
+    },
+    "webApplicationPackageFolder": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "WebDeploy package location. This path is relative to the webApplicationPackageFolder parameter"
+      }
+    },
+    "WebApplicationPackageFileName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Name of the webdeploy package"
+      }
+    },
+    "WebSiteName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Name of the WebSiteName"
+      }
+    },
+    "StorageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "StorageAccountName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Name of the StorageAccountName"
+      }
+    },
+    "StorageConnection": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The StorageConnection"
+      }
+    },
+    "KeyValueStorageConnection": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The KeyValueStorageConnection"
+      }
+    },
+    "aad_ClientId": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The aad_ClientId"
+      }
+    },
+    "aad_ClientSecret": {
+      "type": "string",
+      "minLength": 0,
+      "metadata": {
+        "description": "The aad_ClientSecret"
+      }
+    },
+    "aad_TenantId": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The aad_TenantId"
+      }
+    },
+    "aad_PostLogoutRedirectUri": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The aad_PostLogoutRedirectUri"
+      }
+    },
+    "aad_ExternalApiId": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The aad_ExternalApiId"
+      }
+    },
+    "security_Admins": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The security_Admins"
+      }
+    }
+  },
+  "variables": {
+    "WebSiteName": "[parameters('WebSiteName')]",
+    "StorageAccountName": "[parameters('StorageAccountName')]",
+    "StorageConnection": "[parameters('StorageConnection')]",
+    "KeyValueStorageConnection": "[parameters('KeyValueStorageConnection')]",
+    "aad_ClientId": "[parameters('aad_ClientId')]",
+    "aad_ClientSecret": "[parameters('aad_ClientSecret')]",
+    "aad_TenantId": "[parameters('aad_TenantId')]",
+    "aad_PostLogoutRedirectUri": "[parameters('aad_PostLogoutRedirectUri')]",
+    "aad_ExternalApiId": "[parameters('aad_ExternalApiId')]",
+    "security_Admins": "[parameters('security_Admins')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-08-01",
+      "name": "[parameters('hostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "HostingPlan"
+      },
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "capacity": "[parameters('skuCapacity')]"
+      },
+      "properties": {
+        "name": "[parameters('hostingPlanName')]"
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "name": "[variables('WebSiteName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "Resource",
+        "displayName": "Website"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+      ],
+      "properties": {
+        "name": "[variables('WebSiteName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
+      },
+      "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('webSiteName'))]"
+          ],
+          "tags": {
+            "displayName": "[variables('WebSiteName')]"
+          },
+          "properties": {
+            "packageUri": "[concat(parameters('webApplicationPackageFolder'), '/', parameters('WebApplicationPackageFileName'))]",
+            "dbType": "None",
+            "connectionString": "",
+            "setParameters": {
+              "IIS Web Application Name": "[variables('WebSiteName')]"
+            }
+          }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "appsettings",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('WebSiteName'))]",
+            "[concat('Microsoft.Web/Sites/', parameters('WebSiteName'), '/Extensions/MSDeploy')]"
+          ],
+          "properties": {
+            "aad_ClientId": "[variables('aad_ClientId')]",
+            "aad_ClientSecret": "[variables('aad_ClientSecret')]",
+            "aad_TenantId": "[variables('aad_TenantId')]",
+            "aad_PostLogoutRedirectUri": "[variables('aad_PostLogoutRedirectUri')]",
+            "aad_ExternalApiId": "[variables('aad_ExternalApiId')]",
+            "security_Admins": "[variables('security_Admins')]"
+          }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "connectionstrings",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('WebSiteName'))]",
+            "[concat('Microsoft.Web/Sites/', parameters('WebSiteName'), '/Extensions/MSDeploy')]"
+          ],
+          "properties": {
+            "StorageConnection": {
+              "value": "[variables('StorageConnection')]",
+              "Name": "StorageConnection",
+              "type": "Custom"
+            },
+            "KeyValueStorageConnection": {
+              "value": "[variables('KeyValueStorageConnection')]",
+              "Name": "KeyValueStorageConnection",
+              "type": "Custom"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
