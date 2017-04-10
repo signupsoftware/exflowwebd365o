@@ -2,7 +2,7 @@
 ExFlow web for *Dynamics 365 for Operations* (D365O) runs in Azure as a fully scalable *Azure App Service*. ExFlow web is deployed into the tenant’s Azure environment as a Resource Group that contains a Web Site and a Storage account. The website is further connected to the Azure AD and D365O thru a so called App Registration and communicates with D365O using the same security technology that D365O uses namely Azure AD and OAuth 2.0.
 
 ## Installation and updates
-ExFlow web is installed by running the following PowerShell script in *Powershell ISE*.
+ExFlow web is installed by running the following PowerShell script ([Example.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/Example.ps1)) in *Powershell ISE*.
 
 
 ```powershell
@@ -54,17 +54,13 @@ The following features are currently under development.
 
 ### Release 14 (2017-04-04)
 Applies to D365O
-
-***News***
-
+###News
 * ARM template deployment with form ISE PowerShell
 * Bug fixes
 
-### Release 13 (2017-03-29)
+##Release 13 (2017-03-29)
 Applies to D365O (prerelease), AX2012
-
-***News***
-
+###News
 * Adds document drafting and autosave. Changes to lines and coding are automatically stored by the system.
 * Handles browser back navigation
 * Improves display of coding columns
