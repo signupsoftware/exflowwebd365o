@@ -240,7 +240,7 @@ If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupNam
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmStorageAccount"
     Write-Output "--------------------------------------------------------------------------------"
-
+    Write-Output "(This can take a while)"
     $AzureRmStorageAccountParams = @{
         Name              = $StorageAccountName
         ResourceGroupName = $ResourceGroupName
