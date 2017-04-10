@@ -77,10 +77,10 @@ Write-Output "Checking PowerShell version and modules"
 Write-Output "--------------------------------------------------------------------------------"
 $azrm=(Get-Module -Name "AzureRM.Automation")
 If (!$azrm){
-    Throw "Module AzureRM is not installed (use command: Install-Module AzureRm)"
+    Write-Warning "Module AzureRM is not installed (use command: Install-Module -Name AzureRM -AllowClobber)"
 }
 ElseIf ($azrm.Version -lt "2.3.0"){
-    Throw "Module AzureRM (" + $azrm.Version + ") should updated (use command: Install-Module AzureRm)"
+    Write-Warning  "Module AzureRM (" + $azrm.Version + ") should updated (use command: Install-Module -Name AzureRM -AllowClobber)"
 }
 Else{
     Write-Output "Modules and PS is valid"
