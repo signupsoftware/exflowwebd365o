@@ -75,7 +75,7 @@ $Measure = [System.Diagnostics.Stopwatch]::StartNew()
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Checking PowerShell version and modules"
 Write-Output "--------------------------------------------------------------------------------"
-$azrm=(Get-Module -Name "AzureRM.Automation")
+$azrm=Get-Module -ListAvailable -Name AzureRM
 If (!$azrm){
     Write-Warning "Module AzureRM is not installed (use command: Install-Module -Name AzureRM)"
 }
