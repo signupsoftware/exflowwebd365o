@@ -49,4 +49,22 @@ The following features are currently under development.
 * Boolean coding columns not supported.
 * Paging/"scroll for more" in lookups (account, items, ..) are under development. 
 * Azure AD for AX2012 is under development.
+* Line templates
+
+
+### Release 14 (2017-04-04)
+Applies to D365O
+***News***
+* ARM template deployment with form ISE PowerShell
+* Bug fixes
+
+##Release 13 (2017-03-29)
+Applies to D365O (prerelease), AX2012
+***News***
+* Adds document drafting and autosave. Changes to lines and coding are automatically stored by the system.
+* Handles browser back navigation
+* Improves display of coding columns
+* Improves mobile UI/UX
+* Includes a read up (help tutorial) with animated images.
+* Bug fixes
 
