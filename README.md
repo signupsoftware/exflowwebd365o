@@ -19,12 +19,11 @@ The script downloads the latest ExFlow web release and installs all required Azu
 
 ### Instructions:
 1. Open PowerShell ISE
-2. Install/Verify AzureRM (see Error handling)
-3. Change parameters $location, $Security_Admins, $DynamicsAXApiId, $ExFlowUserSecret  (see inline comments)
-4. Press Play
-5. When prompted sign in using an Azure admin account
-6. Wait until done
-7. Sign in to the app and grant permissions 
+2. Change parameters $location, $Security_Admins, $DynamicsAXApiId, $ExFlowUserSecret  (see inline comments)
+3. Press Play
+4. When prompted sign in using an Azure admin account
+5. Wait until done
+6. Sign in to the app and grant permissions 
 
 Error handling:
 If the text in the command window turns red something went wrong 
