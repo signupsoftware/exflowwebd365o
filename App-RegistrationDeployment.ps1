@@ -156,7 +156,7 @@ $IdentifierUris            = "https://$($_TenantId).azurewebsites.net"
 $FileName                  = "package.zip"                                       
 $FilePath                  = $env:TEMP
                                      
-$RedistPath                = "https://raw.githubusercontent.com/signupsoftware/xf365rel/master"
+$RedistPath                = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master"
 $AzureSDKDllLocation       = $RedistPath
                            
 $AzureSDKDlls              = @(
