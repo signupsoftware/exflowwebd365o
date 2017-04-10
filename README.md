@@ -30,7 +30,10 @@ Error handling:
 If the text in the command window turns red something went wrong 
 1.  Press the Stop button
 2.  Verify that you are using an account with enough rights to create an App registration
-3.  Make sure that you have AzureRM installed, see instructions https://www.powershellgallery.com/packages/AzureRM/3.4.0.
+3.  Make sure that you have AzureRM installed using:
+```powershell
+Install-Module AzureRm
+```
 
 
 ## Release notes
