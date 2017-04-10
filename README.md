@@ -54,13 +54,17 @@ The following features are currently under development.
 
 ### Release 14 (2017-04-04)
 Applies to D365O
-###News
+
+**News**
+
 * ARM template deployment with form ISE PowerShell
 * Bug fixes
 
-##Release 13 (2017-03-29)
+### Release 13 (2017-03-29)
 Applies to D365O (prerelease), AX2012
-###News
+
+**News**
+
 * Adds document drafting and autosave. Changes to lines and coding are automatically stored by the system.
 * Handles browser back navigation
 * Improves display of coding columns
