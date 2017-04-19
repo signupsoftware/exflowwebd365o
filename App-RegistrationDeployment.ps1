@@ -92,7 +92,7 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Checking package"
 Write-Output "--------------------------------------------------------------------------------"
 
-$packageURL = (New-Object System.Net.Webclient).DownloadString('https://exflowpackagemanager.azurewebsites.net/?s='+$ExFlowUserSecret)
+$packageURL = (New-Object System.Net.Webclient).DownloadString('https://exflowpackagemanager.azurewebsites.net/packages?s='+$ExFlowUserSecret)
 Write-Output "Package URL: " 
 Write-Output $packageURL
 Write-Output ""
