@@ -7,12 +7,12 @@ ExFlow web is installed by running the following PowerShell script ([Example.ps1
 
 ```powershell
 $Location                  = "northeurope" #Azure location notheurope, westeurope,... 
-$Security_Admins           = "JOHANB,JERRY" #AX user name of web site administrators. Admins can translate texts, write welecome messages, ...
-$DynamicsAXApiId           = "axtestdynamics365aos" #left part of the AX URL such as axtestdynamics365aos for https://axtestdynamics365aos.cloudax.dynamics.com
+$Security_Admins           = "JOHANB,JERRY" #AX user name (UPPERCASE) of ExFlow web administrators. Admins can translate texts, write welecome messages, ...
+$DynamicsAXApiId           = "axtestdynamics365aos.cloudax.dynamics.com" #URL such as axtestdynamics365aos.cloudax.dynamics.com
 $ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
 
 $scriptPath = ((New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/App-RegistrationDeployment.ps1'))
-Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $Location,$Security_Admins,$DynamicsAXApiId,$ExFlowUserSecret 
+Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $Location,$Security_Admins,$DynamicsAXApiId,$ExFlowUserSecret
 ```
 
 The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the D365O API (web services). **Note that to apply product updates you just run the script again.**
@@ -25,10 +25,11 @@ The script downloads the latest ExFlow web release and installs all required Azu
 5. Wait until done
 6. Sign in to the app and grant permissions 
 
-Error handling:
+*Error handling:*
+
 If the text in the command window turns red something went wrong 
 1.  Press the Stop button
-2.  Verify that you are using an account with enough rights to create an App registration
+2.  Verify that you are using an account with enough rights to create an App registration. Note that you can't use an account with 2-factor authentication with PowerShell. Also, make sure that the account is part of the subscription admin group.
 3.  Make sure that you have AzureRM installed. Open PowerShell ISE with **Run as administrator** and run the following command:
 ```powershell
 Install-Module -Name AzureRM

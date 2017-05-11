@@ -10,7 +10,10 @@ param(
     [string]$DynamicsAXApiId,
 
     [Parameter(Mandatory=$True)]
-    [string]$ExFlowUserSecret
+    [string]$ExFlowUserSecret,
+
+    [Parameter(Mandatory=$True)]
+    [string]$PackageVersion
 )
 
 #Function to get authorization token for communication with the Microsoft Graph REST API
@@ -70,6 +73,9 @@ Function Create-AesKey() {
 Clear-Host
 
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
+If (!$PackageVersion){
+    $PackageVersion="latest"
+}
 
 #region jb
 Write-Output "--------------------------------------------------------------------------------"
@@ -95,7 +101,7 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Checking package"
 Write-Output "--------------------------------------------------------------------------------"
 
-$packageURL = (New-Object System.Net.Webclient).DownloadString('https://exflowpackagemanager.azurewebsites.net/packages?s='+$ExFlowUserSecret)
+$packageURL = (New-Object System.Net.Webclient).DownloadString('https://exflowpackagemanager.azurewebsites.net/packages?s='+$ExFlowUserSecret+'&v='+$PackageVersion)
 Write-Output "Package URL: " 
 Write-Output $packageURL
 Write-Output ""
