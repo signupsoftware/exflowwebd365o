@@ -123,12 +123,12 @@ Import-Module AzureRM.Automation
 $login = Login-AzureRmAccount  -Credential $Credential
 If (-not($login)){
     Write-Warning "This script will be aborted."
-    exit
+    end
 }
 ElseIf (-not($login.Context.Subscription)){
     Write-Warning "This account doesn't have a subscription! Please add subscription in the Azure portal."
     Write-Warning "This script will be aborted."
-    exit
+    end
 }
 
 #endregion
