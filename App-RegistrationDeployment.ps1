@@ -13,6 +13,9 @@ param(
     [string]$ExFlowUserSecret,
 
     [Parameter(Mandatory=$True)]
+    [string]$Prefix,
+
+    [Parameter(Mandatory=$True)]
     [string]$PackageVersion
 )
 
@@ -140,6 +143,9 @@ Else{
 $md5 = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
 $utf8 = New-Object -TypeName System.Text.UTF8Encoding
 $hash = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($DynamicsAXApiId)))
+If ($Prefix){
+    $hash = $Prefix+$hash
+}
 $_TenantId = "exflow$(($hash.ToLower()).Replace('-','').Substring(0,18))"
 If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `
    (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
