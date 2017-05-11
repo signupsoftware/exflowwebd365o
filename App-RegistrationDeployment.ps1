@@ -130,6 +130,9 @@ ElseIf (-not($login.Context.Subscription)){
     Write-Warning "This script will be aborted."
     return
 }
+Else{
+    $login
+}
 
 #endregion
 
