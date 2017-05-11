@@ -120,7 +120,17 @@ Write-Output "------------------------------------------------------------------
 If (!($Credential)) { Write-Output "Script aborted..." ; exit }
 
 Import-Module AzureRM.Automation
-Login-AzureRmAccount  -Credential $Credential
+$login = Login-AzureRmAccount  -Credential $Credential
+If (-not($login)){
+    Write-Warning "This script will be aborted."
+    exit
+}
+ElseIf (-not($login.Context.Subscription)){
+    Write-Warning "This account doesn't have a subscription! Please add subscription in the Azure portal."
+    Write-Warning "This script will be aborted."
+    exit
+}
+
 #endregion
 
 #region Determine AzureRmDnsAvailability
