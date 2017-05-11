@@ -79,11 +79,14 @@ $azrm=Get-Module -ListAvailable -Name AzureRM
 If (!$azrm){
     Write-Warning "Module AzureRM is not installed (use command: Install-Module -Name AzureRM)"
 }
-ElseIf ($azrm.Version -lt "2.3.0"){
-    Write-Warning  "Module AzureRM (" + $azrm.Version + ") should updated (use command: Install-Module -Name AzureRM)"
+ElseIf ($azrm.Version -lt "3.8.0"){
+    Write-Warning  "Module AzureRM $($azrm.Version) should updated (use command: Install-Module -Name AzureRM)"
+}
+ElseIf ($PSVersionTable.PSVersion -lt "5.0.0"){
+    Write-Warning "PowerShell could be updated from $($PSVersionTable.PSVersion) to > 5.0. See SignUp's GitHub for more info and help."
 }
 Else{
-    Write-Output "Modules and PS is valid"
+    Write-Output "Modules and PowerShell versions are valid"
 }
 Write-Output ""
 
@@ -201,7 +204,7 @@ $CorsRules = @{
 }
 
 $aad_TenantId              = (Get-AzureRmTenant).TenantId
-$aad_ExternalApiId         = "https://$($DynamicsAXApiId).cloudax.dynamics.com"
+$aad_ExternalApiId         = "https://$($DynamicsAXApiId)"
 #endregion
 
 #region Create AzureRmResourceGroup
