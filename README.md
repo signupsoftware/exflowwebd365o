@@ -47,13 +47,22 @@ Compared with version 3 the following features have been removed.
 * IE11 on Windows Server using default security configuration where localStorage is disabled is not supported. 
 
 The following features are currently under development.
-* Ax2012 change line type.
-* Keyboard navigation not fully implemented.
 * Boolean coding columns not supported.
 * Paging/"scroll for more" in lookups (account, items, ..) are under development. 
-* Azure AD for AX2012 is under development.
 * Line templates
 
+
+### Release 15 
+Applies to D365O (not released), AX2012 (20170428)
+
+**News**
+* Fixes a critical bug that sometimes stopped final approval
+* Improved language files and translation support - custom labeling.
+* Automatic theme (color) change based on a number of due documents (experimental).
+* Adds full support for keyboard shortcuts.
+* Adds possibility to change line type.
+* Improves splitting with a possibility to quickly change the original line amount.
+* (AX2012) Support Azure AD. 
 
 ### Release 14 (2017-04-04)
 Applies to D365O
