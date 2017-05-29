@@ -51,6 +51,18 @@ The following features are currently under development.
 * Paging/"scroll for more" in lookups (account, items, ..) are under development. 
 * Line templates
 
+### Release 16 
+2017-05-30, AX2012, D365AX
+
+**News**
+* Improves keyboard navigation using adding ESC to escape line editing.
+* Improves the Forward feature adding the possibility to disable the Previous option. The OK button is also disabled until approver and comment have been specified.
+* Improves filtering for adding approvers (Add Approver & Forward To)
+* Improves display of the Amount column in the inbox.
+* Adds possibility for an administrator to download the latest logfile (experimental).
+* Adds possibility to turn on extended logging in admin settings (experimental).
+* Adds admin option to manually clean temporary files and folders (experimental). 
+* Bug fixes.
 
 ### Release 15 
 Applies to D365O (not released), AX2012 (20170428)
