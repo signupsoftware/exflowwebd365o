@@ -97,6 +97,9 @@ ElseIf ($PSVersionTable.PSVersion -lt "5.0.0"){
 Else{
     Write-Output "Modules and PowerShell versions are valid"
 }
+Write-Output "PowerShell version: "$($PSVersionTable.PSVersion)
+Write-Output "AzureRM version: "$($azrm.Version)
+
 Write-Output ""
 
 #get the zip-file
@@ -135,6 +138,7 @@ ElseIf (-not($login.Context.Subscription)){
 }
 Else{
     $login
+    $aad_TenantId=$login.Context.Tenant.TenantId
 }
 
 #endregion
@@ -228,7 +232,7 @@ $CorsRules = @{
     AllowedMethods         = @("Get")
 }
 
-$aad_TenantId              = (Get-AzureRmTenant).TenantId
+#jb $aad_TenantId              = (Get-AzureRmTenant).TenantId
 $aad_ExternalApiId         = "https://$($DynamicsAXApiId)"
 #endregion
 
