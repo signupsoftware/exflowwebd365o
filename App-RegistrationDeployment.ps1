@@ -141,13 +141,16 @@ ElseIf (-not($login.Context.Subscription)){
 }
 Else{
     $aad_TenantId = $login.Context.Tenant.TenantId
-    if ($TenantGuid){
+    If ($TenantGuid){
         $aad_TenantId = $TenantGuid
     }
     Write-Output $login.Context
     Write-Output "Selected tenant :"$($aad_TenantId)
 }
-
+If (!$aad_TenantId){
+    Write-Warning "Tenant not found script aborted. Consider using the TenantGuid parameter."
+    return
+}
 #endregion
 
 #region Determine AzureRmDnsAvailability
