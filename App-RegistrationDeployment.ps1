@@ -137,8 +137,9 @@ ElseIf (-not($login.Context.Subscription)){
     return
 }
 Else{
+    $aad_TenantId = $login.Context.Tenant.TenantId
+    Write-Output $aad_TenantId
     $login
-    $aad_TenantId=$login.Context.Tenant.TenantId
 }
 
 #endregion
