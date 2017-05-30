@@ -16,7 +16,10 @@ param(
     [string]$Prefix,
 
     [Parameter(Mandatory=$True)]
-    [string]$PackageVersion
+    [string]$PackageVersion,
+
+    [Parameter(Mandatory=$True)]
+    [string]$TenantGuid
 )
 
 #Function to get authorization token for communication with the Microsoft Graph REST API
@@ -138,12 +141,11 @@ ElseIf (-not($login.Context.Subscription)){
 }
 Else{
     $aad_TenantId = $login.Context.Tenant.TenantId
-    if (!$aad_TenantId){
-        $aad_TenantId = $login.Context.Tenant.Id
+    if ($TenantGuid){
+        $aad_TenantId = $TenantGuid
     }
-    Write-Output "TenantId"$($aad_TenantId)
-    Write-Output $login
-    Write-Output $login.Context.Tenant
+    Write-Output $login.Context
+    Write-Output "Selected tenant :"$($aad_TenantId)
 }
 
 #endregion
