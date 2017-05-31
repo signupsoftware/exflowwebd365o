@@ -77,33 +77,37 @@ Function Create-AesKey() {
 }
 
 Clear-Host
-
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
 If (!$PackageVersion){
     $PackageVersion="latest"
 }
-
+$HasErrors = ""
 #region jb
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Checking PowerShell version and modules"
 Write-Output "--------------------------------------------------------------------------------"
-$azrm=Get-Module -ListAvailable -Name AzureRM
+$azrm = Get-Module -ListAvailable -Name AzureRM
 If (!$azrm){
-    Write-Warning "Module AzureRM is not installed (use command: Install-Module -Name AzureRM)"
+    $HasErrors = "Module AzureRM is not installed (use command: Install-Module -Name AzureRM and reopen PowerShell editor). Script aborted!"
 }
-ElseIf ($azrm.Version -lt "3.8.0"){
-    Write-Warning  "Module AzureRM $($azrm.Version) should updated (use command: Install-Module -Name AzureRM)"
+ElseIf ($azrm.Version -lt "4.0.2"){
+    $HasErrors = "Module AzureRM $($azrm.Version) should updated (use command: Install-Module -Name AzureRM and reopen PowerShell editor). Script aborted!"
 }
 ElseIf ($PSVersionTable.PSVersion -lt "5.0.0"){
-    Write-Warning "PowerShell could be updated from $($PSVersionTable.PSVersion) to > 5.0. See SignUp's GitHub for more info and help."
+    $HasErrors = "PowerShell could be updated from $($PSVersionTable.PSVersion) to > 5.0. See SignUp's GitHub for more info and help."
 }
 Else{
     Write-Output "Modules and PowerShell versions are valid"
 }
 Write-Output "PowerShell version: "$($PSVersionTable.PSVersion)
-Write-Output "AzureRM version: "$($azrm.Version)
-
 Write-Output ""
+Write-Output "AzureRM version: "$($azrm.Version)
+Write-Output ""
+
+If ($HasErrors){
+    Write-Warning $HasErrors
+    return 
+}
 
 #get the zip-file
 Write-Output "--------------------------------------------------------------------------------"
@@ -131,27 +135,31 @@ If (!($Credential)) { Write-Output "Script aborted..." ; exit }
 Import-Module AzureRM.Automation
 $login = Login-AzureRmAccount  -Credential $Credential
 If (-not($login)){
-    Write-Warning "This script will be aborted."
-    return
+    $HasErrors = "Login failed. Script aborted."
 }
 ElseIf (-not($login.Context.Subscription)){
-    Write-Warning "This account doesn't have a subscription! Please add subscription in the Azure portal."
-    Write-Warning "This script will be aborted."
-    return
+    $HasErrors =  "This account doesn't have a subscription! Please add subscription in the Azure portal. Scrip aborted."
 }
-Else{
-    $aad_TenantId = $login.Context.Tenant.TenantId
-    If ($TenantGuid){
-        $aad_TenantId = $TenantGuid
-    }
-    Write-Output $login.Context
-    Write-Output "Selected tenant :"$($aad_TenantId)
+$Tenant = Get-AzureRmTenant
+If ($TenantGuid){
+    $Tenant = Get-AzureRmTenant -TenantId $TenantGuid
 }
+
+$aad_TenantId = $Tenant.Id
+$tenantName = $Tenant.Directory
+
+Write-Output $login.Context
+
 If (!$aad_TenantId){
-    Write-Warning "Tenant not found script aborted. Consider using the TenantGuid parameter."
-    return
+    $HasErrors = "Tenant not found. Script aborted."
 }
 #endregion
+
+If ($HasErrors){
+    Write-Warning $HasErrors
+    return 
+}
+
 
 #region Determine AzureRmDnsAvailability
 $md5 = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
@@ -548,7 +556,6 @@ $restPayload.Add("requiredResourceAccess",@($requiredResourceAccess,$requiredRes
 
 $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 
-$tenantName = (Get-AzureRmTenant).Domain
 $token = GetAuthorizationToken -TenantName $tenantName
 
 $authorizationHeader = @{
