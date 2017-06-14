@@ -153,6 +153,8 @@ Write-Output $login.Context
 If (!$aad_TenantId){
     $HasErrors = "Tenant not found. Script aborted."
 }
+Write-Output "aad_TenantId"
+Write-Output $aad_TenantId
 #endregion
 
 If ($HasErrors){
@@ -504,6 +506,8 @@ If ($Security_Admins)
 {
     $TemplateParameters.Add("Security_Admins",$Security_Admins)
 }
+Write-Output "AzureRmResourceGroupDeployment parameters:"
+$TemplateParameters
 
 New-AzureRmResourceGroupDeployment @TemplateParameters -Verbose
 
