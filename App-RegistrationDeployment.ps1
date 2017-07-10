@@ -19,7 +19,10 @@ param(
     [string]$PackageVersion,
 
     [Parameter(Mandatory=$True)]
-    [string]$TenantGuid
+    [string]$TenantGuid,
+
+    [Parameter(Mandatory=$True)]
+    [string]$WebAppSubscriptionGuid
 )
 
 #Function to get authorization token for communication with the Microsoft Graph REST API
@@ -129,29 +132,44 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Logging in to azure automation"
 Write-Output "--------------------------------------------------------------------------------"
 
-[PSCredential]$Credential = (Get-Credential -Message "Azure tenant administrator account")
-If (!($Credential)) { Write-Output "Script aborted..." ; exit }
+[PSCredential]$Credential = (Get-Credential -Message "Azure AD admin account")
+If (!($Credential)) { Write-Output "Script aborted..." ; return }
 
 Import-Module AzureRM.Automation
-$login = Login-AzureRmAccount  -Credential $Credential
-If (-not($login)){
-    $HasErrors = "Login failed. Script aborted."
+Import-Module AzureRM.Profile
+$LoginAD = Login-AzureRmAccount  -Credential $Credential
+
+If ($WebAppSubscriptionGuid){
+    Write-Output "Subscription co-admin account"
+    $Login = Login-AzureRmAccount  -SubscriptionId $WebAppSubscriptionGuid
+}
+else{
+    $Login = $LoginAD;
+}
+Set-AzureRmContext -Context $Login.Context
+
+If (-not($Login)){
+    $HasErrors = "Login failed. "
 }
 ElseIf (-not($login.Context.Subscription)){
-    $HasErrors =  "This account doesn't have a subscription! Please add subscription in the Azure portal. Scrip aborted."
+    $HasErrors =  "This account isn't linked to a subscription! Please add account to a subscription in the Azure portal."
 }
+
+Set-AzureRmContext -Context $LoginAD.Context
+
 $Tenant = Get-AzureRmTenant
 If ($TenantGuid){
     $Tenant = Get-AzureRmTenant -TenantId $TenantGuid
 }
 
+
 $aad_TenantId = $Tenant.Id
 $tenantName = $Tenant.Directory
 
-Write-Output $login.Context
+Set-AzureRmContext -Context $Login.Context
 
 If (!$aad_TenantId){
-    $HasErrors = "Tenant not found. Script aborted."
+    $HasErrors = "Tenant not found."
 }
 Write-Output "aad_TenantId"
 Write-Output $aad_TenantId
@@ -159,6 +177,7 @@ Write-Output $aad_TenantId
 
 If ($HasErrors){
     Write-Warning $HasErrors
+    Write-Warning "Script aborted."
     return 
 }
 
@@ -186,9 +205,13 @@ If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAct
 If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `
    (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
 {
-    Write-Warning "A unique AzureRm DNS name could not be automatically determined."
-    Write-Warning "This script will be aborted."
-    end
+    $HasErrors = "A unique AzureRm DNS name could not be automatically determined."
+    return
+}
+If ($HasErrors){
+    Write-Warning $HasErrors
+    Write-Warning "Script aborted."
+    return 
 }
 #endregion
 
@@ -361,6 +384,8 @@ If ($cUpdate)
 }
 #endregion
 
+Set-AzureRmContext -Context $LoginAD.Context
+
 #region Create AzureRmADApplication
 If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith $WebApplicationName -ErrorAction SilentlyContinue))
 {
@@ -478,6 +503,8 @@ If (-not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName 
 }
 #endregion
 
+Set-AzureRmContext -Context $Login.Context
+
 #region Deploy Azure Resource Manager Template
 Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
@@ -519,6 +546,8 @@ While ($X -lt 3)
     $x++
 }
 #endregion
+
+Set-AzureRmContext -Context $LoginAD.Context
 
 #region Web App registration with Microsoft Graph REST Api
 $WebClient = New-Object System.Net.WebClient
