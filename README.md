@@ -30,17 +30,7 @@ The script downloads the latest ExFlow web release and installs all required Azu
 5. Wait until done
 6. Sign in to the app and grant permissions 
 
-*Error handling:*
-
-If the text in the command window turns red something went wrong 
-1.  Press the Stop button
-2.  Verify that you are using an account with enough rights to create an App registration. Note that you can't use an account with 2-factor authentication with PowerShell. Also, make sure that the account is part of the subscription admin group.
-3.  Make sure that you have AzureRM installed. Open PowerShell ISE with **Run as administrator** and run the following command:
-```powershell
-Install-Module -Name AzureRM
-```
-4. If above step still fails you will need to upgrade to a later version of PowerShell. Go to https://msdn.microsoft.com/en-us/powershell/wmf/5.0/requirements.
-
+If the text in the command window turns red or the script aborts something went wrong, see bellow section on errors.
 
 ## Release notes
 Compared with version 3 the following features have been removed.
@@ -98,4 +88,21 @@ Applies to D365O (prerelease), AX2012
 * Improves mobile UI/UX
 * Includes a read up (help tutorial) with animated images.
 * Bug fixes
+
+# Error handling
+
+If the text in the command window turns red or the script aborts something went wrong. 
+1.  Press the Stop button
+2.  Verify that you are using an account with enough rights to create an App registration. Note that you can't use an account with 2-factor authentication with PowerShell. Also, make sure that the account is part of the subscription admin group.
+3.  Make sure that you have AzureRM installed. Open PowerShell ISE with **Run as administrator** and run the following command:
+```powershell
+Install-Module -Name AzureRM
+```
+4. If above step still fails you may have to need to upgrade to a later version of PowerShell. Go to https://msdn.microsoft.com/en-us/powershell/wmf/5.0/requirements.
+
+## Remove
+In the Azure Portal:
+1. Sign in and locate 'Resource Groups' in the menu. Find the resource group to remove (start with 'exflow...').
+2. Open, press 'Delete' and follow instructions.
+3. Locate 'App Registrations' in the menu. Find app (they always start with exflow), press 'Delete' and follow instructions.
 

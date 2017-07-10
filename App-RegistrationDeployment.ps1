@@ -23,6 +23,7 @@ param(
 
     [Parameter(Mandatory=$True)]
     [string]$WebAppSubscriptionGuid
+
 )
 
 #Function to get authorization token for communication with the Microsoft Graph REST API
