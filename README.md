@@ -8,7 +8,7 @@ ExFlow web is installed by running the following PowerShell script ([Example.ps1
 ```powershell
 $Location                  = "northeurope" #Azure location notheurope, westeurope,... 
 $Security_Admins           = "JOHANB,JERRY" #AX user name (UPPERCASE) of ExFlow web administrators. Admins can translate texts, write welecome messages, ...
-$DynamicsAXApiId           = "axtestdynamics365aos.cloudax.dynamics.com" #URL such as axtestdynamics365aos.cloudax.dynamics.com
+$DynamicsAXApiId           = "axtestdynamics365aos.cloudax.dynamics.com" #URL host such as axtestdynamics365aos.cloudax.dynamics.com
 $ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
 $Prefix                    = "" #Optional prefix (short using alphanumeric characters). Leave blank for default behavior.
 $PackageVersion            = "" #Optional version to install.  Leave blank for default behavior.
