@@ -395,14 +395,14 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     Write-Output "Creating PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
 
-    $psadCredential           = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
+    $psadCredential           = New-Object Microsoft.Azure.Graph.RBAC.Version1_6.ActiveDirectory.PSADPasswordCredential
     $startDate                = Get-Date
     $psadCredential.StartDate = $startDate
     $psadCredential.EndDate   = $startDate.AddYears(1)
     $psadCredential.KeyId     = [guid]::NewGuid()
     $psadKeyValue             = Create-AesKey
     $psadCredential.Password  = $psadKeyValue
-
+    
     $SecurePassword = $psadKeyValue | ConvertTo-SecureString -AsPlainText -Force
     $SecurePassword | Export-Clixml "$env:USERPROFILE\PSDAKey.xml"
 
