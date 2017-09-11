@@ -90,7 +90,7 @@ $HasErrors = ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Checking PowerShell version and modules"
 Write-Output "--------------------------------------------------------------------------------"
-$azrm = Get-Module -ListAvailable -Name AzureRM
+$azrm = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select -First 1
 If (!$azrm){
     $HasErrors = "Module AzureRM is not installed (use command: Install-Module -Name AzureRM and reopen PowerShell editor). Script aborted!"
 }
