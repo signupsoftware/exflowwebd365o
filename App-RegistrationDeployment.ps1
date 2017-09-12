@@ -165,7 +165,7 @@ If ($TenantGuid){
 
 
 $aad_TenantId = $Tenant.Id
-$tenantName = $Tenant.Directory
+$tenantName =  $Tenant.Id # $Tenant.Directory
 
 Set-AzureRmContext -Context $Login.Context
 
