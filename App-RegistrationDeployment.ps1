@@ -172,8 +172,8 @@ Set-AzureRmContext -Context $Login.Context
 If (!$aad_TenantId){
     $HasErrors = "Tenant not found."
 }
-Write-Output "aad_TenantId"
-Write-Output $aad_TenantId
+Write-Output "Tenant"
+Write-Output $Tenant
 #endregion
 
 If ($HasErrors){
