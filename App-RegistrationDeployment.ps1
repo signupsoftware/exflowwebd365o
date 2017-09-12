@@ -1,4 +1,4 @@
-﻿#Parameters for input as arguments or parameters
+#Parameters for input as arguments or parameters
 param(
     [Parameter(Mandatory=$True)]
     [string]$Location,
