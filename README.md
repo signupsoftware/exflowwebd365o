@@ -8,7 +8,7 @@ ExFlow web is installed by running the following PowerShell script ([Example.ps1
 ```powershell
 $Location                  = "northeurope" #Azure location notheurope, westeurope,... 
 $Security_Admins           = "JOHANB,JERRY" #AX user name (UPPERCASE) of ExFlow web administrators. Admins can translate texts, write welecome messages, ...
-$DynamicsAXApiId           = "axtestdynamics365aos.cloudax.dynamics.com" #URL such as axtestdynamics365aos.cloudax.dynamics.com
+$DynamicsAXApiId           = "axtestdynamics365aos.cloudax.dynamics.com" #URL host such as axtestdynamics365aos.cloudax.dynamics.com
 $ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
 $Prefix                    = "" #Optional prefix (short using alphanumeric characters). Leave blank for default behavior.
 $PackageVersion            = "" #Optional version to install.  Leave blank for default behavior.
@@ -43,6 +43,17 @@ The following features are currently under development.
 * Boolean coding columns not supported.
 * Paging/"scroll for more" in lookups (account, items, ..) are under development. 
 * Line templates
+
+### Release 17
+2017-08-30, AX2012, D365AX, NAV (pre)
+
+**News**
+* Adds UI improvements.
+* Improves client-side performance.
+* Improves performance when reloading settings from Dynamics.
+* Fixes a critical issue with PDF-files for D365
+* Changes how the primary button work (the green one). The primary button will change from Approve (i.e. approve all lines) to Save/Send when the user makes a line approval decision.
+* Bug fixes
 
 ### Release 16 
 2017-05-30, AX2012, D365AX

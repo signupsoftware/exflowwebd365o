@@ -1,4 +1,4 @@
-﻿#Parameters for input as arguments or parameters
+﻿﻿#Parameters for input as arguments or parameters
 param(
     [Parameter(Mandatory=$True)]
     [string]$Location,
@@ -90,7 +90,7 @@ $HasErrors = ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Checking PowerShell version and modules"
 Write-Output "--------------------------------------------------------------------------------"
-$azrm = Get-Module -ListAvailable -Name AzureRM
+$azrm = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select -First 1
 If (!$azrm){
     $HasErrors = "Module AzureRM is not installed (use command: Install-Module -Name AzureRM and reopen PowerShell editor). Script aborted!"
 }
@@ -172,8 +172,10 @@ Set-AzureRmContext -Context $Login.Context
 If (!$aad_TenantId){
     $HasErrors = "Tenant not found."
 }
-Write-Output "aad_TenantId"
-Write-Output $aad_TenantId
+Write-Output "Tenant"
+Write-Output $Tenant
+Write-Output "."
+
 #endregion
 
 If ($HasErrors){
@@ -394,8 +396,17 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
+    $azureRmModuleVersion = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select -First 1
 
-    $psadCredential           = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
+    $psadCredential = $null
+    If ("$($azureRmModuleVersion.Version.Major).$($azureRmModuleVersion.Version.Minor).$($azureRmModuleVersion.Version.Build)" -le "4.2.0") {
+        $psadCredential = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
+    }
+    Else {
+        $psadCredential = New-Object Microsoft.Azure.Graph.RBAC.Version1_6.ActiveDirectory.PSADPasswordCredential
+    }
+
+    # $psadCredential           = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
     $startDate                = Get-Date
     $psadCredential.StartDate = $startDate
     $psadCredential.EndDate   = $startDate.AddYears(1)
