@@ -165,7 +165,7 @@ If ($TenantGuid){
 
 
 $aad_TenantId = $Tenant.Id
-$tenantName =  $Tenant.Id # $Tenant.Directory
+$tenantName = $Tenant.Directory
 
 Set-AzureRmContext -Context $Login.Context
 
@@ -174,6 +174,8 @@ If (!$aad_TenantId){
 }
 Write-Output "Tenant"
 Write-Output $Tenant
+Write-Output "."
+
 #endregion
 
 If ($HasErrors){
