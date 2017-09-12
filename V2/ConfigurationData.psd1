@@ -4,7 +4,7 @@
     AzureRmDomain                   = "azurewebsites.net"
     PowerShellVersion               = "5.0.0"
                                     
-    RedistPath                      = "https://github.com/djpericsson/AzureWebAppDeploy/raw/master"
+    RedistPath                      = "https://github.com/signupsoftware/exflowwebd365o/raw/master"
     PackageURL                      = "https://exflowpackagemanager.azurewebsites.net"
     LocalPath                       = $env:TEMP
 
@@ -78,7 +78,7 @@
                                       
     CorsRules = @{                     
         AllowedHeaders                = @("x-ms-meta-abc","x-ms-meta-data*","x-ms-meta-target*")
-        AllowedOrigins                = @("https://[TenantId].azurewebsites.net")
+        AllowedOrigins                = @("https://[DeploymentName].azurewebsites.net")
         MaxAgeInSeconds               = 200
         ExposedHeaders                = @("x-ms-meta-*")
         AllowedMethods                = @("Get")

@@ -1,47 +1,50 @@
 ﻿#Parameters for input as arguments or parameters
 param(
-    [Parameter(Mandatory=$True)]
+    [Parameter(Mandatory = $True)]
     [string]$Location,
 
-    [Parameter(Mandatory=$True)]
+    [Parameter(Mandatory = $True)]
     [string]$Security_Admins,
 
-    [Parameter(Mandatory=$True)]
+    [Parameter(Mandatory = $True)]
     [string]$DynamicsAXApiId,
 
-    [Parameter(Mandatory=$True)]
+    [Parameter(Mandatory = $True)]
     [string]$RepoURL,
 
-    [Parameter(Mandatory=$False)]
+    [Parameter(Mandatory = $True)]
     [string]$ExFlowUserSecret,
 
-    [Parameter(Mandatory=$False)]
-    [string]$Prefix,
+    [Parameter(Mandatory = $False)]
+    [string]$Prefix = "exflow",
 
-    [Parameter(Mandatory=$False)]
+    [Parameter(Mandatory = $False)]
     [string]$PackageVersion = "latest",
 
-    [Parameter(Mandatory=$False)]
+    [Parameter(Mandatory = $False)]
+    [string]$MachineName = "F1",    
+
+    [Parameter(Mandatory = $False)]
     [string]$TenantGuid,
 
-    [Parameter(Mandatory=$False)]
+    [Parameter(Mandatory = $False)]
     [string]$WebAppSubscriptionGuid
 )
 
-Function Get-UrlStatusCode
-{
+Function Get-UrlStatusCode {
     Param
     (
         [ValidateNotNullOrEmpty()]
         [String]$Url
     )
     [int]$StatusCode = $null
-    try
-    {
+    try {
         $StatusCode = (Invoke-WebRequest -Uri $Url -UseBasicParsing -DisableKeepAlive).StatusCode
+        if (-not( $Url.StartsWith("https://")) ) {
+            $StatusCode = 200
+        }
     }
-    catch [Net.WebException]
-    {
+    catch [Net.WebException] {
         $StatusCode = [int]$_.Exception.Response.StatusCode
     }
     return $StatusCode
@@ -50,11 +53,11 @@ Function Get-UrlStatusCode
 Clear-Host
 
 #We client download options
-$Webclient                       = New-Object System.Net.Webclient
+$Webclient = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true
-$Webclient.Proxy.Credentials     = $Webclient.Credentials
-$Webclient.Encoding              = [System.Text.Encoding]::UTF8
-$Webclient.CachePolicy           = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
+$Webclient.Proxy.Credentials = $Webclient.Credentials
+$Webclient.Encoding = [System.Text.Encoding]::UTF8
+$Webclient.CachePolicy = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
 
 #Start measuring time to complete script
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
@@ -67,27 +70,33 @@ Write-Output "------------------------------------------------------------------
 $DependencyValidation = $True
 
 #Download the Helper-Module
-$StatusCodeHelper = Get-UrlStatusCode -Url "$RepoURL/Helper-Module.ps1"
+$StatusCodeHelper = Get-UrlStatusCode -Url "$($RepoURL)Helper-Module.ps1"
 If ($StatusCodeHelper -ne 200) {
     Write-Warning "Helper-Module location could not be verified."
-    Write-Warning "Url: $RepoURL/Helper-Module.ps1"
+    Write-Warning "Url: $($RepoURL)Helper-Module.ps1"
     Write-Warning "StatusCode: $StatusCodeHelper"
     $DependencyValidation = $False
-} Else {
-    $Webclient.DownloadString("$RepoURL/Helper-Module.ps1") | Invoke-Expression
+}
+Else {
+    $Webclient.DownloadString("$($RepoURL)Helper-Module.ps1") | Invoke-Expression
 }
 
 #Download and convert the configuration data file as Hash Table
-$StatusCodeConfiguration = Get-UrlStatusCode -Url "$RepoURL/ConfigurationData.psd1"
+$StatusCodeConfiguration = Get-UrlStatusCode -Url "$($RepoURL)ConfigurationData.psd1"
 If ($StatusCodeConfiguration -ne 200) {
     Write-Warning "ConfigurationData.psd1 location could not be verified."
-    Write-Warning "Url: $RepoURL/ConfigurationData.psd1"
+    Write-Warning "Url: $($RepoURL)ConfigurationData.psd1"
     Write-Warning "StatusCode: $StatusCodeConfiguration"
     $DependencyValidation = $False
-} Else {
-    [hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$RepoURL/ConfigurationData.psd1") | Invoke-Expression)
 }
-
+Else {
+    [hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$($RepoURL)ConfigurationData.psd1") | Invoke-Expression)
+}
+#Clean input
+$DynamicsAXApiId = $DynamicsAXApiId.ToLower().Replace("https://","").Replace("http://","")
+$DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("dynamics.com")+"dynamics.com".Length)
+if (!$MachineSize) { $MachineSize = "F1" }
+#Setup log file
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
 Write-Host "LogFile: $LogFile" -ForegroundColor Green
@@ -97,15 +106,15 @@ Try { Invoke-Logger -Message "Security_Admins: $Security_Admins" -Severity I -Ca
 Try { Invoke-Logger -Message "DynamicsAXApiId: $DynamicsAXApiId" -Severity I -Category "Parameters" } Catch {}
 Try { Invoke-Logger -Message "RepoURL: $RepoURL" -Severity I -Category "Parameters" } Catch {}
 
-Try { Invoke-Logger -Message "Helper-Module: $RepoURL/Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
-Try { Invoke-Logger -Message "ConfigurationData.psd1: $RepoURL/ConfigurationData.psd1" -Severity I -Category "Configuration" } Catch {}
+Try { Invoke-Logger -Message "Helper-Module: $($RepoURL)Helper-Module.ps1" -Severity I -Category "Helper-Module" } Catch {}
+Try { Invoke-Logger -Message "ConfigurationData.psd1: $($RepoURL)ConfigurationData.psd1" -Severity I -Category "Configuration" } Catch {}
 
 Try { Invoke-Logger -Message $ConfigurationData -Severity I -Category "Configuration" } Catch {}
 
 If (!$DependencyValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
-Write-Output "Helper-Module: $RepoURL/Helper-Module.ps1"
-Write-Output "ConfigurationData: $RepoURL/ConfigurationData.psd1"
+Write-Output "Helper-Module: $($RepoURL)Helper-Module.ps1"
+Write-Output "ConfigurationData: $($RepoURL)ConfigurationData.psd1"
 Write-Output ""
 
 #region Checking PowerShell version and modules
@@ -122,7 +131,8 @@ If ($PSVersionTable.PSVersion -lt $ConfigurationData.PowerShell.Version) {
     Write-Warning $Message
     Try { Invoke-Logger -Message $Message -Severity W -Category "PowerShell" } Catch {}
     $hasErrors = $True
-} Else {
+}
+Else {
     $Message = "PowerShell version $($PSVersionTable.PSVersion) is valid."
     Write-Host $Message
     Try { Invoke-Logger -Message $Message -Severity I -Category "PowerShell" } Catch {}
@@ -137,12 +147,14 @@ If ($hasErrors) {
 #endregion
 
 #region Download the zip-file
+$PackageValidation = $True
+
 If ($ExFlowUserSecret) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Checking package"
     Write-Output "--------------------------------------------------------------------------------"
 
-    $packageURL = (New-Object System.Net.Webclient).DownloadString("$($ConfigurationData.PackageURL)/packages?s="+$ExFlowUserSecret+"&v="+$PackageVersion)
+    $packageURL = (New-Object System.Net.Webclient).DownloadString("$($ConfigurationData.PackageURL)/packages?s=" + $ExFlowUserSecret + "&v=" + $PackageVersion)
 
     Write-Output "Package URL: " 
     Write-Output $packageURL
@@ -150,15 +162,24 @@ If ($ExFlowUserSecret) {
 
     Try { Invoke-Logger -Message "Package URL: $packageURL" -Severity I -Category "Package" } Catch {}
 
-    $packgeUrlAr   = $packageURL.Split("?")
-    $packageSAS    = "$($ConfigurationData.WebApplication)?"+$packgeUrlAr[1]
-    $packageFolder = $packgeUrlAr[0].replace("/$($ConfigurationData.WebApplication)","")
+    $packgeUrlAr = $packageURL.Split("?")
+    $packageSAS = "package.zip?"+$packgeUrlAr[1]
+    $packageFolder = $packgeUrlAr[0].replace("/package.zip","")
+
+    $StatusCodeWebApplication = Get-UrlStatusCode -Url  $packageURL
+    If ($StatusCodeWebApplication -ne 200) { $Message = "Web package application file location could not be verified" ; Write-Warning $Message ; $PackageValidation = $False ; Try { Invoke-Logger -Message "Url: $packageURL : $StatusCodeWebApplication" -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
+    
 }
+else{
+    $PackageValidation = $False
+}
+If (!$PackageValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
+
 #endregion 
 
 #Import used AzureRM modules to memory
 If (-not (Get-Module -Name AzureRM.Automation -ErrorAction SilentlyContinue)) { Import-Module AzureRM.Automation }
-If (-not (Get-Module -Name AzureRM.Profile -ErrorAction SilentlyContinue))    { Import-Module AzureRM.Profile }
+If (-not (Get-Module -Name AzureRM.Profile -ErrorAction SilentlyContinue)) { Import-Module AzureRM.Profile }
 
 #region Log in to Azure Automation
 Write-Output "--------------------------------------------------------------------------------"
@@ -185,14 +206,14 @@ If (!$AzureRmLogon.Account) {
     If (!$AzureRmLogon) { Try { Invoke-Logger -Message "Logon to Azure failed" -Severity W -Category "Logon" } Catch {} ; return }
 
     #Determine Azure subscription
-    If (-not($AzureRmLogon.Context.Subscription)){
+    If (-not($AzureRmLogon.Context.Subscription)) {
         Write-Warning "The account is not linked to an Azure subscription! Please add account to a subscription in the Azure portal."
         Try { Invoke-Logger -Message "The account is not linked to an Azure subscription! Please add account to a subscription in the Azure portal." -Severity W -Category "Subscription" } Catch {}
         return
     }
     Else {
         #Get all subscriptions
-        $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Context.Tenant.Id | Select-Object Name,Id
+        $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Context.Tenant.Id | Select-Object Name, Id
 
         Try { Invoke-Logger -Message "Get-AzureRmSubscription -TenantId $($AzureRmLogon.Context.Tenant.Id) : $($SubscriptionIds.Id.count)" -Severity I -Category "Subscription" } Catch {}
 
@@ -229,7 +250,7 @@ If (!$AzureRmLogon.Account) {
 }
 Else {
     #Get all subscriptions
-    $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Tenant.Id | Select-Object Name,Id
+    $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Tenant.Id | Select-Object Name, Id
 
     Try { Invoke-Logger -Message "Get-AzureRmSubscription -TenantId $($AzureRmLogon.Tenant.Id) : $($SubscriptionIds.Id.count)" -Severity I -Category "Subscription" } Catch {}
 
@@ -264,20 +285,21 @@ Else {
 
 #Set tenant variables based on logged on session
 If ($AzureRmLogon.Account.Id) {
-    $SignInName   = $AzureRmLogon.Account.Id
+    $SignInName = $AzureRmLogon.Account.Id
     $Subscription = "/subscriptions/$($AzureRmLogon.Subscription.Id)"
-    $TenantId     = $AzureRmLogon.Tenant.Id
+    $TenantId = $AzureRmLogon.Tenant.Id
 }
 Else {
-    $SignInName   = $AzureRmLogon.Context.Account.Id
+    $SignInName = $AzureRmLogon.Context.Account.Id
     $Subscription = "/subscriptions/$($AzureRmLogon.Context.Subscription.Id)"
-    $TenantId     = $AzureRmLogon.Context.Tenant.Id
+    $TenantId = $AzureRmLogon.Context.Tenant.Id
 }
 
 #Get tenant id information
-If ($TenantGuid){
+If ($TenantGuid) {
     $Tenant = Get-AzureRmTenant -TenantId $TenantGuid
-} Else {
+}
+Else {
     $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantId }
 }
 
@@ -285,13 +307,16 @@ If ($TenantGuid){
 $RoleAssignment = Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") }
 
 If ($RoleAssignment.SignInName -like "*#EXT#*") {
-    $TenantName = ((($RoleAssignment | Select -First 1 | Select-Object SignInName).SignInName).Replace("$($SignInName.Replace("@","_"))#EXT#@","")).Replace(".onmicrosoft.com","")
+    $TenantName = ((($RoleAssignment | Select -First 1 | Select-Object SignInName).SignInName).Replace("$($SignInName.Replace("@","_"))#EXT#@", "")).Replace(".onmicrosoft.com", "")
     If ($Tenant.Directory -ne $TenantName) { $Tenant.Directory = $TenantName }
+}
+else{
+    $TenantName = $Tenant.Directory
 }
 
 $aad_TenantId = $Tenant.Id
 
-If (!$aad_TenantId){
+If (!$aad_TenantId) {
     Write-Warning "A tenant id could not be found."
     return
 }
@@ -310,7 +335,7 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Determining deployment name and availability"
 Write-Output "--------------------------------------------------------------------------------"
 
-$DeploymentName = Set-DeploymentName -String $DynamicsAXApiId
+$DeploymentName = Set-DeploymentName -String $DynamicsAXApiId -Prefix $Prefix
 
 Write-Output "Deployment name: $DeploymentName"
 
@@ -372,8 +397,7 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
 #endregion
 
 #region Create AzureRmResourceGroup
-If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue))
-{
+If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmResourceGroup"
@@ -386,15 +410,15 @@ If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName 
 
     Try {
         $AzureRmResourceGroup = New-AzureRmResourceGroup @AzureRmResourceGroupParams -ErrorAction Stop
-    } Catch {
+    }
+    Catch {
         Write-Error $_
         Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmResourceGroup" } Catch {}
         return
     }  
 
     $x = 0
-    While ((-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) -and ($X -lt 10))
-    {
+    While ((-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) -and ($X -lt 10)) {
         Write-Host "SLEEP: $((Get-Date).ToString("hh:mm:ss")) - Awaiting AzureRmResourceGroup status for $(5*$x) seconds" -ForegroundColor "cyan"
         Start-Sleep 5
         $x++
@@ -404,15 +428,13 @@ If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName 
     Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
 
 }
-Else
-{
+Else {
     Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
 }
 #endregion
 
 #region Create/Get AzureRmStorageAccount
-If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $DeploymentName -Name $DeploymentName -ErrorAction SilentlyContinue))
-{
+If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $DeploymentName -Name $DeploymentName -ErrorAction SilentlyContinue)) {
 
     Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
@@ -429,7 +451,8 @@ If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupNam
 
     Try {
         $AzureRmStorageAccount = New-AzureRmStorageAccount @AzureRmStorageAccountParams -ErrorAction Stop
-    } Catch {
+    }
+    Catch {
         Write-Error $_
         Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmStorageAccount" } Catch {}
         return
@@ -445,8 +468,7 @@ If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupNam
     Try { Invoke-Logger -Message $Keys -Severity I -Category "AzureRmStorageAccount" } Catch {}
     Try { Invoke-Logger -Message $StorageContext -Severity I -Category "AzureRmStorageAccount" } Catch {}
 }
-Else
-{
+Else {
     $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $DeploymentName -Name $DeploymentName
     $StorageContext = New-AzureStorageContext -StorageAccountName $DeploymentName $Keys[0].Value
 
@@ -456,8 +478,7 @@ Else
 #endregion
 
 #region Create AzureStorageContainer
-If ($AzureRmResourceGroup -and $AzureRmStorageAccount -and -not(Get-AzureStorageContainer -Name $ConfigurationData.Storage.Container -Context $StorageContext -ErrorAction SilentlyContinue))
-{
+If ($AzureRmResourceGroup -and $AzureRmStorageAccount -and -not(Get-AzureStorageContainer -Name $ConfigurationData.Storage.Container -Context $StorageContext -ErrorAction SilentlyContinue)) {
 
     Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
@@ -479,22 +500,19 @@ If ($AzureRmResourceGroup -and $AzureRmStorageAccount -and -not(Get-AzureStorage
 
 #region Create AzureStorageCORSRule
 If ($StorageContext) {
-    $ConfigurationData.CorsRules.AllowedOrigins = ($ConfigurationData.CorsRules.AllowedOrigins).Replace("[TenantId]",$DeploymentName)
+    $ConfigurationData.CorsRules.AllowedOrigins = ($ConfigurationData.CorsRules.AllowedOrigins).Replace("[DeploymentName]", $DeploymentName)
 
     $cRules = Get-AzureStorageCORSRule -ServiceType Blob -Context $StorageContext
 
     $cUpdate = $False
-    ForEach ($CorsRule in $ConfigurationData.CorsRules.Keys)
-    {
-        If (!([string]$cRules.$CorsRule -eq [string]$ConfigurationData.CorsRules.$CorsRule))
-        {
+    ForEach ($CorsRule in $ConfigurationData.CorsRules.Keys) {
+        If (!([string]$cRules.$CorsRule -eq [string]$ConfigurationData.CorsRules.$CorsRule)) {
             $cUpdate = $True
             Break
         }
     }
 
-    If ($cUpdate)
-    {
+    If ($cUpdate) {
         Write-Output ""
         Write-Output "--------------------------------------------------------------------------------"
         Write-Output "Create AzureStorageCORSRule"
@@ -509,7 +527,8 @@ If ($StorageContext) {
 
             Try { Invoke-Logger -Message $GetAzureStorageCORSRule -Severity I -Category "AzureStorageCORSRule" } Catch {}
 
-        } Catch {
+        }
+        Catch {
             Write-Error $_
             Try { Invoke-Logger -Message $_ -Severity E -Category "AzureStorageCORSRule" } Catch {}
         }
@@ -518,8 +537,7 @@ If ($StorageContext) {
 #endregion
 
 #region Create AzureRmADApplication
-If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith $DeploymentName -ErrorAction SilentlyContinue))
-{
+If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith $DeploymentName -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating PSADCredential"
@@ -532,15 +550,15 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
         $psadCredential = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
     }
     Else {
-        $psadCredential = New-Object Microsoft.Azure.Graph.RBAC.Version1_6.ActiveDirectory.PSADKeyCredential
+        $psadCredential = New-Object Microsoft.Azure.Graph.RBAC.Version1_6.ActiveDirectory.PSADPasswordCredential
     }
 
-    $startDate                = Get-Date
+    $startDate = Get-Date
     $psadCredential.StartDate = $startDate
-    $psadCredential.EndDate   = $startDate.AddYears($ConfigurationData.PSADCredential.Years)
-    $psadCredential.KeyId     = [guid]::NewGuid()
-    $psadKeyValue             = Set-AesKey
-    $psadCredential.Password  = $psadKeyValue
+    $psadCredential.EndDate = $startDate.AddYears($ConfigurationData.PSADCredential.Years)
+    $psadCredential.KeyId = [guid]::NewGuid()
+    $psadKeyValue = Set-AesKey
+    $psadCredential.Password = $psadKeyValue
 
     $SecurePassword = $psadKeyValue | ConvertTo-SecureString -AsPlainText -Force
     $SecurePassword | Export-Clixml $ConfigurationData.PSADCredential.ClixmlPath
@@ -566,28 +584,26 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
         $AzureRmADApplication = New-AzureRmADApplication @AzureRmADApplicationParams -ErrorAction Stop
         Write-Output $AzureRmADApplication
         Try { Invoke-Logger -Message $AzureRmADApplication -Severity I -Category "AzureRmADApplication" } Catch {}
-    } Catch {
+    }
+    Catch {
         Write-Error $_
         Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmADApplication" } Catch {}
     }   
 }
-Else
-{
+Else {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Importing PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
 
-    If (Test-Path -Path $ConfigurationData.PSADCredential.ClixmlPath -ErrorAction SilentlyContinue)
-    {
+    If (Test-Path -Path $ConfigurationData.PSADCredential.ClixmlPath -ErrorAction SilentlyContinue) {
 
         $SecurePassword = Import-Clixml $ConfigurationData.PSADCredential.ClixmlPath
-        $psadKeyValue  = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword))
+        $psadKeyValue = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword))
 
         Write-Output $psadKeyValue
         Try { Invoke-Logger -Message "Password: *****" -Severity I -Category "PSADCredential" } Catch {}
     }
-    Else
-    {
+    Else {
         Write-Warning "A PSADCredential could not be found, aborting"
         Try { Invoke-Logger -Message "A PSADCredential could not be found, aborting" -Severity W -Category "PSADCredential" } Catch {}
         Try { Invoke-Logger -Message "Path: $($ConfigurationData.PSADCredential.ClixmlPath)" -Severity W -Category "PSADCredential" } Catch {}
@@ -597,8 +613,7 @@ Else
 #endregion
 
 #region Create AzureRmADServicePrincipal
-If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $AzureRmADApplication.DisplayName -ErrorAction SilentlyContinue))
-{
+If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $AzureRmADApplication.DisplayName -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmADServicePrincipal"
@@ -607,22 +622,21 @@ If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADSe
     Try {
         $AzureRmADServicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $AzureRmADApplication.ApplicationId -ErrorAction Stop
         Try { Invoke-Logger -Message $AzureRmADServicePrincipal -Severity I -Category "AzureRmADServicePrincipal" } Catch {}
-    } Catch {
+    }
+    Catch {
         Write-Error $_
         Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmADServicePrincipal" } Catch {}
     } 
 
     $x = 0
-    While ($X -lt 6)
-    {
+    While ($X -lt 6) {
         Write-Host "SLEEP: $((Get-Date).ToString("hh:mm:ss")) - Awaiting AzureRmADServicePrincipal completion for $(30-(5*$x)) seconds" -ForegroundColor "cyan"
         Start-Sleep 5
         $x++
     }
 
     $x = 0
-    While ((-not($AzureRmADServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $AzureRmADApplication.DisplayName -ErrorAction SilentlyContinue)) -and ($X -lt 10))
-    {
+    While ((-not($AzureRmADServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $AzureRmADApplication.DisplayName -ErrorAction SilentlyContinue)) -and ($X -lt 10)) {
         Write-Host "SLEEP: $((Get-Date).ToString("hh:mm:ss")) - Awaiting AzureRmADServicePrincipal status for $(5*$x) seconds" -ForegroundColor "cyan"
         Start-Sleep 5
         $x++
@@ -630,31 +644,26 @@ If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADSe
 
     Write-Output $AzureRmADServicePrincipal
 }
-Else
-{
+Else {
     Try { Invoke-Logger -Message $AzureRmADServicePrincipal -Severity I -Category "AzureRmADServicePrincipal" } Catch {}
 }
 #endregion
 
 #region Create AzureRmRoleAssignment
-If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction SilentlyContinue))
-{
+If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmRoleAssignment"
     Write-Output "--------------------------------------------------------------------------------"
 
     $x = 0
-    While ((-not($AzureRmRoleAssignment)) -and ($X -lt 15))
-    {
+    While ((-not($AzureRmRoleAssignment)) -and ($X -lt 15)) {
         $AzureRmRoleAssignment = $null
-        Try
-        {
+        Try {
             $AzureRmRoleAssignment = New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction Stop
             Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
         }
-        Catch
-        {
+        Catch {
             Write-Host "SLEEP: $((Get-Date).ToString("hh:mm:ss")) - Awaiting AzureRmRoleAssignment status for 5 seconds" -ForegroundColor "cyan"
             Start-Sleep 5
             $x++
@@ -663,8 +672,7 @@ If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssi
 
     Write-Output $AzureRmRoleAssignment
 }
-Else
-{
+Else {
     Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
 }
 #endregion
@@ -676,28 +684,26 @@ Write-Output "Deploying Azure Resource Manager Template"
 Write-Output "--------------------------------------------------------------------------------"
 
 [bool]$ParamValidation = $True
-If (!$DeploymentName)                               { $Message = "Deployment name parameter could not be determined" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$DeploymentName) { $Message = "Deployment name parameter could not be determined" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
 
-$StatusCodeWebSite = Get-UrlStatusCode -Url "$($ConfigurationData.RedistPath)/WebSite.json" 
-If ($StatusCodeWebSite -ne 200)                     { $Message = "Template file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message "Url: $($ConfigurationData.RedistPath)/WebSite.json : $StatusCodeWebSite" -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
+$StatusCodeWebSite = Get-UrlStatusCode -Url "$($RepoURL)WebSite.json" 
+If ($StatusCodeWebSite -ne 200) { $Message = "Template file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message "Url: $($RepoURL)WebSite.json : $StatusCodeWebSite" -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
 
-$StatusCodeWebApplication = Get-UrlStatusCode -Url  "$($ConfigurationData.RedistPath)/$($ConfigurationData.WebApplication)"
-If ($StatusCodeWebApplication -ne 200)              { $Message = "Web application file location could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message "Url: $($ConfigurationData.RedistPath)/$($ConfigurationData.WebApplication) : $StatusCodeWebApplication" -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
-
-If (!$AzureRmADApplication.ApplicationId)           { $Message = "Application ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If (!$psadKeyValue)                                 { $Message = "PSADCredential secret could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If (!$AzureRmADApplication.ApplicationId)           { $Message = "AAD client ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If (!$aad_TenantId)                                 { $Message = "AAD tenant ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
-If (!$Keys[0].Value)                                { $Message = "Storage SAS key could not be verified." ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$AzureRmADApplication.ApplicationId) { $Message = "Application ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$psadKeyValue) { $Message = "PSADCredential secret could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$AzureRmADApplication.ApplicationId) { $Message = "AAD client ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$aad_TenantId) { $Message = "AAD tenant ID parameter could not be verified" ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
+If (!$Keys[0].Value) { $Message = "Storage SAS key could not be verified." ; Write-Warning $Message ; $ParamValidation = $False ; Try { Invoke-Logger -Message $Message -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
 
 If (!$ParamValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
 $TemplateParameters = @{
     Name                          = $DeploymentName
+    skuName                       = $MachineName
     ResourceGroupName             = $DeploymentName
-    TemplateFile                  = "$($ConfigurationData.RedistPath)/WebSite.json"
-    webApplicationPackageFolder   = $ConfigurationData.RedistPath
-    WebApplicationPackageFileName = $ConfigurationData.WebApplication
+    TemplateFile                  = "$($RepoURL)WebSite.json"
+    webApplicationPackageFolder   = $packageFolder
+    WebApplicationPackageFileName = $packageSAS
     WebSiteName                   = $DeploymentName
     StorageAccountName            = $DeploymentName
     hostingPlanName               = $DeploymentName
@@ -710,9 +716,8 @@ $TemplateParameters = @{
     KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($DeploymentName);AccountKey=$($Keys[0].Value);"
 }
 
-If ($Security_Admins)
-{
-    $TemplateParameters.Add("Security_Admins",$Security_Admins)
+If ($Security_Admins) {
+    $TemplateParameters.Add("Security_Admins", $Security_Admins)
 }
 
 Try { Invoke-Logger -Message $TemplateParameters -Severity I -Category "AzureRmResourceGroupDeployment" } Catch {}
@@ -720,8 +725,7 @@ Try { Invoke-Logger -Message $TemplateParameters -Severity I -Category "AzureRmR
 New-AzureRmResourceGroupDeployment @TemplateParameters -Verbose
 
 $x = 0
-While ($X -lt 3)
-{
+While ($X -lt 3) {
     Write-Host "SLEEP: $((Get-Date).ToString("hh:mm:ss")) - Awaiting AzureRmResourceGroupDeployment for $(15-(5*$x)) seconds" -ForegroundColor "cyan"
     Start-Sleep 5
     $x++
@@ -730,12 +734,9 @@ While ($X -lt 3)
 
 #region Web App registration with Microsoft Graph REST Api
 $SDKHeader = $True
-ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
-{
-    If (!(Test-Path -Path "$($ConfigurationData.LocalPath)\$($DllFile)" -ErrorAction SilentlyContinue))
-    {
-        If ($SDKHeader)
-        {
+ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls) {
+    If (!(Test-Path -Path "$($ConfigurationData.LocalPath)\$($DllFile)" -ErrorAction SilentlyContinue)) {
+        If ($SDKHeader) {
             Write-Output ""
             Write-Output "--------------------------------------------------------------------------------"
             Write-Output "Downloading Azure SDK DLL:s"
@@ -746,7 +747,7 @@ ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
         Write-Output "Downloading: $($ConfigurationData.RedistPath)/$($DllFile)"
         Try { Invoke-Logger -Message "Downloading: $($ConfigurationData.RedistPath)/$($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
 
-        Get-WebDownload -Source "$($ConfigurationData.RedistPath)/$($DllFile)?raw=true" -Target "$($ConfigurationData.LocalPath)/$($DllFile)"
+        Get-WebDownload -Source "$($ConfigurationData.RedistPath)/$($DllFile)?raw=true" -Target "$($ConfigurationData.LocalPath)\$($DllFile)"
     }
 }
 
@@ -766,7 +767,7 @@ $restPayload = @{
     "keyCredentials" = @($mySecret)
 }
 
-$restPayload.Add("requiredResourceAccess",@($ConfigurationData.RequiredResourceAccess,$ConfigurationData.RequiredResourceAccessAZ))
+$restPayload.Add("requiredResourceAccess", @($ConfigurationData.RequiredResourceAccess, $ConfigurationData.RequiredResourceAccessAZ))
 
 $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 
@@ -787,8 +788,7 @@ $restResourceAccess = Invoke-RestMethod -Uri $restUri -Headers $authorizationHea
 Try { Invoke-Logger -Message "GET: $restUri" -Severity I -Category "Graph" } Catch {}
 Try { Invoke-Logger -Message $restResourceAccess -Severity I -Category "Graph" } Catch {}
 
-If ($restResourceAccess.resourceAppId -notcontains $ConfigurationData.RequiredResourceAccess.resourceAppId)
-{
+If ($restResourceAccess.resourceAppId -notcontains $ConfigurationData.RequiredResourceAccess.resourceAppId) {
     Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Configure application settings"
@@ -798,28 +798,22 @@ If ($restResourceAccess.resourceAppId -notcontains $ConfigurationData.RequiredRe
 
     Try { Invoke-Logger -Message "PATCH" -Severity I -Category "Graph" } Catch {}
 }
-Else
-{
+Else {
     Try { Invoke-Logger -Message $restResourceAccess.resourceAppId -Severity I -Category "Graph" } Catch {}
 
-    ForEach ($Resource in $restResourceAccess)
-    {
-        If ($resourceAccess.resourceAppId -eq $ConfigurationData.RequiredResourceAccess.resourceAppId)
-        {
+    ForEach ($Resource in $restResourceAccess) {
+        If ($resourceAccess.resourceAppId -eq $ConfigurationData.RequiredResourceAccess.resourceAppId) {
             $resourceAccess = ($Resource | Select -ExpandProperty resourceAccess).id
 
             $updateResourceAccess = $False
-            ForEach ($id in $ConfigurationData.RequiredResourceAccess.resourceAccess.id)
-            {
-                If ($resourceAccess -notcontains $id)
-                {
+            ForEach ($id in $ConfigurationData.RequiredResourceAccess.resourceAccess.id) {
+                If ($resourceAccess -notcontains $id) {
                     $updateResourceAccess = $True
                     Break
                 }
             }
 
-            If ($updateResourceAccess)
-            {
+            If ($updateResourceAccess) {
                 Write-Output ""
                 Write-Output "--------------------------------------------------------------------------------"
                 Write-Output "Configure application settings"
@@ -838,8 +832,7 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Cleaning up Azure SDK DLL:s"
 Write-Output "--------------------------------------------------------------------------------"
 
-ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls)
-{
+ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls) {
     Write-Output "Removing: $($ConfigurationData.LocalPath)\$($DllFile)"
     Try { Invoke-Logger -Message "Removing: $($ConfigurationData.LocalPath)\$($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
     Remove-Item -Path "$($ConfigurationData.LocalPath)\$($DllFile)" -Force -ErrorAction SilentlyContinue

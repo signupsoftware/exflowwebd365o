@@ -201,9 +201,9 @@ Function Get-AuthorizationToken
     Write-Host "--------------------------------------------------------------------------------"
     Write-Host "Logging in to Microsoft Graph API"
     Write-Host "--------------------------------------------------------------------------------"
-
-    $adal             = "${ConfigurationData.LocalPath}\Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
-    $adalforms        = "${ConfigurationData.LocalPath}\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll"
+    
+    $adal             = "$($ConfigurationData.LocalPath)\Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+    $adalforms        = "$($ConfigurationData.LocalPath)\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll"
     [System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
     [System.Reflection.Assembly]::LoadFrom($adalforms) | Out-Null
     $clientId         = "1950a258-227b-4e31-a9cf-717495945fc2"
