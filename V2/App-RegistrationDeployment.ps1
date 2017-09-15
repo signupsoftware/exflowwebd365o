@@ -560,8 +560,8 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     $psadKeyValue = Set-AesKey
     $psadCredential.Password = $psadKeyValue
 
-    $SecurePassword = $psadKeyValue | ConvertTo-SecureString -AsPlainText -Force
-    $SecurePassword | Export-Clixml $ConfigurationData.PSADCredential.ClixmlPath
+   # $SecurePassword = $psadKeyValue | ConvertTo-SecureString -AsPlainText -Force
+   # $SecurePassword | Export-Clixml $ConfigurationData.PSADCredential.ClixmlPath
 
     Write-Output $psadCredential
     Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
@@ -594,21 +594,8 @@ Else {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Importing PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
-
-    If (Test-Path -Path $ConfigurationData.PSADCredential.ClixmlPath -ErrorAction SilentlyContinue) {
-
-        $SecurePassword = Import-Clixml $ConfigurationData.PSADCredential.ClixmlPath
-        $psadKeyValue = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword))
-
-        Write-Output $psadKeyValue
-        Try { Invoke-Logger -Message "Password: *****" -Severity I -Category "PSADCredential" } Catch {}
-    }
-    Else {
-        Write-Warning "A PSADCredential could not be found, aborting"
-        Try { Invoke-Logger -Message "A PSADCredential could not be found, aborting" -Severity W -Category "PSADCredential" } Catch {}
-        Try { Invoke-Logger -Message "Path: $($ConfigurationData.PSADCredential.ClixmlPath)" -Severity W -Category "PSADCredential" } Catch {}
-        return
-    }
+    $slot = Get-AzureRmWebAppSlot -Name $DeploymentName -Slot production -ResourceGroupName $DeploymentName 
+    $psadKeyValue = $slot.SiteConfig.AppSettings.aad_ClientSecret
 }
 #endregion
 
