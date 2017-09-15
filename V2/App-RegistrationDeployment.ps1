@@ -297,7 +297,7 @@ Else {
 
 #Get tenant id information
 If ($TenantGuid) {
-    $Tenant = Get-AzureRmTenant -TenantId $TenantGuid
+    $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantGuid }  #Doesn't contain anything in Directory (bug) 
 }
 Else {
     $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantId }
@@ -595,7 +595,7 @@ Else {
     Write-Output "Importing PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
     $slot = Get-AzureRmWebAppSlot -Name $DeploymentName -Slot production -ResourceGroupName $DeploymentName 
-    $psadKeyValue = $slot.SiteConfig.AppSettings.aad_ClientSecret
+    $psadKeyValue = $slot.SiteConfig.AppSettings.aad_ClientSecret    
 }
 #endregion
 
