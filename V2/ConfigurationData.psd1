@@ -4,7 +4,7 @@
     AzureRmDomain                   = "azurewebsites.net"
     PowerShellVersion               = "5.0.0"
                                     
-    RedistPath                      = "https://github.com/signupsoftware/exflowwebd365o/raw/master"
+    RedistPath                      = "https://github.com/signupsoftware/exflowwebd365o/raw/master/v2"
     PackageURL                      = "https://exflowpackagemanager.azurewebsites.net"
     LocalPath                       = $env:TEMP
 
@@ -38,7 +38,7 @@
                                     
     ApplicationRegistration = @{
         Type                        = "Symmetric"
-        Days                        = "365"
+        Days                        = "1825"
     }                               
                                     
     AzureSDK = @{                   

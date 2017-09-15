@@ -45,7 +45,7 @@ The following features are currently under development.
 * Line templates
 
 ### Release 17
-2017-08-30, AX2012, D365AX, NAV (pre)
+No. 4.17, 2017-08-30, AX2012, D365AX, NAV (pre)
 
 **News**
 * Adds UI improvements.
@@ -54,6 +54,8 @@ The following features are currently under development.
 * Fixes a critical issue with PDF-files for D365
 * Changes how the primary button work (the green one). The primary button will change from Approve (i.e. approve all lines) to Save/Send when the user makes a line approval decision.
 * Bug fixes
+    * Attachments added in web wasn't saved  [AX2012] (4.17.0.2) 
+    * Fixes a issue with line headers on IE and Edge (4.17.0.2)
 
 ### Release 16 
 2017-05-30, AX2012, D365AX

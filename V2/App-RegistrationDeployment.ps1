@@ -94,7 +94,7 @@ Else {
 }
 #Clean input
 $DynamicsAXApiId = $DynamicsAXApiId.ToLower().Replace("https://","").Replace("http://","")
-$DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("dynamics.com")+"dynamics.com".Length)
+$DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("dynamics.com")+"dynamics.com".Length) #remove all after dynamics.com
 if (!$MachineSize) { $MachineSize = "F1" }
 #Setup log file
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
@@ -307,7 +307,7 @@ Else {
 $RoleAssignment = Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") }
 
 If ($RoleAssignment.SignInName -like "*#EXT#*") {
-    $TenantName = ((($RoleAssignment | Select -First 1 | Select-Object SignInName).SignInName).Replace("$($SignInName.Replace("@","_"))#EXT#@", "")).Replace(".onmicrosoft.com", "")
+    $TenantName = ((($RoleAssignment | Select-Object -First 1 | Select-Object SignInName).SignInName).Replace("$($SignInName.Replace("@","_"))#EXT#@", "")).Replace(".onmicrosoft.com", "")
     If ($Tenant.Directory -ne $TenantName) { $Tenant.Directory = $TenantName }
 }
 else{
@@ -543,7 +543,7 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     Write-Output "Creating PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
 
-    $azureRmModuleVersion = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select -First 1
+    $azureRmModuleVersion = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select-Object -First 1
 
     $psadCredential = $null
     If ("$($azureRmModuleVersion.Version.Major).$($azureRmModuleVersion.Version.Minor).$($azureRmModuleVersion.Version.Build)" -le "4.2.0") {
@@ -783,7 +783,7 @@ $authorizationHeader = @{
 
 $restUri = "https://$($ConfigurationData.GraphAPI.URL)/$($TenantName)/applications/$($AzureRmADApplication.ObjectId)?api-version=$($ConfigurationData.GraphAPI.Version)"
 
-$restResourceAccess = Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Method GET | Select -ExpandProperty requiredResourceAccess
+$restResourceAccess = Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Method GET | Select-Object -ExpandProperty requiredResourceAccess
 
 Try { Invoke-Logger -Message "GET: $restUri" -Severity I -Category "Graph" } Catch {}
 Try { Invoke-Logger -Message $restResourceAccess -Severity I -Category "Graph" } Catch {}
@@ -803,7 +803,7 @@ Else {
 
     ForEach ($Resource in $restResourceAccess) {
         If ($resourceAccess.resourceAppId -eq $ConfigurationData.RequiredResourceAccess.resourceAppId) {
-            $resourceAccess = ($Resource | Select -ExpandProperty resourceAccess).id
+            $resourceAccess = ($Resource | Select-Object -ExpandProperty resourceAccess).id
 
             $updateResourceAccess = $False
             ForEach ($id in $ConfigurationData.RequiredResourceAccess.resourceAccess.id) {

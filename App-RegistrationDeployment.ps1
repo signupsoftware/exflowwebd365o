@@ -87,10 +87,13 @@ If (!$PackageVersion){
 }
 $HasErrors = ""
 #region jb
+$DynamicsAXApiId = $DynamicsAXApiId.ToLower().Replace("https://","").Replace("http://","")
+$DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("dynamics.com")+"dynamics.com".Length) #remove all after dynamics.com
+
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Checking PowerShell version and modules"
 Write-Output "--------------------------------------------------------------------------------"
-$azrm = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select -First 1
+$azrm = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select-Object -First 1
 If (!$azrm){
     $HasErrors = "Module AzureRM is not installed (use command: Install-Module -Name AzureRM and reopen PowerShell editor). Script aborted!"
 }
@@ -160,7 +163,8 @@ Set-AzureRmContext -Context $LoginAD.Context
 
 $Tenant = Get-AzureRmTenant
 If ($TenantGuid){
-    $Tenant = Get-AzureRmTenant -TenantId $TenantGuid
+    #$Tenant = Get-AzureRmTenant -TenantId $TenantGuid #bug in AzureRM 4.3.1 Directory is empty when using -TenantId
+    $Tenant =  Get-AzureRmTenant | Where-Object Id -eq $TenantGuid
 }
 
 
@@ -396,7 +400,7 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
-    $azureRmModuleVersion = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select -First 1
+    $azureRmModuleVersion = Get-Module -ListAvailable -Name AzureRm | Sort-Object -Descending | Select-Object -First 1
 
     $psadCredential = $null
     If ("$($azureRmModuleVersion.Version.Major).$($azureRmModuleVersion.Version.Minor).$($azureRmModuleVersion.Version.Build)" -le "4.2.0") {
@@ -610,7 +614,7 @@ $authorizationHeader = @{
 
 $restUri = "https://graph.windows.net/$($tenantName)/applications/$($AzureRmADApplication.ObjectId)?api-version=1.6"
 
-$restResourceAccess = Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Method GET | Select -ExpandProperty requiredResourceAccess
+$restResourceAccess = Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Method GET | Select-Object -ExpandProperty requiredResourceAccess
 
 If ($restResourceAccess.resourceAppId -notcontains $requiredResourceAccess.resourceAppId)
 {
@@ -627,7 +631,7 @@ Else
     {
         If ($resourceAccess.resourceAppId -eq $requiredResourceAccess.resourceAppId)
         {
-            $resourceAccess = ($Resource | Select -ExpandProperty resourceAccess).id
+            $resourceAccess = ($Resource | Select-Object -ExpandProperty resourceAccess).id
 
             $updateResourceAccess = $False
             ForEach ($id in $requiredResourceAccess.resourceAccess.id)
