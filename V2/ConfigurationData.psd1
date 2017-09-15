@@ -4,7 +4,7 @@
     AzureRmDomain                   = "azurewebsites.net"
     PowerShellVersion               = "5.0.0"
                                     
-    RedistPath                      = "https://github.com/signupsoftware/exflowwebd365o/raw/master/v2"
+    RedistPath                      = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2"
     PackageURL                      = "https://exflowpackagemanager.azurewebsites.net"
     LocalPath                       = $env:TEMP
 

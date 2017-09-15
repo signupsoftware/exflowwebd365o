@@ -23,21 +23,22 @@ Function Get-RequiredModules
 
     ForEach ($Module in $Modules)
     {
-        $cModule = Get-Module -ListAvailable -Name $Module.Name | Sort-Object -Descending | Select -First 1
-        If (!$cModule) {
+        #$cModule = Get-Module -ListAvailable -Name $Module.Name | Sort-Object -Descending | Select-Object -First 1 
+        $vModule = (Get-Module -ListAvailable -Name $Module.Name).Version | Sort-Object -Descending | Select-Object -First 1 #some ps ver sorts 
+        If (!$vModule) {
             Write-Warning "Module $($Module.Name) is not installed."
             Write-Warning "`tInstall-Module -Name $($Module.Name)"
             Try { Invoke-Logger -Message "Module $($Module.Name) is not installed" -Severity W -Category "PSModule" } Catch {}
             $hasErrors = $True
         } Else {
-            If ($cModule.Version -lt $Module.MinimumVersion) {
+            If ($vModule -lt $Module.MinimumVersion) {
                 Write-Warning "Module $($Module.Name) must be updated."
                 Write-Warning "`tInstall-Module -Name $($Module.Name) -AllowClobber -Force"
                 Try { Invoke-Logger -Message "Module $($Module.Name) must be updated" -Severity W -Category "PSModule" } Catch {}
                 $hasErrors = $True
             } Else {
-                Write-Host "Module $($Module.Name) version $($cModule.Version) is valid."
-                Try { Invoke-Logger -Message "Module $($Module.Name) version $($cModule.Version) is valid" -Severity I -Category "PSModule" } Catch {}
+                Write-Host "Module $($Module.Name) version $($vModule) is valid."
+                Try { Invoke-Logger -Message "Module $($Module.Name) version $($vModule) is valid" -Severity I -Category "PSModule" } Catch {}
             }
         }
     }
