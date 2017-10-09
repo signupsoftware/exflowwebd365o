@@ -22,10 +22,25 @@ param(
     [string]$TenantGuid,
 
     [Parameter(Mandatory=$True)]
-    [string]$WebAppSubscriptionGuid
+    [string]$WebAppSubscriptionGuid,
+    
+    [Parameter(Mandatory=$True)]
+    [string]$TenantnameSpecific,
+
+    [Parameter()]
+    [string]$ReplacePattern='[^a-zA-Z0-9]'
 
 )
-
+<#
+$Location                  = "northeurope" #Azure location notheurope, westeurope,... 
+$Security_Admins           = "EGMAGRA,KEFOL,MBRAN,KIJNI" #AX user name (UPPERCASE) of ExFlow web administrators. Admins can translate texts, write welecome messages, ...
+$DynamicsAXApiId           = "coro-axtest12aos.sandbox.ax.dynamics.com" #URL such as axtestdynamics365aos.cloudax.dynamics.com
+$ExFlowUserSecret          = "1a73f90b52c44c70a892987cb526d263" #Your identity recieved by signupsoftware.com
+$Prefix                    = "" #Optional prefix (short using alphanumeric characters). Leave blank for default behavior.
+$PackageVersion            = "" #Optional version to install.  Leave blank for default behavior.
+$TenantGuid                = "2d9c7aaa-2448-49d8-ad14-9044694cbaaf" #Optional tenant id when you have multiple tenants (advanced).   
+$WebAppSubscriptionGuid    = "4bb56e2f-3830-4c3f-9bd5-8578403dd03c" 
+#>
 #Function to get authorization token for communication with the Microsoft Graph REST API
 Function GetAuthorizationToken
 {
@@ -182,31 +197,12 @@ If ($HasErrors){
     return 
 }
 
-
 #region Determine AzureRmDnsAvailability
-$md5 = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
-$utf8 = New-Object -TypeName System.Text.UTF8Encoding
-$hash = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($DynamicsAXApiId)))
-If ($Prefix){
-    $hash = $Prefix+$hash
-}
-$_TenantId = "exflow$(($hash.ToLower()).Replace('-','').Substring(0,18))"
+$_TenantId = $DynamicsAXApiId.split('.')[0] + "-exflow"
 If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `
    (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
 {
-    For ($x=1; $x -le 9; $x++)
-    {
-        If (Test-AzureRmDnsAvailability -DomainNameLabel "exflow$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,17))$($x)" -Location $Location)
-        {
-            $_TenantId = "exflow$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,17))$($x)"
-            break
-        }
-    }
-}
-If (-not(Get-AzureRmResourceGroup -Name $_TenantId -Location $Location -ErrorAction SilentlyContinue) -and `
-   (-not(Test-AzureRmDnsAvailability -DomainNameLabel $_TenantId -Location $Location)))
-{
-    $HasErrors = "A unique AzureRm DNS name could not be automatically determined."
+    $HasErrors = "A unique AzureRm DNS name could not be determined. Please look at "
     return
 }
 If ($HasErrors){
@@ -395,6 +391,7 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     Write-Output "Creating PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
 
+    #$psadCredential           = New-Object Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADPasswordCredential
     $psadCredential           = New-Object Microsoft.Azure.Graph.RBAC.Version1_6.ActiveDirectory.PSADPasswordCredential
     $startDate                = Get-Date
     $psadCredential.StartDate = $startDate
@@ -441,7 +438,7 @@ Else
     Else
     {
         Write-Warning "A PSADCredential could not be found, aborting"
-        exit
+        #exit
     }
 }
 #endregion
@@ -590,7 +587,7 @@ $restPayload.Add("requiredResourceAccess",@($requiredResourceAccess,$requiredRes
 
 $restPayload = ConvertTo-Json -InputObject $restPayload -Depth 4
 
-$token = GetAuthorizationToken -TenantName $tenantName
+$token = GetAuthorizationToken -TenantName $TenantnameSpecific
 
 $authorizationHeader = @{
     "Content-Type"  = "application/json"
