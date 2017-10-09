@@ -34,12 +34,13 @@ param(
 <#
 $Location                  = "northeurope" #Azure location notheurope, westeurope,... 
 $Security_Admins           = "EGMAGRA,KEFOL,MBRAN,KIJNI" #AX user name (UPPERCASE) of ExFlow web administrators. Admins can translate texts, write welecome messages, ...
-$DynamicsAXApiId           = "coro-axtest12aos.sandbox.ax.dynamics.com" #URL such as axtestdynamics365aos.cloudax.dynamics.com
+$DynamicsAXApiId           = "coro-uat.sandbox.operations.dynamics.com/" #URL such as axtestdynamics365aos.cloudax.dynamics.com
 $ExFlowUserSecret          = "1a73f90b52c44c70a892987cb526d263" #Your identity recieved by signupsoftware.com
 $Prefix                    = "" #Optional prefix (short using alphanumeric characters). Leave blank for default behavior.
 $PackageVersion            = "" #Optional version to install.  Leave blank for default behavior.
 $TenantGuid                = "2d9c7aaa-2448-49d8-ad14-9044694cbaaf" #Optional tenant id when you have multiple tenants (advanced).   
-$WebAppSubscriptionGuid    = "4bb56e2f-3830-4c3f-9bd5-8578403dd03c" 
+$WebAppSubscriptionGuid    = "4bb56e2f-3830-4c3f-9bd5-8578403dd03c" #Optional Subscription for the web app (advanced). Use if you have two subscriptions, one holding tenant (AD) and another for apps. You will be prompted twice for cretedials, (1) use AD admin credentials, (2) the subscription co-admin for the second subscription.       
+$TenantnameSpecific        = "corocorp.onmicrosoft.com" #Specify the Azure AD tenant name.
 #>
 #Function to get authorization token for communication with the Microsoft Graph REST API
 Function GetAuthorizationToken
@@ -178,24 +179,40 @@ If ($TenantGuid){
     $Tenant = Get-AzureRmTenant -TenantId $TenantGuid
 }
 
-
 $aad_TenantId = $Tenant.Id
 $tenantName = $Tenant.Directory
 
 Set-AzureRmContext -Context $Login.Context
 
 If (!$aad_TenantId){
-    $HasErrors = "Tenant not found."
+    $HasErrors = "TenantID not found."
 }
+
 Write-Output "aad_TenantId"
 Write-Output $aad_TenantId
-#endregion
 
 If ($HasErrors){
     Write-Warning $HasErrors
     Write-Warning "Script aborted."
     return 
 }
+
+If (!$tenantName){
+    Write-Host "Setting to specific tenant name"
+    $tenantName = $TenantnameSpecific
+    
+    If (!$tenantName){
+    $HasErrors = "TenantName not found."
+    }
+}
+
+If ($HasErrors){
+    Write-Warning $HasErrors
+    Write-Warning "Script aborted."
+    return 
+}
+#endregion
+
 
 #region Determine AzureRmDnsAvailability
 $_TenantId = $DynamicsAXApiId.split('.')[0] + "-exflow"
