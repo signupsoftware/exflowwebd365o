@@ -10,5 +10,5 @@ $TenantnameSpecific        = "corocorp.onmicrosoft.com" #Specify the Azure AD te
 #$ReplacePattern            = #This pattern is used, to convert the $DynamicsAXApiId in to useable format for a Storage accounts container. If blank, default is '[^a-zA-Z0-9]' 
 
 #$scriptPath = ((New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/App-RegistrationDeployment.ps1'))
-$scriptPath = 'C:\Users\magra\Google Drive\Arbejde\CORO\D365O\ExFlow installation\exflowwebd365o-master\App-RegistrationDeployment.ps1'
+$scriptPath = ((New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/gammelgaard52/exflowwebd365o/master/App-RegistrationDeployment.ps1'))
 Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $Location,$Security_Admins,$DynamicsAXApiId,$ExFlowUserSecret,$Prefix,$PackageVersion,$TenantGuid,$WebAppSubscriptionGuid,$TenantnameSpecific,$ReplacePattern

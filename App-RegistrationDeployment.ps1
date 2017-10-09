@@ -215,7 +215,7 @@ If ($HasErrors){
 #region Define parameters                           
 $ResourceGroupName         = $_TenantId
                            
-$StorageAccountName        = $_TenantId
+$StorageAccountName        = $_TenantId -replace $pattern,''
 $StorageContainer          = "artifacts"
 $StorageType               = "Standard_LRS"
                            
