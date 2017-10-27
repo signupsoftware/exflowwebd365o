@@ -4,7 +4,7 @@
     AzureRmDomain                   = "azurewebsites.net"
     PowerShellVersion               = "5.0.0"
                                     
-    RedistPath                      = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2"
+    RedistPath                      = ""
     PackageURL                      = "https://exflowpackagemanager.azurewebsites.net"
     LocalPath                       = $env:TEMP
 
@@ -32,7 +32,7 @@
     };                              
                                     
     PSADCredential = @{             
-        Years                       = "1"
+        Years                       = "10"
         ClixmlPath                  = "$($env:USERPROFILE)\PSDAKey.xml"
     }                               
                                     

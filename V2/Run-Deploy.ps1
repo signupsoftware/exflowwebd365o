@@ -1,11 +1,11 @@
-﻿$Location                  = "northeurope" #Azure location notheurope, westeurope,... 
-$Security_Admins           = "" #Dynamics user name of ExFlow Web administrators. Use comma to separate. Admins can translate texts, write welecome messages, ...
+﻿$Location                  = "westeurope" #Azure location such as eastasia,southeastasia,centralus,eastus,eastus2,westus,northcentralus,southcentralus,northeurope,westeurope,japanwest,japaneast,brazilsouth,australiaeast,australiasoutheast,southindia,centralindia,westindia,canadacentral,canadaeast,uksouth,ukwest,westcentralus,westus2,koreacentral,koreasouth 
+$Security_Admins           = "ADMIN" #Dynamics user name of ExFlow Web administrators. Use comma to separate. Admins can translate texts, write welecome messages, ...
 $DynamicsAXApiId           = "https://axtestdynamics365aos.cloudax.dynamics.com" #URL to AX
-$RepoURL                   = "https://github.com/signupsoftware/exflowwebd365o/blob/master/v2/" #URL to GitHub
-$Prefix                    = "" #Optional prefix (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx].
-$ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
-$PackageVersion            = "latest" #Optional version to install.  Leave blank for default behavior.
-$MachineSize               = "F1" #App Service machine (AKA Service Plan) size F1=Free (default), D1=Shared, B1 to B3= Basic, S1 to S3 = Standard, P1 to P3 = Premium  (see also https://azure.microsoft.com/en-us/pricing/details/app-service/)
+$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/" #URL to GitHub https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/ or the download location for example c:\folder\. 
+$ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
+$Prefix                    = "" #Optional prefix but recommended (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx].
+$PackageVersion            = "" #Optional version to install.  Leave blank for default behavior.
+$MachineSize               = "" #App Service machine (AKA Service Plan) size F1=Free, D1=Shared, B1 (default) to B3= Basic, S1 to S3 = Standard, P1 to P3 = Premium  (see also https://azure.microsoft.com/en-us/pricing/details/app-service/)
 $TenantGuid                = "" #Optional tenant id when you have multiple tenants (advanced). 
 $WebAppSubscriptionGuid    = "" #Optional Subscription for the web app (advanced).
 

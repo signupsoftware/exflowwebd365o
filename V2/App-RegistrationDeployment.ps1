@@ -16,13 +16,13 @@ param(
     [string]$ExFlowUserSecret,
 
     [Parameter(Mandatory = $False)]
-    [string]$Prefix = "exflow",
+    [string]$Prefix="",
 
     [Parameter(Mandatory = $False)]
-    [string]$PackageVersion = "latest",
+    [string]$PackageVersion,
 
     [Parameter(Mandatory = $False)]
-    [string]$MachineName = "F1",    
+    [string]$MachineName,    
 
     [Parameter(Mandatory = $False)]
     [string]$TenantGuid,
@@ -93,9 +93,11 @@ Else {
     [hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData ($Webclient.DownloadString("$($RepoURL)ConfigurationData.psd1") | Invoke-Expression)
 }
 #Clean input
-$DynamicsAXApiId = $DynamicsAXApiId.ToLower().Replace("https://","").Replace("http://","")
-$DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("dynamics.com")+"dynamics.com".Length) #remove all after dynamics.com
-if (!$MachineSize) { $MachineSize = "F1" }
+$DynamicsAXApiId = $DynamicsAXApiId.ToLower().Replace("https://", "").Replace("http://", "")
+$DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("dynamics.com") + "dynamics.com".Length) #remove all after dynamics.com
+if (!$MachineSize) { $MachineSize = "B1" }
+If (-not($PackageVersion)){$PackageVersion="latest"}
+If (-not($ConfigurationData.RedistPath)){ $ConfigurationData.RedistPath = $RepoURL }
 #Setup log file
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
@@ -163,14 +165,14 @@ If ($ExFlowUserSecret) {
     Try { Invoke-Logger -Message "Package URL: $packageURL" -Severity I -Category "Package" } Catch {}
 
     $packgeUrlAr = $packageURL.Split("?")
-    $packageSAS = "package.zip?"+$packgeUrlAr[1]
-    $packageFolder = $packgeUrlAr[0].replace("/package.zip","")
+    $packageSAS = "package.zip?" + $packgeUrlAr[1]
+    $packageFolder = $packgeUrlAr[0].replace("/package.zip", "")
 
     $StatusCodeWebApplication = Get-UrlStatusCode -Url  $packageURL
     If ($StatusCodeWebApplication -ne 200) { $Message = "Web package application file location could not be verified" ; Write-Warning $Message ; $PackageValidation = $False ; Try { Invoke-Logger -Message "Url: $packageURL : $StatusCodeWebApplication" -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
     
 }
-else{
+else {
     $PackageValidation = $False
 }
 If (!$PackageValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
@@ -185,20 +187,20 @@ If (-not (Get-Module -Name AzureRM.Profile -ErrorAction SilentlyContinue)) { Imp
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Logging in to azure automation"
 Write-Output "--------------------------------------------------------------------------------"
-
+$AzureRmLogon = @{Account = $null}
+$AzureRmTenantLogon = @{Account = $null}
 #Determine logon status
-$AzureRmLogon = Get-AzureRmContext -ErrorAction Stop
-
 If (!$AzureRmLogon.Account) {
-
+    Write-Host "Sign-in with your Subscription account (opens in another win):"
     #Determine if manual subscription id was provided
     If ($WebAppSubscriptionGuid) {
-        Write-Host "Subscription co-admin account"
         $AzureRmLogon = Set-AzureRmLogon -SubscriptionGuid $SubscriptionGuid
+        $AzureRmTenantLogon = $AzureRmLogon
         Try { Invoke-Logger -Message "Set-AzureRmLogon -SubscriptionGuid $SubscriptionGuid" -Severity I -Category "Logon" } Catch {}
     }
     Else {
         $AzureRmLogon = Set-AzureRmLogon
+        $AzureRmTenantLogon = $AzureRmLogon
         Try { Invoke-Logger -Message "Set-AzureRmLogon" -Severity I -Category "Logon" } Catch {}
     }
 
@@ -213,32 +215,20 @@ If (!$AzureRmLogon.Account) {
     }
     Else {
         #Get all subscriptions
-        $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Context.Tenant.Id | Select-Object Name, Id
+        $SubscriptionIds = Get-AzureRmSubscription | Select-Object Name, Id
 
-        Try { Invoke-Logger -Message "Get-AzureRmSubscription -TenantId $($AzureRmLogon.Context.Tenant.Id) : $($SubscriptionIds.Id.count)" -Severity I -Category "Subscription" } Catch {}
+        Try { Invoke-Logger -Message "Get-AzureRmSubscription : $($SubscriptionIds.Id.count)" -Severity I -Category "Subscription" } Catch {}
 
         #Multiple subscriptions detected
         If ($SubscriptionIds.Id.count -gt 1) {
-
-            $mChoices = @()
-            $choice = $null
-            [int]$i = 0
-
-            #Dynamically provide all subscriptions as a choice menu
-            ForEach ($SubscriptionId in $SubscriptionIds) {
-                $i++
-                $choice = "`$$i = new-Object System.Management.Automation.Host.ChoiceDescription '`&$($SubscriptionId.Id)','$($SubscriptionId.Id)'"
-                Invoke-Expression $choice
-                $mChoices += $($SubscriptionId.Name)
-            }
-
-            #Call functions to return answer from choice menu
-            $answer = Get-ChoiceMenu -Choices $choices -mChoices $mChoices
-        
+            Write-Output ""
+            Write-Output "Multiple Azure subscriptions found:"
+            Write-Host $SubscriptionIds
+            Write-Output ""
+            $answer = Read-Host -Prompt 'Enter Subscription id:'
             #Select the chosen AzureRmSubscription
-            Select-AzureRmSubscription -SubscriptionId $SubscriptionIds[$answer].Id -TenantId $AzureRmLogon.Context.Tenant.Id
-
-            Try { Invoke-Logger -Message "Select-AzureRmSubscription -SubscriptionId $($SubscriptionIds[$answer].Id) -TenantId $($AzureRmLogon.Context.Tenant.Id)" -Severity I -Category "Subscription" } Catch {}
+            Select-AzureRmSubscription -SubscriptionId $answer
+            Try { Invoke-Logger -Message "Select-AzureRmSubscription -SubscriptionId $answer" -Severity I -Category "Subscription" } Catch {}
         }
     }
 
@@ -246,43 +236,11 @@ If (!$AzureRmLogon.Account) {
     Set-AzureRmContext -Context $AzureRmLogon.Context
 
     Try { Invoke-Logger -Message "Set-AzureRmContext -Context $($AzureRmLogon.Context)" -Severity I -Category "Context" } Catch {}
-
 }
-Else {
-    #Get all subscriptions
-    $SubscriptionIds = Get-AzureRmSubscription -TenantId $AzureRmLogon.Tenant.Id | Select-Object Name, Id
-
-    Try { Invoke-Logger -Message "Get-AzureRmSubscription -TenantId $($AzureRmLogon.Tenant.Id) : $($SubscriptionIds.Id.count)" -Severity I -Category "Subscription" } Catch {}
-
-    #Multiple subscriptions detected
-    If ($SubscriptionIds.Id.count -gt 1) {
-        $mChoices = @()
-        $choice = $null
-        [int]$i = 0
-
-        #Dynamically provide all subscriptions as a choice menu
-        ForEach ($SubscriptionId in $SubscriptionIds) {
-            $i++
-            $choice = "`$$i = new-Object System.Management.Automation.Host.ChoiceDescription '`&$($SubscriptionId.Id)','$($SubscriptionId.Id)'"
-            Invoke-Expression $choice
-            $mChoices += $($SubscriptionId.Name)
-        }
-
-        #Call functions to return answer from choice menu
-        $answer = Get-ChoiceMenu -Choices $choices -mChoices $mChoices
-        
-        #Select the chosen AzureRmSubscription
-        Select-AzureRmSubscription -SubscriptionId $SubscriptionIds[$answer].Id -TenantId $AzureRmLogon.Tenant.Id
-
-        Try { Invoke-Logger -Message "Select-AzureRmSubscription -SubscriptionId $($SubscriptionIds[$answer].Id) -TenantId $($AzureRmLogon.Context.Tenant.Id)" -Severity I -Category "Subscription" } Catch {}
-    }
-    Else {
-        #List currently logged on session
-        $AzureRmLogon
-        Try { Invoke-Logger -Message $AzureRmLogon -Severity I -Category "Logon" } Catch {}
-    }
-}
-
+Write-Output ""
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "Tenant information"
+Write-Output "--------------------------------------------------------------------------------"
 #Set tenant variables based on logged on session
 If ($AzureRmLogon.Account.Id) {
     $SignInName = $AzureRmLogon.Account.Id
@@ -296,22 +254,39 @@ Else {
 }
 
 #Get tenant id information
-If ($TenantGuid) {
-    $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantGuid }  #Doesn't contain anything in Directory (bug) 
+try {
+    If ($TenantGuid) {
+        if ($TenantId -eq $TenantGuid) {
+            $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantGuid }  #Doesn't contain anything in Directory (bug) 
+        }
+        else {
+            ## the tenant is not in current subscription we must switch account
+            Write-Host "Sign-in with your company account (Azure AD):"
+            $AzureRmTenantLogon = Set-AzureRmLogon
+            Set-AzureRmContext -Context $AzureRmTenantLogon.Context
+            $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantGuid }
+            Set-AzureRmContext -Context $AzureRmLogon.Context   
+        }
+    }
+    Else {
+        $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantId }
+    }
+    $TenantName = $Tenant.Directory
 }
-Else {
-    $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantId }
+catch {
+    Write-Error $_
+    Write-Warning "Tenant could not be retrived. Use paramter TenantGuid in complex env with multipe subscriptions. In the second promp for credentials use a Windows AD user i.e. @companydomain.com user"
+    return
 }
 
 #Get tenant name if external user
-$RoleAssignment = Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") }
-
-If ($RoleAssignment.SignInName -like "*#EXT#*") {
-    $TenantName = ((($RoleAssignment | Select-Object -First 1 | Select-Object SignInName).SignInName).Replace("$($SignInName.Replace("@","_"))#EXT#@", "")).Replace(".onmicrosoft.com", "")
-    If ($Tenant.Directory -ne $TenantName) { $Tenant.Directory = $TenantName }
+try {
+    $RoleAssignment = Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") }
 }
-else{
-    $TenantName = $Tenant.Directory
+catch {
+    Write-Error $_
+    Write-Warning "This user is missing permissions in Subscription>IAM (contributor,owner) or is not part of Azure AD in this subscription."
+    return
 }
 
 $aad_TenantId = $Tenant.Id
@@ -320,12 +295,9 @@ If (!$aad_TenantId) {
     Write-Warning "A tenant id could not be found."
     return
 }
+Write-Output ""
 
-Write-Output "--------------------------------------------------------------------------------"
-Write-Output "Tenant information"
-Write-Output "--------------------------------------------------------------------------------"
-
-$Tenant
+Write-Output $Tenant
 
 Try { Invoke-Logger -Message $Tenant -Severity I -Category "Tenant" } Catch {}
 #endregion
@@ -368,7 +340,7 @@ Else {
 #endregion
 
 #region Verify AzureRmRoleAssignment to logged on user
-If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
+If ($ConfigurationData.AzureRmRoleAssignmentValidation -and !$TenantGuid) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Validating AzureRmRoleAssignment"
     Write-Output "--------------------------------------------------------------------------------"
@@ -380,7 +352,9 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation) {
 
     Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
 
-    Write-Output ""
+    Write-Output "-"
+    
+    Write-Output $AzureRmRoleAssignment
 
     #Determine that the currently logged on user has appropriate permissions to run the script in their Azure subscription
     If (-not ($AzureRmRoleAssignment -contains "Owner") -and -not ($AzureRmRoleAssignment -contains "Contributor")) {
@@ -537,8 +511,8 @@ If ($StorageContext) {
 #endregion
 
 #region Create AzureRmADApplication
+Set-AzureRmContext -Context $AzureRmTenantLogon.Context
 If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith $DeploymentName -ErrorAction SilentlyContinue)) {
-
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
@@ -560,8 +534,8 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     $psadKeyValue = Set-AesKey
     $psadCredential.Password = $psadKeyValue
 
-   # $SecurePassword = $psadKeyValue | ConvertTo-SecureString -AsPlainText -Force
-   # $SecurePassword | Export-Clixml $ConfigurationData.PSADCredential.ClixmlPath
+    # $SecurePassword = $psadKeyValue | ConvertTo-SecureString -AsPlainText -Force
+    # $SecurePassword | Export-Clixml $ConfigurationData.PSADCredential.ClixmlPath
 
     Write-Output $psadCredential
     Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
@@ -591,15 +565,18 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     }   
 }
 Else {
+    Set-AzureRmContext -Context $AzureRmLogon.Context
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Importing PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
     $slot = Get-AzureRmWebAppSlot -Name $DeploymentName -Slot production -ResourceGroupName $DeploymentName 
     $psadKeyValue = $slot.SiteConfig.AppSettings.aad_ClientSecret    
 }
+Set-AzureRmContext -Context $AzureRmLogon.Context
 #endregion
 
 #region Create AzureRmADServicePrincipal
+Set-AzureRmContext -Context $AzureRmTenantLogon.Context
 If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $AzureRmADApplication.DisplayName -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -634,9 +611,11 @@ If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADSe
 Else {
     Try { Invoke-Logger -Message $AzureRmADServicePrincipal -Severity I -Category "AzureRmADServicePrincipal" } Catch {}
 }
+Set-AzureRmContext -Context $AzureRmLogon.Context
 #endregion
 
 #region Create AzureRmRoleAssignment
+Set-AzureRmContext -Context $AzureRmTenantLogon.Context
 If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -662,6 +641,7 @@ If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssi
 Else {
     Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
 }
+Set-AzureRmContext -Context $AzureRmLogon.Context
 #endregion
 
 #region Deploy Azure Resource Manager Template
@@ -731,10 +711,14 @@ ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls) {
             $SDKHeader = $False
         }
 
-        Write-Output "Downloading: $($ConfigurationData.RedistPath)/$($DllFile)"
-        Try { Invoke-Logger -Message "Downloading: $($ConfigurationData.RedistPath)/$($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
-
-        Get-WebDownload -Source "$($ConfigurationData.RedistPath)/$($DllFile)?raw=true" -Target "$($ConfigurationData.LocalPath)\$($DllFile)"
+        Write-Output "Downloading: $($ConfigurationData.RedistPath)$($DllFile)"
+        Try { Invoke-Logger -Message "Downloading: $($ConfigurationData.RedistPath)$($DllFile)" -Severity I -Category "AzureSDK" } Catch {}
+        if ($ConfigurationData.RedistPath.Contains("http")) {
+            Get-WebDownload -Source "$($ConfigurationData.RedistPath)$($DllFile)?raw=true" -Target "$($ConfigurationData.LocalPath)\$($DllFile)"
+        }
+        else {
+            Get-WebDownload -Source "$($ConfigurationData.RedistPath)$($DllFile)" -Target "$($ConfigurationData.LocalPath)\$($DllFile)"
+        }
     }
 }
 
