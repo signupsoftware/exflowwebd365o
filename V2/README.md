@@ -1,21 +1,21 @@
 # ExFlow Web for D365O (Experimental)
-This is the exprimental next version of the ExFlow Web setup PowerShell script. 
+This is the experimental next version of the ExFlow Web setup PowerShell script. 
 
 ## Installation and updates
 ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v2/Run-Deploy.ps1)) in *Powershell ISE*. 
 
 
 ```powershell
-$Location                  = "northeurope" #Azure location notheurope, westeurope,... 
-$Security_Admins           = "" #Dynamics user name of ExFlow Web administrators. Use comma to separate. Admins can translate texts, write welecome messages, ...
+$Location                  = "westeurope" #Azure location 
+$Security_Admins           = "ADMIN" #Dynamics user name of ExFlow Web administrators. Use comma to separate. Admins can translate texts, write welecome messages, ...
 $DynamicsAXApiId           = "https://axtestdynamics365aos.cloudax.dynamics.com" #URL to AX
-$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/" #URL to GitHub
-$Prefix                    = "" #Optional prefix (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx].
-$ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
-$PackageVersion            = "latest" #Optional version to install.  Leave blank for default behavior.
-$MachineSize               = "F1" #App Service machine (AKA Service Plan) size F1=Free (default), D1=Shared, B1 to B3= Basic, S1 to S3 = Standard, P1 to P3 = Premium  (see also https://azure.microsoft.com/en-us/pricing/details/app-service/)
+$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/" #URL to GitHub 
+$ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
+$Prefix                    = "" #Optional prefix but recommended (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx].
+$PackageVersion            = "" #Optional version to install.  Leave blank for default behavior.
+$MachineSize               = "" #Optional App Service machine (AKA Service Plan) size F1=Free, D1=Shared, B1 (default) to B3= Basic, S1 to S3 = Standard, P1 to P3 = Premium  (see also https://azure.microsoft.com/en-us/pricing/details/app-service/)
 $TenantGuid                = "" #Optional tenant id when you have multiple tenants (advanced). 
-$WebAppSubscriptionGuid    = "" #Optional Subscription for the web app (advanced).
+$WebAppSubscriptionGuid    = "" #Optional Subscription id when you have multiple Subscriptions (advanced).
 
 
 $Webclient                       = New-Object System.Net.Webclient
@@ -34,10 +34,10 @@ The script downloads the latest ExFlow web release and installs all required Azu
 
 ### Instructions:
 1. Open PowerShell ISE
-2. Change parameters $location, $Security_Admins, $DynamicsAXApiId, $ExFlowUserSecret  (see inline comments)
+2. Change parameters (see inline comments)
 3. Press Play
-4. When prompted sign in using an Azure admin account
+4. When prompted sign in using an Azure Subscription Contributor (or higher) account
 5. Wait until done
-6. Sign in to the app and grant permissions 
+6. Open URL and grant the app permissions 
 
-If the text in the command window turns red or the script aborts something went wrong, see bellow section on errors.
+If the text in the command window turns red or the script aborts something went wrong, see below section on errors.
