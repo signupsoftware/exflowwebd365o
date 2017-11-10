@@ -30,7 +30,7 @@ param(
     [Parameter(Mandatory = $False)]
     [string]$WebAppSubscriptionGuid
 )
-
+#
 Function Get-UrlStatusCode {
     Param
     (
@@ -570,7 +570,7 @@ Else {
     Write-Output "Importing PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
     $slot = Get-AzureRmWebAppSlot -Name $DeploymentName -Slot production -ResourceGroupName $DeploymentName 
-    $psadKeyValue = $slot.SiteConfig.AppSettings.aad_ClientSecret    
+    $psadKeyValue = ($slot.SiteConfig.AppSettings |  Where-Object {$_.Name -eq "aad_ClientSecret"} | Select-Object Value -First 1).Value    
 }
 Set-AzureRmContext -Context $AzureRmLogon.Context
 #endregion
