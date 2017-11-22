@@ -10,7 +10,21 @@
 
     return $ConfigurationData
 }
-
+Function Get-AlphaNumName{
+    param(
+        [Parameter(Mandatory=$True)]
+        [ValidateNotNullorEmpty()]
+        $Name,
+        $MaxLength
+    )
+    
+    $pattern = '[^a-zA-Z0-9]'
+    $Res = $Name -replace $pattern, ''
+    If ($MaxLength -and $Res.Length -gt $MaxLength){
+        $Res = $Res.Substring(0,24)
+    }
+    return $Res
+}
 Function Get-RequiredModules
 {
     param(

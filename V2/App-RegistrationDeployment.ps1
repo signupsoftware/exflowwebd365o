@@ -28,9 +28,15 @@ param(
     [string]$TenantGuid,
 
     [Parameter(Mandatory = $False)]
-    [string]$WebAppSubscriptionGuid
+    [string]$WebAppSubscriptionGuid,
+
+    [Parameter(Mandatory = $False)]
+    [string]$UseApiName
+
 )
-#
+
+
+
 Function Get-UrlStatusCode {
     Param
     (
@@ -95,9 +101,10 @@ Else {
 #Clean input
 $DynamicsAXApiId = $DynamicsAXApiId.ToLower().Replace("https://", "").Replace("http://", "")
 $DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("dynamics.com") + "dynamics.com".Length) #remove all after dynamics.com
+$DynamicsAXApiSubdomain = $DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("."))
 if (!$MachineSize) { $MachineSize = "B1" }
-If (-not($PackageVersion)){$PackageVersion="latest"}
-If (-not($ConfigurationData.RedistPath)){ $ConfigurationData.RedistPath = $RepoURL }
+If (-not($PackageVersion)) {$PackageVersion = "latest"}
+If (-not($ConfigurationData.RedistPath)) { $ConfigurationData.RedistPath = $RepoURL }
 #Setup log file
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
@@ -220,7 +227,10 @@ If (!$AzureRmLogon.Account) {
         Try { Invoke-Logger -Message "Get-AzureRmSubscription : $($SubscriptionIds.Id.count)" -Severity I -Category "Subscription" } Catch {}
 
         #Multiple subscriptions detected
-        If ($SubscriptionIds.Id.count -gt 1) {
+        If ($WebAppSubscriptionGuid) {
+            Select-AzureRmSubscription -SubscriptionId $WebAppSubscriptionGuid
+        }
+        ElseIf ($SubscriptionIds.Id.count -gt 1) {
             Write-Output ""
             Write-Output "Multiple Azure subscriptions found:"
             Write-Host $SubscriptionIds
@@ -306,9 +316,12 @@ Try { Invoke-Logger -Message $Tenant -Severity I -Category "Tenant" } Catch {}
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Determining deployment name and availability"
 Write-Output "--------------------------------------------------------------------------------"
-
-$DeploymentName = Set-DeploymentName -String $DynamicsAXApiId -Prefix $Prefix
-
+If ($UseApiName -eq "true") {
+    $DeploymentName = $Prefix + $DynamicsAXApiSubdomain
+}
+Else {
+    $DeploymentName = Set-DeploymentName -String $DynamicsAXApiId -Prefix $Prefix 
+}
 Write-Output "Deployment name: $DeploymentName"
 
 Try { Invoke-Logger -Message "Deployment name: $DeploymentName" -Severity I -Category "Deployment" } Catch {}
@@ -406,9 +419,9 @@ Else {
     Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
 }
 #endregion
-
+$StorageName = Get-AlphaNumName -Name $DeploymentName -MaxLength 24
 #region Create/Get AzureRmStorageAccount
-If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $DeploymentName -Name $DeploymentName -ErrorAction SilentlyContinue)) {
+If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $DeploymentName -Name $StorageName -ErrorAction SilentlyContinue)) {
 
     Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
@@ -417,7 +430,7 @@ If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupNam
     Write-Output "This process may take a few minutes..."
 
     $AzureRmStorageAccountParams = @{
-        Name              = $DeploymentName
+        Name              = $StorageName
         ResourceGroupName = $DeploymentName
         Type              = $ConfigurationData.Storage.Type
         Location          = $Location
@@ -436,15 +449,15 @@ If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupNam
 
     Try { Invoke-Logger -Message $AzureRmStorageAccount -Severity I -Category "AzureRmStorageAccount" } Catch {}
 
-    $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $DeploymentName -Name $DeploymentName
-    $StorageContext = New-AzureStorageContext -StorageAccountName $DeploymentName -StorageAccountKey $Keys[0].Value
+    $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $DeploymentName -Name $StorageName
+    $StorageContext = New-AzureStorageContext -StorageAccountName $StorageName -StorageAccountKey $Keys[0].Value
 
     Try { Invoke-Logger -Message $Keys -Severity I -Category "AzureRmStorageAccount" } Catch {}
     Try { Invoke-Logger -Message $StorageContext -Severity I -Category "AzureRmStorageAccount" } Catch {}
 }
 Else {
-    $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $DeploymentName -Name $DeploymentName
-    $StorageContext = New-AzureStorageContext -StorageAccountName $DeploymentName $Keys[0].Value
+    $Keys = Get-AzureRmStorageAccountKey -ResourceGroupName $DeploymentName -Name $StorageName
+    $StorageContext = New-AzureStorageContext -StorageAccountName $StorageName $Keys[0].Value
 
     Try { Invoke-Logger -Message $Keys -Severity I -Category "AzureRmStorageAccount" } Catch {}
     Try { Invoke-Logger -Message $StorageContext -Severity I -Category "AzureRmStorageAccount" } Catch {}
@@ -672,15 +685,15 @@ $TemplateParameters = @{
     webApplicationPackageFolder   = $packageFolder
     WebApplicationPackageFileName = $packageSAS
     WebSiteName                   = $DeploymentName
-    StorageAccountName            = $DeploymentName
+    StorageAccountName            = $StorageName
     hostingPlanName               = $DeploymentName
     aad_ClientId                  = $AzureRmADApplication.ApplicationId
     aad_ClientSecret              = $psadKeyValue
     aad_TenantId                  = $aad_TenantId
     aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
     aad_ExternalApiId             = "https://$($DynamicsAXApiId)"
-    StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($DeploymentName);AccountKey=$($Keys[0].Value);"
-    KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($DeploymentName);AccountKey=$($Keys[0].Value);"
+    StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
+    KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
 }
 
 If ($Security_Admins) {
