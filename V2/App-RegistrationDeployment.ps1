@@ -419,7 +419,7 @@ Else {
     Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
 }
 #endregion
-$StorageName = Get-AlphaNumName -Name $DeploymentName -MaxLength 24
+$StorageName = Get-AlphaNumName -Name $DeploymentName.replace("exflow","") -MaxLength 24
 #region Create/Get AzureRmStorageAccount
 If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $DeploymentName -Name $StorageName -ErrorAction SilentlyContinue)) {
 
