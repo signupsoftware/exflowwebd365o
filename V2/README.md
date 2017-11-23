@@ -42,6 +42,18 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 
 The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the D365O API (web services). **Note that to apply product updates you just run the script again.**
 
+## AzureRM Module
+To successfully run the script you will need an updated PowerShell version. The script also depends on the AzureRM module, 
+written by Microsoft. PowerShell and the AzureRM update frequently and updates are rarely (never) backwards compatible. Also, all versions stack up making the environment a bit unstable/unpredictable. One way of avoiding this is to uninstall modules. 
+```powershell
+Uninstall-Module -Name AzureRM -AllVersions
+```
+and then reinstall the module again
+```powershell
+Install-Module -Name AzureRM
+```
+Finally close and reopen the PowerShell ISE console.
+
 ### Instructions:
 1. Open PowerShell ISE
 2. Change parameters (see inline comments)
