@@ -201,9 +201,9 @@ If (!$AzureRmLogon.Account) {
     Write-Host "Sign-in with your Subscription account (opens in another win):"
     #Determine if manual subscription id was provided
     If ($WebAppSubscriptionGuid) {
-        $AzureRmLogon = Set-AzureRmLogon -SubscriptionGuid $SubscriptionGuid
+        $AzureRmLogon = Set-AzureRmLogon -SubscriptionGuid $WebAppSubscriptionGuid
         $AzureRmTenantLogon = $AzureRmLogon
-        Try { Invoke-Logger -Message "Set-AzureRmLogon -SubscriptionGuid $SubscriptionGuid" -Severity I -Category "Logon" } Catch {}
+        Try { Invoke-Logger -Message "Set-AzureRmLogon -SubscriptionGuid $WebAppSubscriptionGuid" -Severity I -Category "Logon" } Catch {}
     }
     Else {
         $AzureRmLogon = Set-AzureRmLogon
@@ -711,7 +711,9 @@ While ($X -lt 3) {
     $x++
 }
 #endregion
-
+If (-not($MachineName)){
+    $MachineName="B1"
+}
 #region Web App registration with Microsoft Graph REST Api
 $SDKHeader = $True
 ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls) {
