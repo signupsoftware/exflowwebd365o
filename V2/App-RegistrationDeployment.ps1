@@ -22,7 +22,7 @@ param(
     [string]$PackageVersion,
 
     [Parameter(Mandatory = $False)]
-    [string]$MachineName,    
+    [string]$MachineSize,    
 
     [Parameter(Mandatory = $False)]
     [string]$TenantGuid,
@@ -102,9 +102,11 @@ Else {
 $DynamicsAXApiId = $DynamicsAXApiId.ToLower().Replace("https://", "").Replace("http://", "")
 $DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("dynamics.com") + "dynamics.com".Length) #remove all after dynamics.com
 $DynamicsAXApiSubdomain = $DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("."))
-if (!$MachineSize) { $MachineSize = "B1" }
+if (-not($MachineSize)) { $MachineSize = "B1" }
+if ($Prefix) { $Prefix = $Prefix.ToLower() }
 If (-not($PackageVersion)) {$PackageVersion = "latest"}
 If (-not($ConfigurationData.RedistPath)) { $ConfigurationData.RedistPath = $RepoURL }
+
 #Setup log file
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
 
@@ -464,7 +466,7 @@ Else {
 }
 #endregion
 
-#region Create AzureStorageContainer
+<#region Create AzureStorageContainer
 If ($AzureRmResourceGroup -and $AzureRmStorageAccount -and -not(Get-AzureStorageContainer -Name $ConfigurationData.Storage.Container -Context $StorageContext -ErrorAction SilentlyContinue)) {
 
     Write-Output ""
@@ -483,7 +485,7 @@ If ($AzureRmResourceGroup -and $AzureRmStorageAccount -and -not(Get-AzureStorage
     Try { Invoke-Logger -Message $AzureStorageContainerParams -Severity I -Category "AzureStorageContainer" } Catch {}
 
 }
-#endregion
+#endregion#>
 
 #region Create AzureStorageCORSRule
 If ($StorageContext) {
@@ -679,7 +681,7 @@ If (!$ParamValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for 
 
 $TemplateParameters = @{
     Name                          = $DeploymentName
-    skuName                       = $MachineName
+    skuName                       = $MachineSize
     ResourceGroupName             = $DeploymentName
     TemplateFile                  = "$($RepoURL)WebSite.json"
     webApplicationPackageFolder   = $packageFolder
@@ -711,9 +713,7 @@ While ($X -lt 3) {
     $x++
 }
 #endregion
-If (-not($MachineName)){
-    $MachineName="B1"
-}
+
 #region Web App registration with Microsoft Graph REST Api
 $SDKHeader = $True
 ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls) {
