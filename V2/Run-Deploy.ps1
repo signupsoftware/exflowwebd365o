@@ -3,12 +3,12 @@ $Security_Admins           = "ADMIN" #Dynamics user name of ExFlow Web administr
 $DynamicsAXApiId           = "https://axtestdynamics365aos.cloudax.dynamics.com" #URL to AX
 $RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/" #URL to GitHub https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/ or the download location for example c:\folder\. 
 $ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
-$Prefix                    = "" #Optional prefix but recommended (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx].
-$PackageVersion            = "" #Optional version to install.  Leave blank for default behavior.
-$MachineSize               = "" #App Service machine (AKA Service Plan) size F1=Free, D1=Shared, B1 (default) to B3= Basic, S1 to S3 = Standard, P1 to P3 = Premium  (see also https://azure.microsoft.com/en-us/pricing/details/app-service/)
-$TenantGuid                = "" #Optional tenant id when you have multiple tenants (advanced). 
-$WebAppSubscriptionGuid    = "" #Optional Subscription for the web app (advanced).
-$UseApiName                = "" #Optional. Set to "true" use the same name as the left part of $DynamicsAXApiId e.g. axtestdynamics365aos. 
+$Prefix                    = "" #(Optional) Name prefix (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx]. If UseApiName is used then name will be [$prefix][dynamics_sub_domain].azurewebsites.net
+$PackageVersion            = "" #(Optional) Version to install. Leave blank for default behavior.
+$MachineSize               = "" #(Optional) App Service machine (AKA Service Plan) size F1=Free, D1=Shared, B1 (default) to B3= Basic, S1 to S3 = Standard, P1 to P3 = Premium  (see also https://azure.microsoft.com/en-us/pricing/details/app-service/)
+$TenantGuid                = "" #(Optional) Tenant id when you have multiple tenants (advanced). 
+$WebAppSubscriptionGuid    = "" #(Optional) Subscription id when you have multiple subscriptions for the web app (advanced).
+$UseApiName                = "" #(Optional) Set to "true" use the same name as the left part of $DynamicsAXApiId e.g. axtestdynamics365aos. 
 
 
 

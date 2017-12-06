@@ -1,41 +1,73 @@
 # ExFlow web for D365O
-ExFlow web for *Dynamics 365 for Operations* (D365O) runs in Azure as a fully scalable *Azure App Service*. ExFlow web is deployed into the tenant’s Azure environment as a Resource Group that contains a Web Site and a Storage account. The website is further connected to the Azure AD and D365O thru a so called App Registration and communicates with D365O using the same security technology that D365O uses namely Azure AD and OAuth 2.0.
+ExFlow web for *Dynamics 365 for Operations* (D365O) runs in Azure as a fully scalable *Azure App Service*. ExFlow web is deployed into the tenant’s Azure environment as a Resource Group that contains a Web Site and a Storage account. The website is further connected to the Azure AD and D365O thru a so-called App Registration and communicates with D365O using the same security technology that D365O uses namely Azure AD and OAuth 2.0.
 
-## NEW VERSION!
-We have a new version of the script called [V2](https://github.com/signupsoftware/exflowwebd365o/tree/master/V2) that we recommend for new deployments.
+## PowerShell deployment script - NEW VERSION
+We have a new version of the script called [V2](https://github.com/signupsoftware/exflowwebd365o/tree/master/V2) that we recommend for new deployments. If you wish to continue using the original version of the script see [V1](https://github.com/signupsoftware/exflowwebd365o/tree/master/V1).
 
-
+News in this version (V2) of the script: 
+* Adds extended logging to a separate file.
+* Adds support for multifactor authentication
+* Adds support to install into a subscription that is connected to another directory/Azure AD. 
+* Removes the need to store app secret/credentials (used in updates) locally. 
+* Adds options ($UseApiName="true") to use the left part of the Dynamics URL as the name. For example, if the Dynamics URL is *axtestdynamics365aos*.cloudax.dynamics.com and $Prefix="exflow-" the URL becomes *exflow-axtestdynamics365aos*.azurewebsites.net.
 
 ## Installation and updates
-ExFlow web is installed by running the following PowerShell script ([Example.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/Example.ps1)) in *Powershell ISE*.
+ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v2/Run-Deploy.ps1)) in *Powershell ISE*. 
 
 
 ```powershell
-$Location                  = "northeurope" #Azure location notheurope, westeurope,... 
-$Security_Admins           = "JOHANB,JERRY" #AX user name (UPPERCASE) of ExFlow web administrators. Admins can translate texts, write welecome messages, ...
-$DynamicsAXApiId           = "axtestdynamics365aos.cloudax.dynamics.com" #URL host such as axtestdynamics365aos.cloudax.dynamics.com
-$ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
-$Prefix                    = "" #Optional prefix (short using alphanumeric characters). Leave blank for default behavior.
-$PackageVersion            = "" #Optional version to install.  Leave blank for default behavior.
-$TenantGuid                = "" #Optional tenant id when you have multiple tenants (advanced).   
-$SubscriptionGuid          = "" #Optional Subscription for the web app (advanced). Use if you have two subscriptions, one holding tenant (AD) and another for apps. You will be prompted twice for credentials, (1) use AD admin account, (2) the subscription co-admin for the second subscription.       
+$Location                  = "westeurope" #Azure location such as northeurope,westeurope...
+$Security_Admins           = "ADMIN" #Dynamics user name of ExFlow Web administrators. Use comma to separate. Admins can translate texts, write welecome messages, ...
+$DynamicsAXApiId           = "https://axtestdynamics365aos.cloudax.dynamics.com" #URL to AX
+$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/" #URL to GitHub or the download location for example c:\folder\. 
+$ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
+$Prefix                    = "" #(Optional) Name prefix (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx]. If UseApiName is used then name will be [$prefix][dynamics_sub_domain].azurewebsites.net
+$PackageVersion            = "" #(Optional) Version to install. Leave blank for default behavior.
+$MachineSize               = "" #(Optional) App Service machine (AKA Service Plan) size F1=Free, D1=Shared, B1 (default) to B3= Basic, S1 to S3 = Standard, P1 to P3 = Premium  (see also https://azure.microsoft.com/en-us/pricing/details/app-service/)
+$TenantGuid                = "" #(Optional) Tenant id when you have multiple tenants (advanced). 
+$WebAppSubscriptionGuid    = "" #(Optional) Subscription id when you have multiple subscriptions for the web app (advanced).
+$UseApiName                = "" #(Optional) Set to "true" use the same name as the left part of $DynamicsAXApiId e.g. axtestdynamics365aos. 
 
-$scriptPath = ((New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/App-RegistrationDeployment.ps1'))
-Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $Location,$Security_Admins,$DynamicsAXApiId,$ExFlowUserSecret,$Prefix,$PackageVersion,$TenantGuid,$SubscriptionGuid 
+
+
+$Webclient                       = New-Object System.Net.Webclient
+$Webclient.UseDefaultCredentials = $true
+$Webclient.Proxy.Credentials     = $Webclient.Credentials
+$Webclient.Encoding              = [System.Text.Encoding]::UTF8
+$Webclient.CachePolicy           = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
+
+$scriptPath = ($Webclient.DownloadString("$($RepoURL)App-RegistrationDeployment.ps1"))
+Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $Location,$Security_Admins,$DynamicsAXApiId,$RepoURL,$ExFlowUserSecret,$Prefix,$PackageVersion,$MachineSize,$TenantGuid,$WebAppSubscriptionGuid,$UseApiName
+
+
 
 ```
 
 The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the D365O API (web services). **Note that to apply product updates you just run the script again.**
 
-### Instructions:
-1. Open PowerShell ISE
-2. Change parameters $location, $Security_Admins, $DynamicsAXApiId, $ExFlowUserSecret  (see inline comments)
-3. Press Play
-4. When prompted sign in using an Azure admin account
-5. Wait until done
-6. Sign in to the app and grant permissions 
+## AzureRM Modules
+To successfully run the script you will need an updated PowerShell version. The script also depends on the AzureRM module, 
+written by Microsoft. PowerShell and the AzureRM update frequently and updates are rarely (never) backward compatible. Also, all versions stack up making PowerShell a bit unpredictable. One way of avoiding this is to uninstall modules. 
+```powershell
+Uninstall-Module -Name AzureRM -AllVersions
+```
+and then reinstall the module again
+```powershell
+Install-Module -Name AzureRM
+```
+Finally, close and reopen the PowerShell ISE console.
 
-If the text in the command window turns red or the script aborts something went wrong, see bellow section on errors.
+## Instructions:
+1. Open PowerShell ISE
+2. Change parameters (see inline comments)
+3. Press Play
+4. When prompted sign in using an Azure Subscription Contributor (or higher) account
+5. If you are prompted for credentials again use an Azure AD user i.e. ...@company.com
+6. Wait until done
+7. Open URL and grant the app permissions 
+
+If the text in the command window turns red or the script aborts something went wrong, see below section on errors.
+
 
 ## Release notes
 Compared with version 3 the following features have been removed.
@@ -49,6 +81,23 @@ The following features are currently under development.
 * Paging/"scroll for more" in lookups (account, items, ..) are under development. 
 * Line templates
 
+### Release 2017.20.0.0
+2017-12-06 for AX12, D365O, NAV
+
+**News**
+* Improves PDF image interaction
+* Coding suggestion lists filters on partial value matches (AX12, D365O)
+* New languages AU and NZ
+* New versioning syntax 2017.Release no.Custom no.Patch no
+* Search and some inbox folders will sort based on Document Date or user preference rather than Due date.
+* Adds inbox/search sorting by column click
+* Improves dashboard chart interaction
+* Adds line comments highlighting
+* Improves line and inbox paging and scrolling
+* Other UI improvements
+* Bug fixes
+
+
 ### Release 17
 No. 4.17, 2017-08-30, AX2012, D365AX, NAV (pre)
 
@@ -60,7 +109,7 @@ No. 4.17, 2017-08-30, AX2012, D365AX, NAV (pre)
 * Changes how the primary button work (the green one). The primary button will change from Approve (i.e. approve all lines) to Save/Send when the user makes a line approval decision.
 * Bug fixes
     * Attachments added in web wasn't saved  [AX2012] (4.17.0.2) 
-    * Fixes a issue with line headers on IE and Edge (4.17.0.2)
+    * Fixes an issue with line headers on IE and Edge (4.17.0.2)
 
 ### Release 16 
 2017-05-30, AX2012, D365AX
@@ -70,7 +119,7 @@ No. 4.17, 2017-08-30, AX2012, D365AX, NAV (pre)
 * Improves the Forward feature adding the possibility to disable the Previous option. The OK button is also disabled until approver and comment have been specified.
 * Improves filtering for adding approvers (Add Approver & Forward To)
 * Improves display of the Amount column in the inbox.
-* Adds possibility for an administrator to download the latest logfile (experimental).
+* Adds possibility for an administrator to download the latest log file (experimental).
 * Adds possibility to turn on extended logging in admin settings (experimental).
 * Adds admin option to manually clean temporary files and folders (experimental). 
 * Bug fixes.
@@ -120,7 +169,7 @@ Install-Module -Name AzureRM
 
 ## Remove
 In the Azure Portal:
-1. Sign in and locate 'Resource Groups' in the menu. Find the resource group to remove (start with 'exflow...').
+1. Sign in and locate 'Resource Groups' in the menu. Find the resource group to be removed.
 2. Open, press 'Delete' and follow instructions.
-3. Locate 'App Registrations' in the menu. Find app (they always start with exflow), press 'Delete' and follow instructions.
+3. Locate 'App Registrations' in the menu. Find app, press 'Delete' and follow instructions.
 
