@@ -1,4 +1,4 @@
-﻿#Parameters for input as arguments or parameters
+﻿Parameters for input as arguments or parameters
 param(
     [Parameter(Mandatory = $True)]
     [string]$Location,
@@ -192,12 +192,38 @@ If (!$PackageValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub fo
 If (-not (Get-Module -Name AzureRM.Automation -ErrorAction SilentlyContinue)) { Import-Module AzureRM.Automation }
 If (-not (Get-Module -Name AzureRM.Profile -ErrorAction SilentlyContinue)) { Import-Module AzureRM.Profile }
 
+Function Switch-Context() {
+    param(
+        [Parameter(Mandatory = $True)]
+        $UseDeployContext,
+        [Parameter(Mandatory = $False)]
+        $SkipSubscriptionSelection = $False
+    )
+    if ($UseDeployContext) {
+        $armctx = Set-AzureRmContext -Context $AzureRmLogon.Context
+        If ($AzureRmLogonSelectedSubscriptionId -and -not $SkipSubscriptionSelection) {
+            $selsub = Select-AzureRmSubscription -SubscriptionId $AzureRmLogonSelectedSubscriptionId
+        }
+    }
+    else {
+        $armctx = Set-AzureRmContext -Context $AzureRmTenantLogon.Context
+        If ($AzureRmTenantLogonSelectedSubscriptionId -and -not $SkipSubscriptionSelection ) {
+            $selsub = Select-AzureRmSubscription -SubscriptionId $AzureRmTenantLogonSelectedSubscriptionId
+        }
+    }
+
+    Try { Invoke-Logger -Message "Set-AzureRmContext -Context $($armctx)" -Severity I -Category "Context" } Catch {}    
+    return Get-AzureRmContext
+}
+ 
 #region Log in to Azure Automation
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Logging in to azure automation"
 Write-Output "--------------------------------------------------------------------------------"
 $AzureRmLogon = @{Account = $null}
+$AzureRmLogonSelectedSubscriptionId = $WebAppSubscriptionGuid
 $AzureRmTenantLogon = @{Account = $null}
+$AzureRmTenantLogonSelectedSubscriptionId = ""
 #Determine logon status
 If (!$AzureRmLogon.Account) {
     Write-Host "Sign-in with your Subscription account (opens in another win):"
@@ -222,33 +248,27 @@ If (!$AzureRmLogon.Account) {
         Try { Invoke-Logger -Message "The account is not linked to an Azure subscription! Please add account to a subscription in the Azure portal." -Severity W -Category "Subscription" } Catch {}
         return
     }
-    Else {
+    ElseIf (!$AzureRmLogonSelectedSubscriptionId) {
         #Get all subscriptions
         $SubscriptionIds = Get-AzureRmSubscription | Select-Object Name, Id
 
         Try { Invoke-Logger -Message "Get-AzureRmSubscription : $($SubscriptionIds.Id.count)" -Severity I -Category "Subscription" } Catch {}
 
         #Multiple subscriptions detected
-        If ($WebAppSubscriptionGuid) {
-            Select-AzureRmSubscription -SubscriptionId $WebAppSubscriptionGuid
-        }
-        ElseIf ($SubscriptionIds.Id.count -gt 1) {
+        If ($SubscriptionIds.Id.count -gt 1) {
             Write-Output ""
             Write-Output "Multiple Azure subscriptions found:"
             Write-Host $SubscriptionIds
             Write-Output ""
             $answer = Read-Host -Prompt 'Enter Subscription id:'
             #Select the chosen AzureRmSubscription
-            Select-AzureRmSubscription -SubscriptionId $answer
+            $AzureRmLogonSelectedSubscriptionId = $answer
             Try { Invoke-Logger -Message "Select-AzureRmSubscription -SubscriptionId $answer" -Severity I -Category "Subscription" } Catch {}
         }
-    }
-
-    #Set AzureRM context
-    Set-AzureRmContext -Context $AzureRmLogon.Context
-
-    Try { Invoke-Logger -Message "Set-AzureRmContext -Context $($AzureRmLogon.Context)" -Severity I -Category "Context" } Catch {}
+    }    
 }
+$AzureRmTenantLogonSelectedSubscriptionId = $AzureRmLogonSelectedSubscriptionId #same subscription for app reg  is assumed
+
 Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Tenant information"
@@ -257,47 +277,88 @@ Write-Output "------------------------------------------------------------------
 If ($AzureRmLogon.Account.Id) {
     $SignInName = $AzureRmLogon.Account.Id
     $Subscription = "/subscriptions/$($AzureRmLogon.Subscription.Id)"
-    $TenantId = $AzureRmLogon.Tenant.Id
 }
 Else {
     $SignInName = $AzureRmLogon.Context.Account.Id
     $Subscription = "/subscriptions/$($AzureRmLogon.Context.Subscription.Id)"
-    $TenantId = $AzureRmLogon.Context.Tenant.Id
 }
 
 #Get tenant id information
 try {
-    If ($TenantGuid) {
-        if ($TenantId -eq $TenantGuid) {
-            $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantGuid }  #Doesn't contain anything in Directory (bug) 
+    Write-Output ""
+    Write-Output "Tenants found:"
+    Write-Output ""
+    Write-Output (Get-AzureRmTenant)
+    $answer = "no"
+    If (!$TenantGuid) {
+        $answer = Read-Host -Prompt 'Is the tenant (used by Dynamics) i.e. your AD in this list? Type y/n:'
+    }
+    else {
+        $tenants = Get-AzureRmTenant | Where-Object Id -eq $TenantGuid 
+        if ($tenants.length>0) {
+            $answer = 'yes'
+        }
+    }
+    if ($answer -eq "y" -or $answer -eq "Y" -or $answer -eq "yes" -or $answer -eq "Yes") {
+ 
+        If (!$TenantGuid) {
+            $SubscriptionIds = Get-AzureRmSubscription | Select-Object Name, Id, TenantId
         }
         else {
-            ## the tenant is not in current subscription we must switch account
-            Write-Host "Sign-in with your company account (Azure AD):"
-            $AzureRmTenantLogon = Set-AzureRmLogon
-            Set-AzureRmContext -Context $AzureRmTenantLogon.Context
-            $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantGuid }
-            Set-AzureRmContext -Context $AzureRmLogon.Context   
+            $SubscriptionIds = Get-AzureRmSubscription | Where-Object TenantId -eq $TenantGuid | Select-Object Name, Id, TenantId
         }
+        If ($SubscriptionIds.Id.count -gt 1) { 
+            #more than one sub prompt to select
+            Write-Output "Subscriptions:"
+            Write-Output (Get-AzureRmSubscription)
+            $answer = Read-Host -Prompt 'Enter SubscriptionId (connected to the tenant):'
+            $AzureRmTenantLogonSelectedSubscriptionId = $answer
+        }
+        elseif ($SubscriptionIds.Id.count -eq 1) {
+            $AzureRmTenantLogonSelectedSubscriptionId = $SubscriptionIds.Id
+        }
+        
     }
-    Else {
-        $Tenant = Get-AzureRmTenant | Where-Object { $_.Id -eq $TenantId }
+    else {
+        ## the tenant is not in current subscription we must switch account
+        Write-Output "Sign-in with your company account (Azure AD):"
+        $AzureRmTenantLogon = Set-AzureRmLogon
+        $ctx = Switch-Context -UseDeployContext $False -SkipSubscriptionSelection $True
+        Write-Output ""
+        Write-Output "Tenants found:"
+        Write-Output ""
+        Write-Output (Get-AzureRmTenant)
+        Write-Output ""
+        If (!$TenantGuid) {
+            $SubscriptionIds = Get-AzureRmSubscription | Select-Object Name, Id, TenantId
+        }
+        else {
+            $SubscriptionIds = Get-AzureRmSubscription | Where-Object TenantId -eq $TenantGuid | Select-Object Name, Id, TenantId
+        }
+        If ($SubscriptionIds.Id.count -gt 1) { 
+            #more than one sub prompt to select
+            Write-Output "Subscriptions:"
+            Write-Output (Get-AzureRmSubscription)
+            $answer = Read-Host -Prompt 'Enter SubscriptionId (connected to the tenant):'
+            $AzureRmTenantLogonSelectedSubscriptionId = $answer
+        }
+        elseif ($SubscriptionIds.Id.count -eq 1) {
+            $AzureRmTenantLogonSelectedSubscriptionId = $SubscriptionIds.Id
+        }
+       
     }
+                
+    $Tenant = (Switch-Context -UseDeployContext $False).Tenant
     $TenantName = $Tenant.Directory
+    If (!$TenantName -and $Tenant) {
+        $Tenant = Get-AzureRmTenant | Where-Object Id -eq $Tenant.Id #Bug in RM where dir is not set on context
+        $TenantName = $Tenant.Directory
+    }
 }
 catch {
     Write-Error $_
     Write-Warning "Tenant could not be retrived. Use paramter TenantGuid in complex env with multipe subscriptions. In the second promp for credentials use a Windows AD user i.e. @companydomain.com user"
-    return
-}
-
-#Get tenant name if external user
-try {
-    $RoleAssignment = Get-AzureRmRoleAssignment -Scope $Subscription | Where-Object { ($_.SignInName -eq $SignInName) -or ($_.SignInName -like "$(($SignInName).Replace("@","_"))*") }
-}
-catch {
-    Write-Error $_
-    Write-Warning "This user is missing permissions in Subscription>IAM (contributor,owner) or is not part of Azure AD in this subscription."
+    Write-Warning "Script aborted."
     return
 }
 
@@ -309,12 +370,26 @@ If (!$aad_TenantId) {
 }
 Write-Output ""
 
-Write-Output $Tenant
-
 Try { Invoke-Logger -Message $Tenant -Severity I -Category "Tenant" } Catch {}
 #endregion
-
+#region Checkpoint
+Write-Output ""
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "Checkpoint"
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "App registration tenant:"
+Write-Output ($Tenant)
+Write-Output "Deployment subscription:"
+Write-Output (Switch-Context -UseDeployContext $True).Subscription
+Write-Output ""
+$answer = Read-Host -Prompt "Is this correct? (y/n)"
+if ($answer -eq "n") {
+    Write-Warning "Script was canceled"
+    return
+}
+#endregion
 #region Set deployment name for resources based on DynamicsAXApiId name
+$ctx = Switch-Context -UseDeployContext $True
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Determining deployment name and availability"
 Write-Output "--------------------------------------------------------------------------------"
@@ -355,6 +430,8 @@ Else {
 #endregion
 
 #region Verify AzureRmRoleAssignment to logged on user
+$ctx = Switch-Context -UseDeployContext $True
+
 If ($ConfigurationData.AzureRmRoleAssignmentValidation -and !$TenantGuid) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Validating AzureRmRoleAssignment"
@@ -380,12 +457,14 @@ If ($ConfigurationData.AzureRmRoleAssignmentValidation -and !$TenantGuid) {
 
         Try { Invoke-Logger -Message "Owner or contributor permissions could not be verified for your subscription" -Severity W -Category "AzureRmRoleAssignment" } Catch {}
 
-        return
+        #return
     }
 }
 #endregion
 
 #region Create AzureRmResourceGroup
+$ctx = Switch-Context -UseDeployContext $True
+
 If (-not($AzureRmResourceGroup = Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -421,8 +500,9 @@ Else {
     Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
 }
 #endregion
-$StorageName = Get-AlphaNumName -Name $DeploymentName.replace("exflow","") -MaxLength 24
+$StorageName = Get-AlphaNumName -Name $DeploymentName.replace("exflow", "") -MaxLength 24
 #region Create/Get AzureRmStorageAccount
+$ctx = Switch-Context -UseDeployContext $True
 If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $DeploymentName -Name $StorageName -ErrorAction SilentlyContinue)) {
 
     Write-Output ""
@@ -466,28 +546,8 @@ Else {
 }
 #endregion
 
-<#region Create AzureStorageContainer
-If ($AzureRmResourceGroup -and $AzureRmStorageAccount -and -not(Get-AzureStorageContainer -Name $ConfigurationData.Storage.Container -Context $StorageContext -ErrorAction SilentlyContinue)) {
-
-    Write-Output ""
-    Write-Output "--------------------------------------------------------------------------------"
-    Write-Output "Creating AzureStorageContainer"
-    Write-Output "--------------------------------------------------------------------------------"
-
-    $AzureStorageContainerParams = @{
-        Name       = $ConfigurationData.Storage.Container
-        Permission = "Off"
-        Context    = $StorageContext
-    }
-
-    New-AzureStorageContainer @AzureStorageContainerParams
-
-    Try { Invoke-Logger -Message $AzureStorageContainerParams -Severity I -Category "AzureStorageContainer" } Catch {}
-
-}
-#endregion#>
-
 #region Create AzureStorageCORSRule
+$ctx = Switch-Context -UseDeployContext $True
 If ($StorageContext) {
     $ConfigurationData.CorsRules.AllowedOrigins = ($ConfigurationData.CorsRules.AllowedOrigins).Replace("[DeploymentName]", $DeploymentName)
 
@@ -526,7 +586,7 @@ If ($StorageContext) {
 #endregion
 
 #region Create AzureRmADApplication
-Set-AzureRmContext -Context $AzureRmTenantLogon.Context
+$ctx = Switch-Context -UseDeployContext $False
 If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith $DeploymentName -ErrorAction SilentlyContinue)) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating PSADCredential"
@@ -580,18 +640,17 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith 
     }   
 }
 Else {
-    Set-AzureRmContext -Context $AzureRmLogon.Context
+    $ctx = Switch-Context -UseDeployContext $True
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Importing PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
     $slot = Get-AzureRmWebAppSlot -Name $DeploymentName -Slot production -ResourceGroupName $DeploymentName 
     $psadKeyValue = ($slot.SiteConfig.AppSettings |  Where-Object {$_.Name -eq "aad_ClientSecret"} | Select-Object Value -First 1).Value    
 }
-Set-AzureRmContext -Context $AzureRmLogon.Context
 #endregion
 
 #region Create AzureRmADServicePrincipal
-Set-AzureRmContext -Context $AzureRmTenantLogon.Context
+$ctx = Switch-Context -UseDeployContext $False
 If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $AzureRmADApplication.DisplayName -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -626,11 +685,10 @@ If ($AzureRmADApplication -and -not($AzureRmADServicePrincipal = Get-AzureRmADSe
 Else {
     Try { Invoke-Logger -Message $AzureRmADServicePrincipal -Severity I -Category "AzureRmADServicePrincipal" } Catch {}
 }
-Set-AzureRmContext -Context $AzureRmLogon.Context
 #endregion
 
 #region Create AzureRmRoleAssignment
-Set-AzureRmContext -Context $AzureRmTenantLogon.Context
+$ctx = Switch-Context -UseDeployContext $False
 If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -656,10 +714,10 @@ If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssi
 Else {
     Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
 }
-Set-AzureRmContext -Context $AzureRmLogon.Context
 #endregion
 
 #region Deploy Azure Resource Manager Template
+$ctx = Switch-Context -UseDeployContext $True
 Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Deploying Azure Resource Manager Template"
@@ -715,6 +773,8 @@ While ($X -lt 3) {
 #endregion
 
 #region Web App registration with Microsoft Graph REST Api
+$ctx = Switch-Context -UseDeployContext $False
+
 $SDKHeader = $True
 ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls) {
     If (!(Test-Path -Path "$($ConfigurationData.LocalPath)\$($DllFile)" -ErrorAction SilentlyContinue)) {
