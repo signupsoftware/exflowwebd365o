@@ -1,5 +1,4 @@
 # PowerShell script ExFlow Web for D365O version 2
-This is the experimental next version of the ExFlow Web setup PowerShell script. 
 
 News in this version (V2) of the script: 
 * Adds extended logging to a separate file.

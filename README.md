@@ -4,7 +4,7 @@ ExFlow web for *Dynamics 365 for Operations* (D365O) runs in Azure as a fully sc
 ## PowerShell deployment script - NEW VERSION
 We have a new version of the script called [V2](https://github.com/signupsoftware/exflowwebd365o/tree/master/V2) that we recommend for new deployments. If you wish to continue using the original version of the script see [V1](https://github.com/signupsoftware/exflowwebd365o/tree/master/V1).
 
-News in this version (V2) of the script: 
+New in this version (V2) of the script: 
 * Adds extended logging to a separate file.
 * Adds support for multifactor authentication
 * Adds support to install into a subscription that is connected to another directory/Azure AD. 
@@ -72,7 +72,7 @@ If the text in the command window turns red or the script aborts something went 
 
 ## Release notes
 Compared with version 3 the following features have been removed.
-* Support for all IE versions <11 are dropped. 
+* Support for all IE versions <11 is dropped. 
 * IE11 not supported in so-called **Compatibility mode**. 
 * Coding favorites have been deprecated and will be replaced by enhanced line templates.
 * IE11 on Windows Server using default security configuration where localStorage is disabled is not supported. 
@@ -102,7 +102,7 @@ The following features are currently under development.
 ### Release 17
 No. 4.17, 2017-08-30, AX2012, D365AX, NAV (pre)
 
-**News**
+**New**
 * Adds UI improvements.
 * Improves client-side performance.
 * Improves performance when reloading settings from Dynamics.
@@ -115,7 +115,7 @@ No. 4.17, 2017-08-30, AX2012, D365AX, NAV (pre)
 ### Release 16 
 2017-05-30, AX2012, D365AX
 
-**News**
+**New**
 * Improves keyboard navigation using adding ESC to escape line editing.
 * Improves the Forward feature adding the possibility to disable the Previous option. The OK button is also disabled until approver and comment have been specified.
 * Improves filtering for adding approvers (Add Approver & Forward To)
@@ -128,7 +128,7 @@ No. 4.17, 2017-08-30, AX2012, D365AX, NAV (pre)
 ### Release 15 
 Applies to D365O (not released), AX2012 (20170428)
 
-**News**
+**New**
 * Fixes a critical bug that sometimes stopped final approval
 * Improved language files and translation support - custom labeling.
 * Automatic theme (color) change based on a number of due documents (experimental).
@@ -140,7 +140,7 @@ Applies to D365O (not released), AX2012 (20170428)
 ### Release 14 (2017-04-04)
 Applies to D365O
 
-**News**
+**New**
 
 * ARM template deployment with form ISE PowerShell
 * Bug fixes
