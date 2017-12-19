@@ -35,8 +35,6 @@ param(
 
 )
 
-
-
 Function Get-UrlStatusCode {
     Param
     (

@@ -10,8 +10,6 @@ $TenantGuid                = "" #(Optional) Tenant id when you have multiple ten
 $WebAppSubscriptionGuid    = "" #(Optional) Subscription id when you have multiple subscriptions for the web app (advanced).
 $UseApiName                = "" #(Optional) Set to "true" use the same name as the left part of $DynamicsAXApiId e.g. axtestdynamics365aos. 
 
-
-
 $Webclient                       = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true
 $Webclient.Proxy.Credentials     = $Webclient.Credentials

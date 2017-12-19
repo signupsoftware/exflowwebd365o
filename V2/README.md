@@ -39,6 +39,7 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 
 ```
 
+
 The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the D365O API (web services). **Note that to apply product updates you just run the script again.**
 
 ## AzureRM Module
@@ -59,7 +60,7 @@ Finally close and reopen the PowerShell ISE console.
 3. Press Play
 4. When prompted sign in using an Azure Subscription Contributor (or higher) account
 5. If you are prompted for credentials again use an Azure AD user i.e. ...@company.com
-6. Respond to additional prompts and wait until done
+6. Respond to additional prompts and wait until done.
 7. Open URL and grant the app permissions 
 
 If the text in the command window turns red or the script aborts something went wrong, see below section on errors.
