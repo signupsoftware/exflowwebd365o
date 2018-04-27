@@ -94,6 +94,8 @@ The following features are currently under development.
 * Fixes an issue with the search panel where suggestion lists on textboxes could get stuck after a search.
 * This release applies to Dynamics NAV, AX 2012 and 365fO.
 
+\* PREVIEWS ARE PROVIDED "AS-IS," "WITH ALL FAULTS," AND "AS AVAILABLE," AND ARE EXCLUDED FROM THE SERVICE LEVEL AGREEMENTS AND LIMITED WARRANTY. 
+
 ### Release 2017.20.0.0
 2017-12-06 for AX12, D365O, NAV
 
@@ -159,8 +161,6 @@ Applies to D365O
 
 ### Release 13 (2017-03-29)
 Applies to D365O (prerelease), AX2012
-
-\* PREVIEWS ARE PROVIDED "AS-IS," "WITH ALL FAULTS," AND "AS AVAILABLE," AND ARE EXCLUDED FROM THE SERVICE LEVEL AGREEMENTS AND LIMITED WARRANTY. 
 
 **News**
 
