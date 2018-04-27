@@ -82,6 +82,20 @@ The following features are currently under development.
 * Paging/"scroll for more" in lookups (account, items, ..) are under development. 
 * Line templates
 
+### Version 2018.4.1
+2018-04-27
+
+**News in this release**
+* Adds support for automatically generated split and coding templates. 
+   * The feature is in public preview*.
+   * Older existing templates aren't overwritten but the feature doesn't include an import. 
+* The sign-out button has been moved from search panel to avoid unintentional signouts.
+* The number of documents in each folder (Inbox, Due, ...) is displayed next to each folder.
+* Fixes an issue with the search panel where suggestion lists on textboxes could get stuck after a search.
+* This release applies to Dynamics NAV, AX 2012 and 365fO.
+
+\* PREVIEWS ARE PROVIDED "AS-IS," "WITH ALL FAULTS," AND "AS AVAILABLE," AND ARE EXCLUDED FROM THE SERVICE LEVEL AGREEMENTS AND LIMITED WARRANTY. 
+
 ### Release 2017.20.0.0
 2017-12-06 for AX12, D365O, NAV
 
