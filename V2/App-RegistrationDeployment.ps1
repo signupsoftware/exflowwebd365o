@@ -402,9 +402,10 @@ Write-Output "Deployment name: $DeploymentName"
 Try { Invoke-Logger -Message "Deployment name: $DeploymentName" -Severity I -Category "Deployment" } Catch {}
 
 If (!$DeploymentName) { Write-Warning "A deployment name could not be generated." ; return }
-
+$IsNewDeployment = $False
 If (-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) {
     $Message = "New deployment detected"
+    $IsNewDeployment = $True
     Write-Output $Message
     Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
     Write-Output ""
@@ -499,6 +500,10 @@ Else {
 }
 #endregion
 $StorageName = Get-AlphaNumName -Name $DeploymentName.replace("exflow", "") -MaxLength 24
+
+If (-not ($IsNewDeployment) -and $AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $DeploymentName -Name $StorageName -ErrorAction SilentlyContinue)) {
+   $StorageName = Get-AlphaNumName -Name $DeploymentName -MaxLength 24
+}
 #region Create/Get AzureRmStorageAccount
 $ctx = Switch-Context -UseDeployContext $True
 If ($AzureRmResourceGroup -and -not (Get-AzureRmStorageAccount -ResourceGroupName $DeploymentName -Name $StorageName -ErrorAction SilentlyContinue)) {
