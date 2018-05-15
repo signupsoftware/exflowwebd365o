@@ -590,7 +590,7 @@ If ($StorageContext) {
 
 #region Create AzureRmADApplication
 $ctx = Switch-Context -UseDeployContext $False
-If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayNameStartWith $DeploymentName -ErrorAction SilentlyContinue)) {
+If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayName $DeploymentName -ErrorAction SilentlyContinue)) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
