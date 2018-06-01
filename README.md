@@ -69,6 +69,23 @@ Finally, close and reopen the PowerShell ISE console.
 
 If the text in the command window turns red or the script aborts something went wrong, see below section on errors.
 
+We also recommend that you install [Microsoft Azure Storage Explorer](https://azure.microsoft.com/en-us/features/storage-explorer) (MASE). 
+
+MASE allows you to: 
+* Export (and import) the "keyvalue" table as a CSV file.
+* Get a shared access signature to the "diagnostics" with our log files.
+
+Another tool from Microsoft is [AzCopy](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy) that allows you to backup content from storage from the command line. 
+
+Example export table using AzCopy:
+
+```cmd
+
+AzCopy /Source:https://[STORAGE NAME].table.core.windows.net/keyvalues/ /manifest:keyvalue.manifest /Dest:C:\myfolder\ /SourceKey:[STORAGE KEY]
+
+```
+
+
 
 ## Release notes
 Compared with version 3 the following features have been removed.
