@@ -888,6 +888,11 @@ ForEach ($DllFile in $ConfigurationData.AzureSDK.Dlls) {
 }
 #endregion
 
+#Region Create SASToken
+$Key2Context = New-AzureStorageContext -StorageAccountName $StorageName $Keys[1].Value
+$SASURI = New-AzureStorageContainerSASToken -Name exflowdiagnostics -Permission rl -IPAddressOrRange "85.24.197.82" <#Signup#> -Context $Key2Context -FullUri -ExpiryTime (get-date).AddYears(1)
+#endregion
+
 $Measure.Stop()
 
 Write-Output ""
@@ -897,6 +902,8 @@ Write-Host "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox
 Try { Invoke-Logger -Message "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" -Severity I -Category "WebApplication" } Catch {}
 
 Write-Output ""
+Write-Output "Send this URL to Signup to allow read access to exflowdiagnostics container in $StorageName :"
+Write-host "$SASUri" -ForegroundColor Green
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Completed in $(($Measure.Elapsed).TotalSeconds) seconds"
 Try { Invoke-Logger -Message "Completed in $(($Measure.Elapsed).TotalSeconds) seconds" -Severity I -Category "Summary" } Catch {}
