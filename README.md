@@ -77,7 +77,8 @@ MASE allows you to:
 
 Another tool from Microsoft is [AzCopy](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy) that allows you to backup content from storage from the command line. 
 
-Example export table
+Example export table using AzCopy:
+
 ```cmd
 
 AzCopy /Source:https://[STORAGE NAME].table.core.windows.net/keyvalues/ /manifest:keyvalue.manifest /Dest:C:\myfolder\ /SourceKey:[STORAGE KEY]
