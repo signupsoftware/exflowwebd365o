@@ -75,17 +75,6 @@ MASE allows you to:
 * Export (and import) the "keyvalue" table as a CSV file.
 * Get a shared access signature to the "diagnostics" with our log files.
 
-Another tool from Microsoft is [AzCopy](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy) that allows you to backup content from storage from the command line. 
-
-Example export table using AzCopy:
-
-```cmd
-
-AzCopy /Source:https://[STORAGE NAME].table.core.windows.net/keyvalues/ /manifest:keyvalue.manifest /Dest:C:\myfolder\ /SourceKey:[STORAGE KEY]
-
-```
-
-
 
 ## Release notes
 Compared with version 3 the following features have been removed.
