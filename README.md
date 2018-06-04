@@ -75,6 +75,13 @@ MASE allows you to:
 * Export (and import) the "keyvalue" table as a CSV file.
 * Get a shared access signature to the "diagnostics" with our log files.
 
+The “keyvalue” table exists in the Azure Storage Account and contains things like user specific settings and document comments data. 
+We recommend creating a backup of this table before upgrading the application:
+•	In MASE, browse to the storage account used by the application.
+•	Expand the storage account, expand “Tables” and select the “keyvalues” table.
+•	Press “export” in the table browser and save the .csv file to a safe location.
+ 
+To import the CSV file follow the same steps but instead choose “import” and select the exported .csv file.
 
 ## Release notes
 Compared with version 3 the following features have been removed.
