@@ -77,9 +77,9 @@ MASE allows you to:
 
 The “keyvalue” table exists in the Azure Storage Account and contains things like user specific settings and document comments data. 
 We recommend creating a backup of this table before upgrading the application:
-•	In MASE, browse to the storage account used by the application.
-•	Expand the storage account, expand “Tables” and select the “keyvalues” table.
-•	Press “export” in the table browser and save the .csv file to a safe location.
+*	In MASE, browse to the storage account used by the application.
+*	Expand the storage account, expand “Tables” and select the “keyvalues” table.
+*	Press “export” in the table browser and save the .csv file to a safe location.
  
 To import the CSV file follow the same steps but instead choose “import” and select the exported .csv file.
 
