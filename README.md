@@ -186,7 +186,7 @@ Applies to D365O (prerelease), AX2012
 
 # Error handling
 
-If the text in the command window turns red or the script aborts something went wrong. 
+### If the text in the command window turns red or the script aborts something went wrong. 
 1.  Press the Stop button
 2.  Verify that you are using an account with enough rights to create an App registration. Note that you can't use an account with 2-factor authentication with PowerShell. Also, make sure that the account is part of the subscription admin group.
 3.  Make sure that you have AzureRM installed. Open PowerShell ISE with **Run as administrator** and run the following command:
@@ -194,6 +194,23 @@ If the text in the command window turns red or the script aborts something went 
 Install-Module -Name AzureRM
 ```
 4. If above step still fails you may have to need to upgrade to a later version of PowerShell. Go to https://msdn.microsoft.com/en-us/powershell/wmf/5.0/requirements.
+
+### Need admin approval
+
+In case the Azure AD setting ”Users can consent to apps accessing company data on their behalf” is set to “No” under ‘Azure Active Directory > Enterprise Applications > User Settings’, an account that is Global Administrator needs to consent the application in the tenant to allow the users to logon.
+
+To give the application Admin consent, create an URL from the below template and have an account with Global Administrator permissions in the tenant login and allow the application access.
+
+https://login.microsoftonline.com/{tenant}/adminconsent?  
+client_id={ApplicationID}  
+&state=12345  
+&redirect_uri={AppURL}
+
+After constructing the URL it should look something like this:
+
+https://login.microsoftonline.com/b518964e-f909-4b59-800f-d9950d5786c7/adminconsent?client_id=e5247d10-9fb4-4ab9-a63d-e68f361ddb37&state=12345&redirect_uri=https://signup-demo.azurewebsites.net/inbox.aspx
+
+Browse to the URL and sign in with a Global Admin account and accept the permissions requested.
 
 ## Remove
 In the Azure Portal:
