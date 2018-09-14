@@ -95,6 +95,21 @@ The following features are currently under development.
 * Paging/"scroll for more" in lookups (account, items, ..) are under development. 
 * Line templates
 
+### Release 2018.5.0
+2018-06-08
+
+**News**
+* Improves exflow.cloud settings reload possibilities.
+* Fixes an issue with app control settings for exflow.cloud.
+* Fixes an issue for D365O where exception logs weren't created.
+* Fixes an issue with template creation for invalid documents.
+* Improves Norwegian labels.
+* Improves line validation for AX.
+* Improves splitting AX project lines with negative quantities.
+* Bug fixes:
+   * Fixes a problem with Inbox folders that could become unresponsive in IE11.
+   * Fixes an issue with split templates that include lines with blank coding.
+
 ### Version 2018.4.1
 2018-04-27
 
