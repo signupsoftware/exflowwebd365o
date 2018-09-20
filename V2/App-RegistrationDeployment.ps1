@@ -1,4 +1,4 @@
-﻿#Parameters for input as arguments or parameters
+#Parameters for input as arguments or parameters
 param(
     [Parameter(Mandatory = $True)]
     [string]$Location,
@@ -643,12 +643,24 @@ If (-not($AzureRmADApplication = Get-AzureRmADApplication -DisplayName $Deployme
     }   
 }
 Else {
-    $ctx = Switch-Context -UseDeployContext $True
     Write-Output "--------------------------------------------------------------------------------"
-    Write-Output "Importing PSADCredential"
+    Write-Output "Creating PSADCredential"
     Write-Output "--------------------------------------------------------------------------------"
+
+    #$ctx = Switch-Context -UseDeployContext $True
+    $psadKeyValue = Set-AesKey
+    $securestring = $psadKeyValue | convertto-securestring -AsPlainText -Force
+    $AzureRMApplicationPassword = New-AzureRmADAppCredential -ApplicationId $AzureRmADApplication.ApplicationId -Password $securestring -EndDate ((get-date).AddYears($ConfigurationData.PSADCredential.Years))
+    
     $slot = Get-AzureRmWebAppSlot -Name $DeploymentName -Slot production -ResourceGroupName $DeploymentName 
-    $psadKeyValue = ($slot.SiteConfig.AppSettings |  Where-Object {$_.Name -eq "aad_ClientSecret"} | Select-Object Value -First 1).Value    
+    $appSettings = $slot.SiteConfig.AppSettings
+    $newAppSettings = @{}
+    ForEach ($item in $appSettings) {
+        $newAppSettings[$item.Name] = $item.Value
+    }
+    $newAppSettings.aad_ClientSecret = $psadKeyValue
+    Set-AzureRmWebApp -AppSettings $newAppSettings -name $slot.name -ResourceGroupName $slot.ResourceGroup | Out-Null
+    #$psadKeyValue = ($slot.SiteConfig.AppSettings |  Where-Object {$_.Name -eq "aad_ClientSecret"} | Select-Object Value -First 1).Value    
 }
 #endregion
 
