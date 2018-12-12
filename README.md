@@ -95,6 +95,37 @@ The following features are currently under development.
 * Paging/"scroll for more" in lookups (account, items, ..) are under development. 
 * Line templates
 
+### Release 2018.12.0
+
+* Mobile UI improvements
+  * The Web now includes full support for mobile editing and approval.
+  * Improved menu scrolling.
+  * Add and edit lines.
+  * Possibility to add replacers.
+  * Added possibility to split lines.
+* Mobile bug fixes:
+  * iOS : Approval button disappears when switching view mode (portrait/landscape).
+ 
+* Other improvements
+  * By default, we delay/skip clicks on the 'Approve all' button until the options menu has been shown, but for experienced users the click will now be allowed - speeding up the approvals.
+  * Column width of the Amount field will now auto adjust.
+  * Improved performance when selecting replacers.
+  * Added text wrapping and scroll for Description field in edit mode.
+  * Added text wrapping for Company and Vendor in search grid.
+  * Templates no longer in preview.
+  * Improved performance for drop-downs in columns.
+  
+* Notable fixes
+  * Fixes issues when entering dates.
+  * Visual chart label overlap.
+  * Fixes issue when doc was canceled but not reloaded from Dynamics.
+  * Fixes scrolling issues on iOS.
+
+* D365FO
+
+  * Improvement of intercompany for D365 Finance & Operations.
+  * Adds new fields to invoice and order information.
+
 ### Release 2018.5.0
 2018-06-08
 
