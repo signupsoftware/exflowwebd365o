@@ -95,6 +95,12 @@ The following features are currently under development.
 * Paging/"scroll for more" in lookups (account, items, ..) are under development. 
 * Line templates
 
+## Specifying what version to install when running the script.
+* To use the latest version (below) run the script with variable $PackageVersion set to blank ($PackageVersion = "").
+* To install an older version, omit any dots and Zeros (0). e.i:
+ * $PackageVersion = "201812" for 2018.12.0
+ * $PackageVersion = "201841" for 2018.4.1
+
 ### Release 2018.12.0
 
 * Mobile UI improvements
