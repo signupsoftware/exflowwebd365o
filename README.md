@@ -100,6 +100,22 @@ The following features are currently under development.
 * To install an older version, omit any dots and Zeros (0). e.i:
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
+ 
+### Release 2019.01.0
+
+* Mobile UI improvements
+  * The Approval button have been improved on iOS (iPhone).
+  * Highlights the current approver better.
+
+* Other improvements
+  * Adds coding column width adjustment.
+  * Improves how the horizontal scrollbar is displayed when viewing lines.
+
+* Notable fixes
+  * Fixes an issue where documents weren't moved from the inbox after approval.
+  * Fixes an issue with attachments if filenames attached from Dynamics that contained mixed casing.
+  * Fixes an issue with the PDF viewer when a user clicked the Next button.
+  * Fixes an issue with the Next and Prev buttons.
 
 ### Release 2018.12.0
 
