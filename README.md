@@ -101,6 +101,25 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
+### Release 2019.3.0
+
+* Improvements
+  * Adds options to remove SSO tickets after sign out.
+  * Restricted file types that can be uploaded. (.txt,.pdf,.zip,.png,.jpg,.doc,.docx,.xls,.xlsx,.csv,.xml)
+  * Added Scandinavian languages to default languages. (English,Svenska,Norsk,Soumi,Dansk)
+  * Stability and security.
+
+### Release 2019.2.0
+
+* Improvements
+  * Added support for Azure-AD Authentication (D365FO & BC).
+  * Web.Config has been revised to be more global towards different endpoints.
+  * Stability and security.
+  
+* Bug Fixes
+  * D365: Last column is gets cut off in edit.
+  * Column sizes jumps.
+ 
 ### Release 2019.01.0
 
 * Mobile UI improvements
