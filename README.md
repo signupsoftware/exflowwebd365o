@@ -101,13 +101,20 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
+### Release 2019.4.0
+* Improvements
+   * Added support to deny/disable forward unless the user is first approver on all lines to approve. 
+   * Fixed a bug where values in hidden coding columns would get deleted when validating.
+   * Fixed an issue with the forward feature when used together with user added approvers.
+   * Stability and security.
+ 
 ### Release 2019.3.0
 
 * Improvements
-  * Adds options to remove SSO tickets after sign out.
-  * Restricted file types that can be uploaded. (.txt,.pdf,.zip,.png,.jpg,.doc,.docx,.xls,.xlsx,.csv,.xml)
-  * Added Scandinavian languages to default languages. (English,Svenska,Norsk,Soumi,Dansk)
-  * Stability and security.
+   * Adds options to remove SSO tickets after sign out.
+   * Restricted file types that can be uploaded. (.txt,.pdf,.zip,.png,.jpg,.doc,.docx,.xls,.xlsx,.csv,.xml)
+   * Added Scandinavian languages to default languages. (English,Svenska,Norsk,Soumi,Dansk)
+   * Stability and security.
 
 ### Release 2019.2.0
 
