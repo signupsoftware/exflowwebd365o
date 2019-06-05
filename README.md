@@ -113,7 +113,7 @@ The following features are currently under development.
 * Improvements
    * Adds options to remove SSO tickets after sign out.
    * Restricted file types that can be uploaded. (.txt,.pdf,.zip,.png,.jpg,.doc,.docx,.xls,.xlsx,.csv,.xml)
-   * Added Scandinavian languages to default languages. (English,Svenska,Norsk,Soumi,Dansk)
+   * Added Scandinavian languages to default languages. (English,Svenska,Norsk,Suomi,Dansk)
    * Stability and security.
 
 ### Release 2019.2.0
