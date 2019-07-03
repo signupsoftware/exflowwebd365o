@@ -1,6 +1,25 @@
 # ExFlow web for D365O
 ExFlow web for *Dynamics 365 for Operations* (D365O) runs in Azure as a fully scalable *Azure App Service*. ExFlow web is deployed into the tenant’s Azure environment as a Resource Group that contains a Web Site and a Storage account. The website is further connected to the Azure AD and D365O thru a so-called App Registration and communicates with D365O using the same security technology that D365O uses namely Azure AD and OAuth 2.0.
 
+## Note: 
+### New function: Chat in ExFlow Web 2019.6.0
+For customers running D365 ExFlow version 2.2.0 and ExFlow Web 2019.6 you can now enable the chat function in ExFlow Web.
+To do so you must enable certain parameters in the Web.Config file of the webapp, steps to follow below.
+
+* Go to App Services and find your webapp > Go to Advanced tool in the WebApp Blade and click "Go ->"
+
+* Go to "Debug console" > CMD/Powershell > Go down in the folderstructure: Site > wwwroot > Edit the web.config File 
+
+* In the Editor, find "AppControlMergeFile" in the <appSettings> node and append the following string:
+    * "{Labs.Vue}=true;{Labs.Vue.XChat}=true;"
+    * It is important that the MergeFile settings are delimited by ";" be sure to add this infront of the current last setting if not already there.
+    * Example of how it should look with the default setting:
+    * "App.AX.WS.xml?{ax365api1}=true;{Lines.EditQty}=false;{UseDebugLog}=false;{FormsTestSite}=false;{CacheCodingOnUser}=true;{FileCacheEnabled}=false;{Lines.RemoveOrginal}=true;{Lines.ChangeType}=true;{ForwardTo}=true;{ForwardTo.NoPrevious}=true;{Lines.RemoveAll}=false;{Lang.All}=true;{Lines.UseLineTemplates}=true;{Lines.UseAsyncValidation}=true`;{Labs.Vue}=true;{Labs.Vue.XChat}=true;`"
+
+* Make sure to press "Save" after making changes, this will restart the site and enable the chat function.
+
+* Check out [Guide with pictures](https://github.com/signupsoftware/exflowwebd365o/tree/master/AddChatGuide)
+
 ## PowerShell deployment script - NEW VERSION
 We have a new version of the script called [V2](https://github.com/signupsoftware/exflowwebd365o/tree/master/V2) that we recommend for new deployments. If you wish to continue using the original version of the script see [V1](https://github.com/signupsoftware/exflowwebd365o/tree/master/V1).
 
@@ -100,7 +119,18 @@ The following features are currently under development.
 * To install an older version, omit any dots and Zeros (0). e.i:
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
- 
+
+### Release 2019.6.0
+
+* Improvement
+  * D365: Implemented new chat function. *Note: See top of github for instructions*
+  * NAV/BC: Automatic Endpoint Configuration detection for easier configuration. 
+
+* Bug Fixes
+  * Fixed issue where scrollbar was not visible in attachments and comments.
+  * Fixed Issue with forward approver.
+  * Fixed issue where no more than 150 lines where shown
+
 ### Release 2019.4.0
 * Improvements
    * Added support to deny/disable forward unless the user is first approver on all lines to approve. 
