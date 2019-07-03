@@ -10,7 +10,7 @@ To do so you must enable certain parameters in the Web.Config file of the webapp
     * "{Labs.Vue}=true;{Labs.Vue.XChat}=true;"
     * It is important that the MergFile settings are delimited by ";" be sure to add this infront of the current last setting if not already there.
     * Example of how it should look with the default setting:
-    * "App.AX.WS.xml?{ax365api1}=true;{Lines.EditQty}=false;{UseDebugLog}=false;{FormsTestSite}=false;{CacheCodingOnUser}=true;{FileCacheEnabled}=false;{Lines.RemoveOrginal}=true;{Lines.ChangeType}=true;{ForwardTo}=true;{ForwardTo.NoPrevious}=true;{Lines.RemoveAll}=false;{Lang.All}=true;{Lines.UseLineTemplates}=true;{Lines.UseAsyncValidation}=true<mark>;{Labs.Vue}=true;{Labs.Vue.XChat}=true;</mark>"
+    * "App.AX.WS.xml?{ax365api1}=true;{Lines.EditQty}=false;{UseDebugLog}=false;{FormsTestSite}=false;{CacheCodingOnUser}=true;{FileCacheEnabled}=false;{Lines.RemoveOrginal}=true;{Lines.ChangeType}=true;{ForwardTo}=true;{ForwardTo.NoPrevious}=true;{Lines.RemoveAll}=false;{Lang.All}=true;{Lines.UseLineTemplates}=true;{Lines.UseAsyncValidation}=true`;{Labs.Vue}=true;{Labs.Vue.XChat}=true;`
    
 ![kudu](/AddChatGuide/editwebconfigline.png)
 
