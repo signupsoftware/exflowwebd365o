@@ -1,9 +1,9 @@
-# ExFlow web for D365O
-ExFlow web for *Dynamics 365 for Operations* (D365O) runs in Azure as a fully scalable *Azure App Service*. ExFlow web is deployed into the tenant’s Azure environment as a Resource Group that contains a Web Site and a Storage account. The website is further connected to the Azure AD and D365O thru a so-called App Registration and communicates with D365O using the same security technology that D365O uses namely Azure AD and OAuth 2.0.
+# ExFlow web for Microsoft Dynamics 365 for Finance and Operations
+ExFlow web for *Microsoft Dynamics 365 for Finance and Operations* runs in Azure as a fully scalable *Azure App Service*. ExFlow web is deployed into the tenant’s Azure environment as a Resource Group that contains a Web Site and a Storage account. The website is further connected to the Azure AD and Microsoft Dynamics 365 for Finance and Operations thru a so-called App Registration and communicates with Microsoft Dynamics 365 for Finance and Operations using the same security technology that Microsoft Dynamics 365 for Finance and Operations uses namely Azure AD and OAuth 2.0.
 
 ## Note: 
 ### New function: Chat in ExFlow Web 2019.6.0
-For customers running D365 ExFlow version 2.2.0 and ExFlow Web 2019.6 you can now enable the chat function in ExFlow Web.
+For customers running Microsoft Dynamics 365 for Finance and Operations ExFlow version 2.2.0 and ExFlow Web 2019.6 you can now enable the chat function in ExFlow Web.
 To do so you must enable certain parameters in the Web.Config file of the webapp, steps to follow below.
 
 * Go to App Services and find your webapp > Go to Advanced tool in the WebApp Blade and click "Go ->"
