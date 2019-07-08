@@ -63,7 +63,7 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 
 ```
 
-The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the D365O API (web services). **Note that to apply product updates you just run the script again.**
+The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the Microsoft Dynamics 365 for Finance and Operations API (web services). **Note that to apply product updates you just run the script again.**
 
 ## AzureRM Modules
 To successfully run the script you will need an updated PowerShell version. The script also depends on the AzureRM module, 
