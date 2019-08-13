@@ -119,6 +119,15 @@ The following features are currently under development.
 * To install an older version, omit any dots and Zeros (0). e.i:
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
+ 
+ ### Release 2019.7.0
+ 
+* Improvement
+  * D365: Added Automatic detection for new chat function
+
+* Bug Fixes
+  * General Fixes for chat function
+  * General Mobile scroll issues
 
 ### Release 2019.6.0
 
