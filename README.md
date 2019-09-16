@@ -122,7 +122,7 @@ The following features are currently under development.
  
  ### Release 2019.8.0
  
- * Minor Bug Fixes for line coding validation
+ * Minor Bug Fixe for line coding validation
  
  ### Release 2019.7.0
  
