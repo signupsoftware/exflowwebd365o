@@ -120,6 +120,10 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
+ ### Release 2019.8.0
+ 
+ * Minor Bug Fixes for line coding validation
+ 
  ### Release 2019.7.0
  
 * Improvement
