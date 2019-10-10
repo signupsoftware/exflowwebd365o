@@ -120,6 +120,30 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
+ 
+ ### Release 2019.9.0.2
+ 
+ * Stability and security.
+ 
+ ### Release 2019.9.0
+ 
+ * Improvement
+    * Implemented partial fetch to speed up filtering for large coding columns.
+    * Added some language support.
+    * Automatic detection of Intercompany.
+ 
+* Bug Fixes
+   * Fixed a sortorder issue.
+   * Fixed an issue where the chat panel notification would show wrong color.
+   * Fixed a coding validation issue.
+   * Fixed a scroll issue when reopening an invoice.
+ 
+* Mobile UI improvements
+   * Added logo for Shortcut
+   * Fixed UI issue when editing ledged account
+   * Fixed overlapping icons when viewing in landscape mode.
+ 
+ 
  ### Release 2019.8.0
  
  * Minor Bug Fix for line coding validation
