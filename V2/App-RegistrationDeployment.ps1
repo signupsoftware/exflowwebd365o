@@ -650,17 +650,24 @@ Else {
     #$ctx = Switch-Context -UseDeployContext $True
     $psadKeyValue = Set-AesKey
     $securestring = $psadKeyValue | convertto-securestring -AsPlainText -Force
-    $AzureRMApplicationPassword = New-AzureRmADAppCredential -ApplicationId $AzureRmADApplication.ApplicationId -Password $securestring -EndDate ((get-date).AddYears($ConfigurationData.PSADCredential.Years))
-    
-    $slot = Get-AzureRmWebAppSlot -Name $DeploymentName -Slot production -ResourceGroupName $DeploymentName 
-    $appSettings = $slot.SiteConfig.AppSettings
-    $newAppSettings = @{}
-    ForEach ($item in $appSettings) {
-        $newAppSettings[$item.Name] = $item.Value
+    Try {
+        $AzureRMApplicationPassword = New-AzureRmADAppCredential -ApplicationId $AzureRmADApplication.ApplicationId -Password $securestring -EndDate ((get-date).AddYears($ConfigurationData.PSADCredential.Years)) -ErrorAction Stop
+        if ($AzureRMApplicationPassword) {
+            $slot = Get-AzureRmWebAppSlot -Name $DeploymentName -Slot production -ResourceGroupName $DeploymentName 
+            $appSettings = $slot.SiteConfig.AppSettings
+            $newAppSettings = @{}
+            ForEach ($item in $appSettings) {
+                $newAppSettings[$item.Name] = $item.Value
+            }
+            $newAppSettings.aad_ClientSecret = $psadKeyValue
+            Set-AzureRmWebApp -AppSettings $newAppSettings -name $slot.name -ResourceGroupName $slot.ResourceGroup | Out-Null
+        }
+    } catch {
+        Write-Warning ("Error occurred when creating new credentials for Application with AppId: " + $AzureRmADApplication.ApplicationId)
+        Write-warning ("Error: " + $Error[0].Exception)
+        $slot = Get-AzureRmWebAppSlot -Name $DeploymentName -Slot production -ResourceGroupName $DeploymentName
+        $psadKeyValue = ($slot.SiteConfig.AppSettings |  Where-Object {$_.Name -eq "aad_ClientSecret"} | Select-Object Value -First 1).Value
     }
-    $newAppSettings.aad_ClientSecret = $psadKeyValue
-    Set-AzureRmWebApp -AppSettings $newAppSettings -name $slot.name -ResourceGroupName $slot.ResourceGroup | Out-Null
-    #$psadKeyValue = ($slot.SiteConfig.AppSettings |  Where-Object {$_.Name -eq "aad_ClientSecret"} | Select-Object Value -First 1).Value    
 }
 #endregion
 
@@ -701,10 +708,10 @@ Else {
     Try { Invoke-Logger -Message $AzureRmADServicePrincipal -Severity I -Category "AzureRmADServicePrincipal" } Catch {}
 }
 #endregion
-
+<#
 #region Create AzureRmRoleAssignment
 $ctx = Switch-Context -UseDeployContext $False
-If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction SilentlyContinue)) {
+If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ResourceGroupName $DeploymentName -ErrorAction SilentlyContinue)) {
 
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmRoleAssignment"
@@ -714,7 +721,7 @@ If ($AzureRmADApplication -and -not($AzureRmRoleAssignment = Get-AzureRmRoleAssi
     While ((-not($AzureRmRoleAssignment)) -and ($X -lt 15)) {
         $AzureRmRoleAssignment = $null
         Try {
-            $AzureRmRoleAssignment = New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ErrorAction Stop
+            $AzureRmRoleAssignment = New-AzureRmRoleAssignment -RoleDefinitionName Reader -ServicePrincipalName $AzureRmADApplication.ApplicationId -ResourceGroupName $DeploymentName -ErrorAction Stop
             Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
         }
         Catch {
@@ -730,7 +737,7 @@ Else {
     Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
 }
 #endregion
-
+#>
 #region Deploy Azure Resource Manager Template
 $ctx = Switch-Context -UseDeployContext $True
 Write-Output ""
@@ -843,7 +850,6 @@ $authorizationHeader = @{
 }
 
 $restUri = "https://$($ConfigurationData.GraphAPI.URL)/$($TenantName)/applications/$($AzureRmADApplication.ObjectId)?api-version=$($ConfigurationData.GraphAPI.Version)"
-
 $restResourceAccess = Invoke-RestMethod -Uri $restUri -Headers $authorizationHeader -Method GET | Select-Object -ExpandProperty requiredResourceAccess
 
 Try { Invoke-Logger -Message "GET: $restUri" -Severity I -Category "Graph" } Catch {}
