@@ -120,7 +120,7 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
-  ### Release 2019.9.0.2
+  ### Release 2019.10
   * Mobile
       * Fixed gray area issue when going from landscape to portrait.
    * Improvements
