@@ -125,6 +125,10 @@ The following features are currently under development.
   * Improvements
       * Fixed issue with chat notification.
       * Extended tooltip to show the original approver.
+   ### Release 2019.11
+   * Adds support for exflow-cloud as the recommended option for FO.
+   * Improves inter-company features for FO.
+   * Bug fixes
 
   ### Release 2019.10
   * Mobile
