@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "WebAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of ExFlow Webapp to update"
+      },
+      "minLength": 1
+    },
+    "PackageUri": {
+      "type": "string",
+      "defaultValue": "",
+      "minLength": 1,
+      "metadata": {
+        "description": "The application package URI to be deployed to the WebApp."
+      }
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('WebAppName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "name": "[parameters('WebAppName')]"
+      },
+      "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "apiVersion": "2018-02-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', parameters('WebAppName'))]"
+          ],
+          "properties": {
+            "packageUri": "[parameters('PackageUri')]",
+            "dbType": "None",
+            "connectionString": ""
+          }
+        }
+      ]
+    }
+  ]
+}
