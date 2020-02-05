@@ -1,24 +1,11 @@
+# Required update to version 2020.1.0.0
+Important notice, in the next couple of days Google will ship version 80 of Chrome. Version 80 contains breaking changes to the cookie handling in Chrome. You can read more about it here, https://docs.microsoft.com/en-us/office365/troubleshoot/miscellaneous/chrome-behavior-affects-applications. THIS MEANS THAT SELF-HOSTED EXFLOW WEB APPLICATIONS NEEDS TO BE UPDATED. Customers running in exflow.cloud (SaaS) will be patched automatically and don't have to do anything. Also, note that it is only required to update the ExFlow web part i.e. you don't have to upgrade ExFlow in Dynamics. This notice applies to all versions of ExFlow web lower than 2020.1.0.0.
+
+If you need assistance with the upgrade please contact us on signupsoftware.com/support. 
+___
+
 # ExFlow web for Microsoft Dynamics 365 for Finance and Operations
 ExFlow web for *Microsoft Dynamics 365 for Finance and Operations* runs in Azure as a fully scalable *Azure App Service*. ExFlow web is deployed into the tenant’s Azure environment as a Resource Group that contains a Web Site and a Storage account. The website is further connected to the Azure AD and Microsoft Dynamics 365 for Finance and Operations thru a so-called App Registration and communicates with Microsoft Dynamics 365 for Finance and Operations using the same security technology that Microsoft Dynamics 365 for Finance and Operations uses namely Azure AD and OAuth 2.0.
-
-## Note: 
-### New function: Chat in ExFlow Web 2019.6.0
-For customers running Microsoft Dynamics 365 for Finance and Operations ExFlow version 2.2.0 and ExFlow Web 2019.6 you can now enable the chat function in ExFlow Web.
-To do so you must enable certain parameters in the Web.Config file of the webapp, steps to follow below.
-
-* Go to App Services and find your webapp > Go to Advanced tool in the WebApp Blade and click "Go ->"
-
-* Go to "Debug console" > CMD/Powershell > Go down in the folderstructure: Site > wwwroot > Edit the web.config File 
-
-* In the Editor, find "AppControlMergeFile" in the <appSettings> node and append the following string:
-    * "{Labs.Vue}=true;{Labs.Vue.XChat}=true;"
-    * It is important that the MergeFile settings are delimited by ";" be sure to add this infront of the current last setting if not already there.
-    * Example of how it should look with the default setting:
-    * "App.AX.WS.xml?{ax365api1}=true;{Lines.EditQty}=false;{UseDebugLog}=false;{FormsTestSite}=false;{CacheCodingOnUser}=true;{FileCacheEnabled}=false;{Lines.RemoveOrginal}=true;{Lines.ChangeType}=true;{ForwardTo}=true;{ForwardTo.NoPrevious}=true;{Lines.RemoveAll}=false;{Lang.All}=true;{Lines.UseLineTemplates}=true;{Lines.UseAsyncValidation}=true`;{Labs.Vue}=true;{Labs.Vue.XChat}=true;`"
-
-* Make sure to press "Save" after making changes, this will restart the site and enable the chat function.
-
-* Check out [Guide with pictures](https://github.com/signupsoftware/exflowwebd365o/tree/master/AddChatGuide)
 
 ## PowerShell deployment script - NEW VERSION
 We have a new version of the script called [V2](https://github.com/signupsoftware/exflowwebd365o/tree/master/V2) that we recommend for new deployments. If you wish to continue using the original version of the script see [V1](https://github.com/signupsoftware/exflowwebd365o/tree/master/V1).
@@ -120,6 +107,20 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
+### Release 2020.1
+
+**This release supports the Chrome 80 change to SameSite cookie behavior.**
+
+Included in the January release there are several updates we hope will be appreciated, here are some of the highlights.
+* Adds support for more columns in the search and inbox.
+* Inbox now shows if a document is read/unread, overdue or if you are mentioned in chat.
+*  For users that primarily review the approval list it's now possible to have the list expanded automatically.
+* The system will now remember the zoom level of the PDF image.
+* Also new for this release is that you now can choose between four coding views.
+* To speed up the accounting process, the suggestions list will now open right when you click in the field.
+
+Please also check out the Quick tips.
+
 
   ### Release 2019.12
   * Improvements
