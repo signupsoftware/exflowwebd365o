@@ -11,7 +11,6 @@
     },
     "PackageUri": {
       "type": "string",
-      "defaultValue": "",
       "minLength": 1,
       "metadata": {
         "description": "The application package URI to be deployed to the WebApp."
