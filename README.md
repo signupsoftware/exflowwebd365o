@@ -121,9 +121,6 @@ Included in the January release there are several updates we hope will be apprec
 
 Please also check out the Quick tips.
 
-
-
-  ### Release 2020.01
    * Improvements
       * Shows all columns in search view 
       * Adds option to display more columns in the inbox 
