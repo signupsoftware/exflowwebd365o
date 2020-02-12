@@ -122,8 +122,8 @@ Included in the January release there are several updates we hope will be apprec
 Please also check out the Quick tips.
 
    * Improvements
-      * Shows all columns in search view 
-      * Adds option to display more columns in the inbox 
+      * Shows all columns in search view. 
+      * Adds option to display more columns in the inbox. 
       * Adds support to trigger search when pressing Enter key. 
       *	Closes attachment and comments panels when user navigates to a new document. 
       * System now automatically expands selection lists on search and document. 
