@@ -122,6 +122,29 @@ Included in the January release there are several updates we hope will be apprec
 Please also check out the Quick tips.
 
 
+
+  ### Release 2020.01
+   * Improvements
+      * Shows all columns in search view 
+      * Adds option to display more columns in the inbox 
+      * Adds support to trigger search when pressing Enter key. 
+      *	Closes attachment and comments panels when user navigates to a new document. 
+      * System now automatically expands selection lists on search and document. 
+      * Adds option to always expand approvers on lines. (Toggle lock option on lines) 
+      * System will remember options for PDF zoom level (if less than 100%). 
+      * Adjust dashboard based on number of columns displayed in inbox grid. 
+      * Improves the display of line coding by adding views: 
+          * View 1 - (default) show only columns with values and scroll on overflow. 
+          * View 2 - As above but wraps on overflow. 
+          * View 3 - Show all columns and wrap on overflow. 
+          *	View 4 - Show all columns, no wrap, hides desc for a compact display.  
+      *	Highlights new documents in inbox. (D365FO) 
+      *	Highlights due date in red when due date has passed. (D365FO) 
+      *	Highlight document in inbox if user has been mentioned in chat.(D365FO) 
+      * Adds support for grouping multiple coding columns into one. (D365FO) 
+      * Adds support for tags (Document Type) in the inbox and search. (D365FO) 
+      * General bugfixes
+
   ### Release 2019.12
   * Improvements
       * Fixed issue with chat notification.
