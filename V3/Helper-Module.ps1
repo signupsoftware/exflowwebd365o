@@ -121,14 +121,14 @@ Function Set-DeploymentName
         $DeploymentName = ($ConfigurationData.Prefix).Substring(0,24)
     }
 
-    If (-not(Get-AzureRmResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue) -and `
-       (-not(Test-AzureRmDnsAvailability -DomainNameLabel $DeploymentName -Location $Location)))
+    If (-not(Get-AzResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue) -and `
+       (-not(Test-AzDnsAvailability -DomainNameLabel $DeploymentName -Location $Location)))
     {
         For ($x=1; $x -le 9; $x++)
         {
-            If (Test-AzureRmDnsAvailability -DomainNameLabel "$($ConfigurationData.Prefix)$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,17))$($x)" -Location $Location)
+            If (Test-AzDnsAvailability -DomainNameLabel "$($ConfigurationData.Prefix)$(((Get-AzTenant).TenantId).Replace('-','').Substring(0,17))$($x)" -Location $Location)
             {
-                $DeploymentName = "$($ConfigurationData.Prefix)$(((Get-AzureRmTenant).TenantId).Replace('-','').Substring(0,17))$($x)"
+                $DeploymentName = "$($ConfigurationData.Prefix)$(((Get-AzTenant).TenantId).Replace('-','').Substring(0,17))$($x)"
                 break
             }
         }
