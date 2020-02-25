@@ -103,7 +103,7 @@ $DynamicsAXApiSubdomain = $DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf
 if (-not($MachineSize)) { $MachineSize = "B1" }
 if ($Prefix) { $Prefix = $Prefix.ToLower() }
 If (-not($PackageVersion)) {$PackageVersion = "latest"}
-If (-not($ConfigurationData.RedistPath)) { $ConfigurationData.RedistPath = $RepoURL }
+#If (-not($ConfigurationData.RedistPath)) { $ConfigurationData.RedistPath = $RepoURL }
 
 #Setup log file
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
@@ -132,6 +132,7 @@ Write-Output "Checking PowerShell version and modules"
 Write-Output "--------------------------------------------------------------------------------"
 
 #Call function to verify installed modules and versions against configuration data file
+<#
 $hasErrors = Get-RequiredModules -Modules $ConfigurationData.Modules
 
 #Verify installed PowerShell version against the configuration data file
@@ -147,7 +148,7 @@ Else {
     Try { Invoke-Logger -Message $Message -Severity I -Category "PowerShell" } Catch {}
     Write-Host ""
 }
-
+#>
 If ($hasErrors) {
     Write-Host ""
     Write-Warning "See SignUp's GitHub for more info and help."
