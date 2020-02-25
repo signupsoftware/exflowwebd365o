@@ -177,8 +177,8 @@ If ($ExFlowUserSecret) {
     $packageSAS = "package.zip?" + $packgeUrlAr[1]
     $packageFolder = $packgeUrlAr[0].replace("/package.zip", "")
 
-    $StatusCodeWebApplication = Get-UrlStatusCode -Url  $packageURL
-    If ($StatusCodeWebApplication -ne 200) { $Message = "Web package application file location could not be verified" ; Write-Warning $Message ; $PackageValidation = $False ; Try { Invoke-Logger -Message "Url: $packageURL : $StatusCodeWebApplication" -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
+    #$StatusCodeWebApplication = Get-UrlStatusCode -Url  $packageURL
+    #If ($StatusCodeWebApplication -ne 200) { $Message = "Web package application file location could not be verified" ; Write-Warning $Message ; $PackageValidation = $False ; Try { Invoke-Logger -Message "Url: $packageURL : $StatusCodeWebApplication" -Severity W -Category "AzureRmResourceGroupDeployment" } Catch {}}
     
 }
 else {
