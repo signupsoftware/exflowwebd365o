@@ -186,6 +186,48 @@ else {
 }
 If (!$PackageValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
+#region Set deployment name for resources based on DynamicsAXApiId name
+#$ctx = Switch-Context -UseDeployContext $True
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "Determining deployment name and availability"
+Write-Output "--------------------------------------------------------------------------------"
+If ($UseApiName -eq "true") {
+    $DeploymentName = $Prefix + $DynamicsAXApiSubdomain
+}
+Else {
+    $DeploymentName = Set-DeploymentName -String $DynamicsAXApiId -Prefix $Prefix 
+}
+Write-Output "Deployment name: $DeploymentName"
+
+Try { Invoke-Logger -Message "Deployment name: $DeploymentName" -Severity I -Category "Deployment" } Catch {}
+
+If (!$DeploymentName) { Write-Warning "A deployment name could not be generated." ; return }
+$IsNewDeployment = $False
+If (-not(Get-AzResourceGroup -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) {
+    $Message = "New deployment detected"
+    $IsNewDeployment = $True
+    Write-Output $Message
+    Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
+    Write-Output ""
+    If (-not(Test-AzDnsAvailability -DomainNameLabel $DeploymentName -Location $Location)) {
+        $Message = "A unique Az DNS name could not be automatically determined"
+        Write-Warning $Message
+        Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
+    }
+    If (Resolve-DnsName -Name "$($DeploymentName).$($ConfigurationData.AzureRmDomain)" -ErrorAction SilentlyContinue) {
+        $Message = "A unique DNS name could not be automatically determined"
+        Write-Warning $Message
+        Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
+    }
+}
+Else {
+    $Message = "Existing deployment detected"
+    Write-Output $Message
+    Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
+    Write-Output ""
+}
+#endregion
+
 #endregion 
 <#
 #Import used AzureRM modules to memory
@@ -218,7 +260,7 @@ Function Switch-Context() {
  
 #region Log in to Azure Automation
 Write-Output "--------------------------------------------------------------------------------"
-Write-Output "Logging in to azure automation"
+Write-Output "Logging in to azure"
 Write-Output "--------------------------------------------------------------------------------"
 $AzureRmLogon = @{Account = $null}
 $AzureRmLogonSelectedSubscriptionId = $WebAppSubscriptionGuid
