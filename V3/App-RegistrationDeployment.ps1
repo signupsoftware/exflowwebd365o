@@ -148,14 +148,15 @@ Else {
     Try { Invoke-Logger -Message $Message -Severity I -Category "PowerShell" } Catch {}
     Write-Host ""
 }
-#>
+
+
 If ($hasErrors) {
     Write-Host ""
     Write-Warning "See SignUp's GitHub for more info and help."
     break
 }
 #endregion
-
+#>
 #region Download the zip-file
 $PackageValidation = $True
 
