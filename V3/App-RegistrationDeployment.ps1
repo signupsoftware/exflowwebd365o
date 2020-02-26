@@ -238,7 +238,7 @@ $TemplateParameters = @{
     #KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
 }
 
-New-AzResourceGroupDeployment
+New-AzResourceGroupDeployment @TemplateParameters -Verbose
 
 $Measure.Stop()
 
