@@ -178,7 +178,7 @@ Try { Invoke-Logger -Message "Deployment name: $DeploymentName" -Severity I -Cat
 
 If (!$DeploymentName) { Write-Warning "A deployment name could not be generated." ; return }
 $IsNewDeployment = $False
-If (-not($WebApp = Get-AzWebApp -Name $DeploymentName -Location $Location -ErrorAction SilentlyContinue)) {
+If (-not($WebApp = Get-AzWebApp -Name $DeploymentName -ErrorAction SilentlyContinue)) {
     $Message = "New deployment detected"
     $IsNewDeployment = $True
     Write-Output $Message
@@ -232,8 +232,8 @@ $TemplateParameters = @{
     #aad_ClientId                  = $AzureRmADApplication.ApplicationId
     #aad_ClientSecret              = $psadKeyValue
     #aad_TenantId                  = $aad_TenantId
-    aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
-    aad_ExternalApiId             = "https://$($DynamicsAXApiId)"
+    #aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
+    #aad_ExternalApiId             = "https://$($DynamicsAXApiId)"
     #StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
     #KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
 }

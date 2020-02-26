@@ -5,7 +5,7 @@
     PowerShellVersion               = "5.0.0"
                                     
     RedistPath                      = ""
-    PackageURL                      = "https://exflowpackagemanager.azurewebsites.net"
+    PackageURL                      = "https://exflowpackagemanagerpatch.azurewebsites.net/"
     LocalPath                       = $env:TEMP
 
     LogFile                         = "App-RegistrationDeployment.log"
