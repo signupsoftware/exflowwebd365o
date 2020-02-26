@@ -140,7 +140,7 @@ If ($ExFlowUserSecret) {
     Write-Output "Checking package"
     Write-Output "--------------------------------------------------------------------------------"
 
-    $packageURL = (New-Object System.Net.Webclient).DownloadString("$($ConfigurationData.PackageURL)/packages?s=" + $ExFlowUserSecret + "&v=" + $PackageVersion)
+    $packageURL = (New-Object System.Net.Webclient).DownloadString("$($ConfigurationData.PackageURL)/Packages?s=" + $ExFlowUserSecret + "&v=" + $PackageVersion)
 
     Write-Output "Package URL: " 
     Write-Output $packageURL
@@ -209,12 +209,37 @@ Else {
     Write-Output ""
 }
 #endregion 
-
+If (-not($ResourceGroup)) {$ResourceGroup = $DeploymentName}
+If (-not($AppServicePlan)) {$AppServicePlan = $DeploymentName}
 If(!($IsNewDeployment)) {
     If ($WebApp.ResourceGroup -ne $ResourceGroup) {
         Write-Warning "Resource group of existing webapp: $($WebApp.ResourceGroup) does not match with resourcegroup specified in parameters"
     }
+    If (($WebApp.ServerFarmId -replace '(?s)^.*\/', '') -ne $AppServicePlan) {
+        Write-Warning "App Service Plan of existing webapp: $($WebApp.ServerFarmId -replace '(?s)^.*\/', '') does not match with App Service Plan specified in parameters"
+    }
 }
+
+$TemplateParameters = @{
+    Name                          = $DeploymentName
+    skuName                       = $MachineSize
+    ResourceGroupName             = $ResourceGroup
+    TemplateFile                  = "$($RepoURL)WebSite.json"
+    webApplicationPackageFolder   = $packageFolder
+    WebApplicationPackageFileName = $packageSAS
+    WebSiteName                   = $DeploymentName
+    StorageAccountName            = $StorageName
+    hostingPlanName               = $DeploymentName
+    aad_ClientId                  = $AzureRmADApplication.ApplicationId
+    aad_ClientSecret              = $psadKeyValue
+    aad_TenantId                  = $aad_TenantId
+    aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
+    aad_ExternalApiId             = "https://$($DynamicsAXApiId)"
+    StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
+    KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
+}
+
+New-AzResourceGroupDeployment
 
 $Measure.Stop()
 
