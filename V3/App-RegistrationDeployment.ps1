@@ -221,7 +221,7 @@ If(!($IsNewDeployment)) {
 }
 
 $TemplateParameters = @{
-    Name                          = $DeploymentName
+    DeploymentName                = $DeploymentName
     skuName                       = $MachineSize
     ResourceGroupName             = $ResourceGroup
     #TemplateFile                  = "$($RepoURL)WebSite.json"
@@ -238,7 +238,7 @@ $TemplateParameters = @{
     #KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
 }
 "$($RepoURL)WebSite.json"
-New-AzResourceGroupDeployment -TemplateParameterObject $TemplateParameters -TemplateUri "$($RepoURL)WebSite.json" -Verbose
+New-AzResourceGroupDeployment -TemplateParameterObject $TemplateParameters -TemplateUri "$($RepoURL)WebSite.json" -Name $DeploymentName -Verbose
 
 $Measure.Stop()
 
