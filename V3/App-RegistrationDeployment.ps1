@@ -225,18 +225,17 @@ $TemplateParameters = @{
     skuName                       = $MachineSize
     ResourceGroupName             = $ResourceGroup
     TemplateFile                  = "$($RepoURL)WebSite.json"
-    webApplicationPackageFolder   = $packageFolder
-    WebApplicationPackageFileName = $packageSAS
+    PackageUri                    = $packageURL
     WebSiteName                   = $DeploymentName
     StorageAccountName            = $StorageName
     hostingPlanName               = $DeploymentName
-    aad_ClientId                  = $AzureRmADApplication.ApplicationId
-    aad_ClientSecret              = $psadKeyValue
-    aad_TenantId                  = $aad_TenantId
+    #aad_ClientId                  = $AzureRmADApplication.ApplicationId
+    #aad_ClientSecret              = $psadKeyValue
+    #aad_TenantId                  = $aad_TenantId
     aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
     aad_ExternalApiId             = "https://$($DynamicsAXApiId)"
-    StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
-    KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
+    #StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
+    #KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
 }
 
 New-AzResourceGroupDeployment
