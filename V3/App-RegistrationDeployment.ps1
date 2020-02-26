@@ -215,7 +215,7 @@ If (-not(Get-AzResourceGroup -Name $DeploymentName -Location $Location -ErrorAct
         Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
     }
     try {
-        ([System.Net.Dns]::GetHostEntry("$($DeploymentName).$($ConfigurationData.AzureRmDomain)")) | out-null
+        ([System.Net.Dns]::GetHostEntry("$($DeploymentName).$($ConfigurationData.AzureRmDomain)")) #| out-null
     } catch {
         $Message = "A unique DNS name could not be automatically determined"
         Write-Warning $Message
