@@ -214,11 +214,18 @@ If (-not(Get-AzResourceGroup -Name $DeploymentName -Location $Location -ErrorAct
         Write-Warning $Message
         Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
     }
-    If (Resolve-DnsName -Name "$($DeploymentName).$($ConfigurationData.AzureRmDomain)" -ErrorAction SilentlyContinue) {
+    try {
+        ([System.Net.Dns]::GetHostEntry("$($DeploymentName).$($ConfigurationData.AzureRmDomain)")) | out-null
+    } catch {
         $Message = "A unique DNS name could not be automatically determined"
         Write-Warning $Message
         Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
     }
+    <#If ([System.Net.Dns]::GetHostEntry("$($DeploymentName).$($ConfigurationData.AzureRmDomain)")) {
+        $Message = "A unique DNS name could not be automatically determined"
+        Write-Warning $Message
+        Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
+    }#>
 }
 Else {
     $Message = "Existing deployment detected"
@@ -228,33 +235,11 @@ Else {
 }
 #endregion
 
-Write-Output "--------------------------------------------------------------------------------"
-Write-Output "Validating AzureRmRoleAssignment"
-Write-Output "--------------------------------------------------------------------------------"
-
-#Get AzureRmRoleAssignment for currently logged on user
-$AzureRmRoleAssignment = ($RoleAssignment).RoleDefinitionName
-
-$AzureRmRoleAssignment
-
-Try { Invoke-Logger -Message $AzureRmRoleAssignment -Severity I -Category "AzureRmRoleAssignment" } Catch {}
-
-Write-Output "-"
-
-Write-Output $AzureRmRoleAssignment
-
-#Determine that the currently logged on user has appropriate permissions to run the script in their Azure subscription
-If (-not ($AzureRmRoleAssignment -contains "Owner") -and -not ($AzureRmRoleAssignment -contains "Contributor")) {
-    Write-Host ""
-    Write-Warning "Owner or contributor permissions could not be verified for your subscription."
-    Write-Host ""
-    Write-Warning "See SignUp's GitHub for more info and help."
-
-    Try { Invoke-Logger -Message "Owner or contributor permissions could not be verified for your subscription" -Severity W -Category "AzureRmRoleAssignment" } Catch {}
-
-    #return
+try {
+    ([System.Net.Dns]::GetHostEntry("signup05c2d7b8821fb.azurewebsites.net")) | out-null
+} catch {
+    "dns name NOT found"
 }
-#endregion
 
 #endregion 
 <#
