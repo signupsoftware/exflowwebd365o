@@ -221,7 +221,7 @@ If(!($IsNewDeployment)) {
 }
 
 $TemplateParameters = @{
-    DeploymentName                = $DeploymentName
+    Deployment                = $DeploymentName
     skuName                       = $MachineSize
     ResourceGroupName             = $ResourceGroup
     #TemplateFile                  = "$($RepoURL)WebSite.json"
