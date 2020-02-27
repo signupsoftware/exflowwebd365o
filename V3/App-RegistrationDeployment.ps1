@@ -222,13 +222,13 @@ If(!($IsNewDeployment)) {
 
 $TemplateParameters = @{
     Deployment                = $DeploymentName
-    skuName                       = $MachineSize
+    AppServicePlanSKU             = $MachineSize
     #ResourceGroupName             = $ResourceGroup
     #TemplateFile                  = "$($RepoURL)WebSite.json"
     PackageUri                    = $packageURL
-    WebSiteName                   = $DeploymentName
+    #WebSiteName                   = $DeploymentName
     #StorageAccountName            = $StorageName
-    hostingPlanName               = $DeploymentName
+    AppServicePlanName             = $AppServicePlan
     #aad_ClientId                  = $AzureRmADApplication.ApplicationId
     #aad_ClientSecret              = $psadKeyValue
     #aad_TenantId                  = $aad_TenantId
