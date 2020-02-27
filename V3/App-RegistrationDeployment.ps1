@@ -106,7 +106,7 @@ Else {
 $DynamicsAXApiId = $DynamicsAXApiId.ToLower().Replace("https://", "").Replace("http://", "")
 $DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("dynamics.com") + "dynamics.com".Length) #remove all after dynamics.com
 $DynamicsAXApiSubdomain = $DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf("."))
-if (-not($MachineSize)) { $MachineSize = "B1" }
+if (-not($MachineSize)) { $MachineSize = "B1 Basic" }
 if ($Prefix) { $Prefix = $Prefix.ToLower() }
 If (-not($PackageVersion)) {$PackageVersion = "latest"}
 #If (-not($ConfigurationData.RedistPath)) { $ConfigurationData.RedistPath = $RepoURL }
@@ -233,7 +233,7 @@ $TemplateParameters = @{
     #aad_ClientSecret              = $psadKeyValue
     #aad_TenantId                  = $aad_TenantId
     #aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
-    #aad_ExternalApiId             = "https://$($DynamicsAXApiId)"
+    Dynamics365Uri             = "https://$($DynamicsAXApiId)"
     #StorageConnection             = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
     #KeyValueStorageConnection     = "DefaultEndpointsProtocol=https;AccountName=$($StorageName);AccountKey=$($Keys[0].Value);"
 }
