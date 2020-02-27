@@ -70,11 +70,9 @@
     }
   },
   "variables": {
-    "randomstring": "[concat(parameters('ApplicationName'), uniqueString(resourceGroup().id))]",
+    "randomstring": "[parameters('ApplicationName')]",
     "uniqueString": "[take(variables('randomstring'),24)]",
     "storageAccount": "[replace(variables('uniqueString'), '-', '')]",
-    "uniqueStringRsg": "[concat('d365', uniqueString(subscription().subscriptionId, resourceGroup().id))]",
-    "dynamicsAxUri": "[concat('https://', subscription().subscriptionId,'.azurewebsites.net')]",
     "AppServicePlanName": "[if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName'))]",
     "AppServicePlanSKU": {
       "F1 Free": {
