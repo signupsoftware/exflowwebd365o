@@ -2,7 +2,7 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "Deployment": {
+    "ApplicationName": {
       "type": "string",
       "metadata": {
         "description": "The name of the customer to deploy."
@@ -70,7 +70,7 @@
     }
   },
   "variables": {
-    "randomstring": "[concat(parameters('Deployment'), uniqueString(resourceGroup().id))]",
+    "randomstring": "[concat(parameters('ApplicationName'), uniqueString(resourceGroup().id))]",
     "uniqueString": "[take(variables('randomstring'),24)]",
     "storageAccount": "[replace(variables('uniqueString'), '-', '')]",
     "uniqueStringRsg": "[concat('d365', uniqueString(subscription().subscriptionId, resourceGroup().id))]",
