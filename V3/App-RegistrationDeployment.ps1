@@ -60,6 +60,22 @@ Function Get-UrlStatusCode {
     return $StatusCode
 }
 
+function Show-Menu
+{
+     param (
+           [string]$Title = 'Advanced Menu'
+     )
+     #cls
+     Write-Host "================ $Title ================"
+    
+     Write-Host "1 : Select Resource Group Name"
+     Write-Host "2 : Select App Service Plan Name"
+     Write-Host "3 : I'm feeling lucky; specify your own deployment name"
+     Write-Host "Q : Press 'Q' to quit."
+     Write-Host "9 : Overwrite deployment; Reruns the template deployment as if new installation : Press '9' for this option."
+}
+
+
 Clear-Host
 
 #We client download options
@@ -161,16 +177,46 @@ else {
 }
 If (!$PackageValidation) { Write-Host "" ; Write-Warning "See SignUp's GitHub for more info and help." ; return }
 
+do
+{
+     Show-Menu
+     $input = Read-Host "Please make a selection"
+     if ($input -eq "q") {
+        Write-host "You have made the following selections: "
+        "Resource Group: $resourceGroup"
+        "App Service Plan: $AppServicePlan"
+        "DeploymentName: $DeploymentName"
+     }
+     switch ($input)
+     {
+           '1' {
+                #cls
+                $ResourceGroup = Read-Host "Enter Resource Group Name"
+           } '2' {
+                #cls
+                $AppServicePlan = Read-Host "Enter App Service Plan Name"
+           } '3' {
+                #cls
+                $DeploymentName = Read-Host "Enter Deployment Name"
+           } 'q' {
+                break
+           }
+     }
+     #pause
+}
+until ($input -eq 'q')
 #region Set deployment name for resources based on DynamicsAXApiId name
 #$ctx = Switch-Context -UseDeployContext $True
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Determining deployment name and availability"
 Write-Output "--------------------------------------------------------------------------------"
-If ($UseApiName -eq "true") {
-    $DeploymentName = $Prefix + $DynamicsAXApiSubdomain
-}
-Else {
-    $DeploymentName = Set-DeploymentName -String $DynamicsAXApiId -Prefix $Prefix 
+If (!$DeploymentName) {
+    If ($UseApiName -eq "true") {
+        $DeploymentName = $Prefix + $DynamicsAXApiSubdomain
+    }
+    Else {
+        $DeploymentName = Set-DeploymentName -String $DynamicsAXApiId -Prefix $Prefix 
+    }
 }
 Write-Output "Deployment name: $DeploymentName"
 
