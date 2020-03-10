@@ -517,6 +517,7 @@ If(-not($AzAadApp = Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction
     }
 }
 If ($AzAadApp) {
+    $AzAadApp
 $AzAadApp = $AzAadApp | ConvertFrom-Json
     write-output $azAadApp | select displayName, ObjectId, identifierUris, homepage, appId, availableToOtherTenants, appPermissions, replyUrls, objectType
     Write-output ""
