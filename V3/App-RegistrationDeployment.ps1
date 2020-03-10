@@ -533,7 +533,7 @@ $AzAadApp = $AzAadApp | ConvertFrom-Json
         aad_ClientId                  = $AzAadApp.appId
         aad_ClientSecret              = $psadKeyValue
         aad_TenantId                  = $TenantGuid
-        aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
+        #aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
         Dynamics365Uri             = "https://$($DynamicsAXApiId)"
     }
 
