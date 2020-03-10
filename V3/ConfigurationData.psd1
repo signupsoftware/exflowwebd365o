@@ -1,8 +1,9 @@
-﻿@{
+@{
 
     Prefix                          = "exflow"
     AzureRmDomain                   = "azurewebsites.net"
     PowerShellVersion               = "5.0.0"
+    AzCli                           = "2.0.80"
                                     
     RedistPath                      = ""
     PackageURL                      = "https://exflowpackagemanagerpatch.azurewebsites.net/"
@@ -21,9 +22,25 @@
                                     
     Modules = @(                    
         @{                          
-            Name                    = "Az"
-            MinimumVersion          = "5.0.1"
-        }                           
+            Name                    = "Az.Accounts"
+            MinimumVersion          = "1.5.2"
+        },
+        @{                          
+            Name                    = "Az.Websites"
+            MinimumVersion          = "1.2.1"
+        },
+        @{                          
+            Name                    = "Az.Network"
+            MinimumVersion          = "1.8.0"
+        },
+        @{                          
+            Name                    = "Az.Storage"
+            MinimumVersion          = "1.3.0"
+        },
+        @{                          
+            Name                    = "Az.Resources"
+            MinimumVersion          = "1.3.1"
+        }                            
     );                              
                                     
     Storage = @{                    
