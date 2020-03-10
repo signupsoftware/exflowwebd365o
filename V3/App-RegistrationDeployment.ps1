@@ -517,8 +517,8 @@ If(-not($AzAadApp = Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction
     }
 }
 If ($AzAadApp) {
-    $AzAadApp
-$AzAadApp = $AzAadApp | ConvertFrom-Json
+    #$AzAadApp
+#$AzAadApp = $AzAadApp | ConvertFrom-Json
     write-output $azAadApp | select displayName, ObjectId, identifierUris, homepage, appId, availableToOtherTenants, appPermissions, replyUrls, objectType
     Write-output ""
     Write-Output $psadCredential
@@ -526,6 +526,7 @@ $AzAadApp = $AzAadApp | ConvertFrom-Json
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Deploying Azure Resource Manager Template"
     Write-Output "--------------------------------------------------------------------------------"
+    $psadKeyValue
     $TemplateParameters = @{
         ApplicationName                = $DeploymentName
         AppServicePlanSKU             = $MachineSize
