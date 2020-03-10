@@ -67,6 +67,27 @@
       "metadata": {
         "description": "The application package URI to be deployed to the WebApp."
       }
+    },
+    "aad_ClientId": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The aad_ClientId"
+      }
+    },
+    "aad_ClientSecret": {
+      "type": "string",
+      "minLength": 0,
+      "metadata": {
+        "description": "The aad_ClientSecret"
+      }
+    },
+    "aad_TenantId": {
+      "type": "string",
+      "minLength": 0,
+      "metadata": {
+        "description": "The aad_tenant"
+      }
     }
   },
   "variables": {
@@ -216,11 +237,12 @@
             "[concat('Microsoft.Web/Sites/', variables('uniqueString'), '/Extensions/MSDeploy')]"
           ],
           "properties": {
-            "aad_ClientId": "",
-            "aad_ClientSecret": "",
-            "aad_TenantId": "[subscription().tenantId]",
+            "aad_ClientId": "[parameters('aad_ClientId')]",
+            "aad_ClientSecret": "[parameters('aad_ClientSecret')]",
+            "aad_TenantId": "[parameters('aad_tenantId')]",
             "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
-            "aad_ExternalApiId": "[parameters('Dynamics365Uri')]"
+            "aad_ExternalApiId": "[parameters('Dynamics365Uri')]",
+            "test": "test"
           }
         },
         {
