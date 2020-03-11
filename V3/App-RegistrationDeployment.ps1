@@ -500,13 +500,13 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
                 Write-output "Az Cli is logged in but could not find an active subscription"
                 $AzCliLogin = az login --tenant $TenantGuid --allow-no-subscriptions | ConvertFrom-Json
             } else {
-                Write-Warning "Failed setting Azure AD App: $($error[1].Exception.Message)"
-                Write-Error $error[0].Exception.Message
+                Write-Warning "Failed setting Azure AD App: $($error[0].Exception.Message)"
+                #Write-Error $error[0].Exception.Message
             }
             Write-output "logged in as $($AzCliLogin[0].user.name)"
         } else {
             If ($AzCliLogin.user.name -ne $AzContext.Account) {
-                "Write-output logging out of Az Account $($AzCliLogin[0].user.name)"
+                Write-output "logging out of Az Account $($AzCliLogin[0].user.name)"
                 az logout --username  ($AzCliLogin[0].user.name)
             }
         }
