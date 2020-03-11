@@ -475,6 +475,7 @@ If(-not($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADAppli
     $ErrorActionPreference = "Continue"
     $requiredresourceaccesses = '[{"resourceAppId": "00000002-0000-0000-c000-000000000000","resourceAccess": [{"id": "311a71cc-e848-46a1-bdf8-97ff7156d8e6","type": "Scope"}]},{"resourceAppId": "00000015-0000-0000-c000-000000000000","resourceAccess": [{"id": "6397893c-2260-496b-a41d-2f1f15b16ff3","type": "Scope"},{"id": "a849e696-ce45-464a-81de-e5c5b45519c1","type": "Scope"},{"id": "ad8b4a5c-eecd-431a-a46f-33c060012ae1","type": "Scope"}]}]' | convertto-json
     $error.Clear()
+    $ReTry = 0
     do
     {
         $AzAadApp = az ad app create --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20)) --credential-description $DeploymentName
@@ -500,6 +501,7 @@ If(-not($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADAppli
                 $AzCliLogin = az login --tenant $TenantGuid --allow-no-subscriptions | ConvertFrom-Json
             } else {
                 Write-Warning "Failed setting Azure AD App: $($error[1].Exception.Message)"
+                Write-Error $error[0].Exception.Message
             }
             Write-output "logged in as $($AzCliLogin[0].user.name)"
         } else {
@@ -509,8 +511,12 @@ If(-not($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADAppli
             }
         }
         #pause
+        $ReTry++
     }
-    until ($AzAadApp)
+    until ($AzAadApp -or ($ReTry -ge 5))
+    If ($ReTry -ge 5) {
+        Write-Error "Attempted to create Az App more than 5 times, exiting script"
+    }
     } Catch {
         Write-Error $_
         Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmADApplication" } Catch {}
