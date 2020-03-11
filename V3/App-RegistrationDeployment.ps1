@@ -515,7 +515,7 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
     }
     until ($AzAadApp -or ($ReTry -ge 5))
     If ($ReTry -ge 5) {
-        Write-Error "Attempted to create Az App more than 5 times, exiting script"
+        Write-Error -Exception "Attempted to create Az App more than 5 times, exiting script"
     }
     } Catch {
         Write-Error $_
