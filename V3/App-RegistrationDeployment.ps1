@@ -448,7 +448,7 @@ If(!($IsNewDeployment)) {
     }
 }
 
-If(-not($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction SilentlyContinue#>)) {
+If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction SilentlyContinue#>) -eq "[]") {
     Write-Output ""
 
     Write-Output "--------------------------------------------------------------------------------"
