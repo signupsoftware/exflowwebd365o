@@ -448,7 +448,7 @@ If(!($IsNewDeployment)) {
     }
 }
 
-If(-not($AzAadApp = Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction SilentlyContinue)) {
+If(-not($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction SilentlyContinue#>)) {
     Write-Output ""
 
     Write-Output "--------------------------------------------------------------------------------"
@@ -517,7 +517,7 @@ If(-not($AzAadApp = Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction
     }
 }
 If ($AzAadApp) {
-    $AzAadApp
+    #$AzAadApp
     $AzAadApp = $AzAadApp | ConvertFrom-Json
     write-output $azAadApp | select displayName, ObjectId, identifierUris, homepage, appId, availableToOtherTenants, appPermissions, replyUrls, objectType
     Write-output ""
