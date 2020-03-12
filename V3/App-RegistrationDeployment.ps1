@@ -328,7 +328,7 @@ If ($TenantGuid) {
         $AzCliLoginList = az account list | ConvertFrom-Json
         $AzCliTenantMatch = $AzCliLoginList | where {$_.tenantId -eq $TenantGuid} | Select-Object -First 1
         If ($AzCliTenantMatch) {
-            Az Account Set --subscription $AzCliTenantMatch.id
+            az Account Set --subscription $AzCliTenantMatch.id
         } elseif (-not($AzCliTenantMatch)) {
             write-output "selected user does not have access to tenant $TenantGuid  or is running in a cloud shell in the wrong tenant"
         }
