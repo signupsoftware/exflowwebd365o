@@ -354,6 +354,7 @@ else
 $ErrorActionPreference = "Continue"
 #region Set deployment name for resources based on DynamicsAXApiId name
 #$ctx = Switch-Context -UseDeployContext $True
+Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Determining deployment name and availability"
 Write-Output "--------------------------------------------------------------------------------"
@@ -417,6 +418,7 @@ Else {
 If (-not($ResourceGroup)) {$ResourceGroup = $DeploymentName}
 If (-not($AppServicePlan)) {$AppServicePlan = $DeploymentName}
 If(-not(Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue)) {
+    Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmResourceGroup"
     Write-Output "--------------------------------------------------------------------------------"
