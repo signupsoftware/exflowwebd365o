@@ -113,9 +113,8 @@ The following features are currently under development.
   * Improvements
      * This release improves the Cross-instance feature with better responsiveness to inbox changes. Cross-instance is when multiple            sites are interconnected and users can move between sites.
      * Ticket SSO have been extended with variable email code length and improved security features such as the option to kill the SSO          ticket on sign out.
-     *	Adds support for the new chat component for BC. With chat you can now mention, reply and receive notification about     
-       conversations.  
-       
+     *	Adds support for the new chat component for BC. With chat you can now mention, reply and receive notification about                      conversations.
+     
   * Bug Fixes
      * Addresses an issue when using Azure AD and user switched between multiple accounts. 
 
