@@ -488,6 +488,7 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
     do
     {
         $AzAadApp = az ad app create --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
+        $psadCredential.Password
         if (!($AzAadApp)) {
             write-output "no app found"
             $error
@@ -525,6 +526,7 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
     until ($AzAadApp -or ($ReTry -ge 5))
     If ($ReTry -ge 5) {
         Write-Error -Exception "Attempted to create Az App more than 5 times, exiting script"
+        break
     }
     } Catch {
         Write-Error $_
@@ -541,6 +543,7 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
     $psadKeyValue = Set-AesKey
     $psadCredential.Password = $psadKeyValue
     az ad app credential reset --id $setAzAppCred.appId --password $psadCredential.Password --end-date ($(get-date).AddYears(20)) --credential-description $DeploymentName
+    $psadCredential.Password
 }
 If ($AzAadApp) {
     #$AzAadApp
@@ -558,7 +561,7 @@ If ($AzAadApp) {
         PackageUri                    = $packageURL
         AppServicePlanName             = $AppServicePlan
         aad_ClientId                  = $AzAadApp.appId
-        aad_ClientSecret              = $psadKeyValue
+        aad_ClientSecret              = $psadCredential.Password
         aad_TenantId                  = $TenantGuid
         #aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
         Dynamics365Uri             = "https://$($DynamicsAXApiId)"
