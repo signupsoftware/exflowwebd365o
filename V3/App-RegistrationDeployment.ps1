@@ -448,12 +448,13 @@ If(!($IsNewDeployment)) {
     }
 }
 
-If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction SilentlyContinue#>) -eq "[]") {
-    Write-Output ""
+Write-Output ""
 
-    Write-Output "--------------------------------------------------------------------------------"
-    Write-Output "Creating AzureRmADApplication"
-    Write-Output "--------------------------------------------------------------------------------"
+Write-Output "--------------------------------------------------------------------------------"
+Write-Output "Creating AzureRmADApplication"
+Write-Output "--------------------------------------------------------------------------------"
+
+If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction SilentlyContinue#>) -eq "[]") {
 
     $psadCredential = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential
     $startDate = Get-Date
@@ -544,7 +545,6 @@ If ($AzAadApp) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Deploying Azure Resource Manager Template"
     Write-Output "--------------------------------------------------------------------------------"
-    $psadKeyValue
     $TemplateParameters = @{
         ApplicationName                = $DeploymentName
         AppServicePlanSKU             = $MachineSize
