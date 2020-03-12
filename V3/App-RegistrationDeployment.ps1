@@ -330,7 +330,13 @@ If ($TenantGuid) {
         If ($AzCliTenantMatch) {
             az Account Set --subscription $AzCliTenantMatch.id
         } elseif (-not($AzCliTenantMatch)) {
-            write-output "selected user does not have access to tenant $TenantGuid  or is running in a cloud shell in the wrong tenant"
+            write-warning "selected user does not have access to tenant $TenantGuid  or is running in a cloud shell in the wrong tenant"
+            Write-Output "Please login to Az Cli With an account that has global admin(Opens in new window):"
+            $AzCliLogin = az login --tenant $TenantGuid --allow-no-subscriptions | ConvertFrom-Json
+            If (-not($AzCliLogin)) {
+                Write-Output "Unable to login, exiting script"
+                break
+            }
         }
     }
 } elseif (!$TenantGuid) {
