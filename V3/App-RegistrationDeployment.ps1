@@ -461,18 +461,16 @@ Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Creating AzureRmADApplication"
 Write-Output "--------------------------------------------------------------------------------"
+$psadCredential = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential
+$startDate = Get-Date
+$psadCredential.StartDate = $startDate
+$psadCredential.EndDate = $startDate.AddYears($ConfigurationData.PSADCredential.Years)
+$psadCredential.KeyId = [guid]::NewGuid()
+$psadKeyValue = Set-AesKey
+$psadCredential.Password = $psadKeyValue
+Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
 
 If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction SilentlyContinue#>) -eq "[]") {
-
-    $psadCredential = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential
-    $startDate = Get-Date
-    $psadCredential.StartDate = $startDate
-    $psadCredential.EndDate = $startDate.AddYears($ConfigurationData.PSADCredential.Years)
-    $psadCredential.KeyId = [guid]::NewGuid()
-    $psadKeyValue = Set-AesKey
-    $psadCredential.Password = $psadKeyValue
-    Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
-
     try {
     <#
     $AzAadApp = New-AzADApplication -DisplayName $ResourceGroup `
@@ -541,16 +539,8 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
     }
 
 } else {
-    $setAzAppCred = $AzAadApp | ConvertFrom-Json
-
-    $psadCredential = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential
-    $startDate = Get-Date
-    $psadCredential.StartDate = $startDate
-    $psadCredential.EndDate = $startDate.AddYears($ConfigurationData.PSADCredential.Years)
-    $psadCredential.KeyId = [guid]::NewGuid()
-    $psadKeyValue = Set-AesKey
-    $psadCredential.Password = $psadKeyValue
-    az ad app credential reset --id $setAzAppCred.appId --password $psadCredential.Password --end-date ($(get-date).AddYears(20)) --credential-description $DeploymentName
+    $AzAadApp = az ad app create --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
+    #az ad app credential reset --id $setAzAppCred.appId --password $psadCredential.Password --end-date ($(get-date).AddYears(20)) --credential-description $DeploymentName
 }
 If ($AzAadApp) {
     #$AzAadApp
