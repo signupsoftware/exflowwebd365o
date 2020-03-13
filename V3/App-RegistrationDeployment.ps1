@@ -534,11 +534,12 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
         Write-Error -Exception "Attempted to create Az App more than 5 times, exiting script"
         break
     }
+        #>
     } Catch {
         Write-Error $_
         Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmADApplication" } Catch {}
     }
-    #>
+
 } else {
     $setAzAppCred = $AzAadApp | ConvertFrom-Json
 
