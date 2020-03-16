@@ -471,6 +471,7 @@ $psadCredential.Password = $psadKeyValue
 Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
 $requiredresourceaccesses = '[{"resourceAppId": "00000002-0000-0000-c000-000000000000","resourceAccess": [{"id": "311a71cc-e848-46a1-bdf8-97ff7156d8e6","type": "Scope"}]},{"resourceAppId": "00000015-0000-0000-c000-000000000000","resourceAccess": [{"id": "6397893c-2260-496b-a41d-2f1f15b16ff3","type": "Scope"},{"id": "a849e696-ce45-464a-81de-e5c5b45519c1","type": "Scope"},{"id": "ad8b4a5c-eecd-431a-a46f-33c060012ae1","type": "Scope"}]}]' | convertto-json
 If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction SilentlyContinue#>) -eq "[]") {
+    Write-Output "No App"
     try {
     <#
     $AzAadApp = New-AzADApplication -DisplayName $ResourceGroup `
@@ -539,6 +540,7 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
     }
 
 } else {
+    Write-Output "App Found"
     #$AzAadApp = az ad app create --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
     if (!$AzAadApp) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
