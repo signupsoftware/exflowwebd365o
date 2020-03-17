@@ -542,8 +542,8 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
 
 } else {
     Write-Output "App Found"
-    $AzAadApp
-    $AzAadApp = az ad app update --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
+    $AzAadApp = $AzAadApp | ConvertFrom-Json
+    $AzAadApp = az ad app update --id $AzAadApp.appId --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
     if (!$AzAadApp) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
@@ -553,7 +553,7 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
 }
 If ($AzAadApp) {
     #$AzAadApp
-    $AzAadApp = $AzAadApp | ConvertFrom-Json
+    #$AzAadApp = $AzAadApp | ConvertFrom-Json
     write-output $azAadApp | select displayName, ObjectId, identifierUris, homepage, appId, availableToOtherTenants, appPermissions, replyUrls, objectType
     Write-output ""
     Write-Output $psadCredential
