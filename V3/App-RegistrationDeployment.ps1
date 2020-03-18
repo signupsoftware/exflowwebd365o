@@ -80,6 +80,7 @@ function Show-Menu
 
 
 Clear-Host
+$ShowAdvancedMenu = "true"
 $ShowAdvancedMenu
 $ShowAdvancedMenu.GetType()
 If ($ShowAdvancedMenu -eq "true") {
