@@ -175,7 +175,6 @@ $DynamicsAXApiSubdomain = $DynamicsAXApiId.Substring(0, $DynamicsAXApiId.IndexOf
 if (-not($MachineSize)) { $MachineSize = "B1 Basic" }
 if ($Prefix) { $Prefix = $Prefix.ToLower() }
 If (-not($PackageVersion)) {$PackageVersion = "latest"}
-#If (-not($ConfigurationData.RedistPath)) { $ConfigurationData.RedistPath = $RepoURL }
 
 #Setup log file
 [String]$LogFile = "$($ConfigurationData.LocalPath)\$($ConfigurationData.LogFile)"
@@ -289,7 +288,9 @@ If ($WebAppSubscriptionGuid) {
         If ($selectSubscription) {
             $AzLogin =  Select-AzSubscription $selectSubscription.SubscriptionId
         } else {
-            Write-Warning "selected user does not have access to subscription $WebAppSubscriptionGuid or is running in a cloud shell in the wrong tenant"
+            Write-Warning "selected user: $($AzContext.Account.id) does not have access to subscription $WebAppSubscriptionGuid or is running in a cloud shell in the wrong tenant"
+            Write-Output "Please login to Az Module(Opens in new window):"
+            $AzLogin = Login-AzAccount -Subscription $WebAppSubscriptionGuid
         }
     }
 } elseif (!$WebAppSubscriptionGuid) {
@@ -351,7 +352,6 @@ If ($TenantGuid) {
         Write-Output ""
         $answer = Read-Host -Prompt 'Enter tenant id:'
         $AzCliLogin = az account set --subscription ($AzCliLoginList | where {$_.tenantId -eq $answer} | Select-Object -First 1).id
-        #$AvailableTenants = $AzCliLogin | Select-Object name, tenantId
     }
 }
 If (!$AzCliLogin) { Try { Invoke-Logger -Message "Logon to Azure failed" -Severity W -Category "Logon" } Catch {} ; return }
@@ -359,7 +359,6 @@ else
 {Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"}
 $ErrorActionPreference = "Continue"
 #region Set deployment name for resources based on DynamicsAXApiId name
-#$ctx = Switch-Context -UseDeployContext $True
 Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Determining deployment name and availability"
@@ -470,76 +469,21 @@ $psadKeyValue = Set-AesKey
 $psadCredential.Password = $psadKeyValue
 Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
 $requiredresourceaccesses = '[{"resourceAppId": "00000002-0000-0000-c000-000000000000","resourceAccess": [{"id": "311a71cc-e848-46a1-bdf8-97ff7156d8e6","type": "Scope"}]},{"resourceAppId": "00000015-0000-0000-c000-000000000000","resourceAccess": [{"id": "6397893c-2260-496b-a41d-2f1f15b16ff3","type": "Scope"},{"id": "a849e696-ce45-464a-81de-e5c5b45519c1","type": "Scope"},{"id": "ad8b4a5c-eecd-431a-a46f-33c060012ae1","type": "Scope"}]}]' | convertto-json
-If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplication -DisplayName $ResourceGroup -ErrorAction SilentlyContinue#>) -eq "[]") {
+If(($AzAadApp = az ad app list --display-name $ResourceGroup) -eq "[]") {
     Write-Output "No App"
     $AzAadApp
     try {
-    <#
-    $AzAadApp = New-AzADApplication -DisplayName $ResourceGroup `
-                        -IdentifierUris "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)" `
-                        -HomePage "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" `
-                        -ReplyUrls "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" `
-                        -PasswordCredentials $psadCredential
-    #>
     $ErrorActionPreference = "Continue"
-    
     $AzAadApp = az ad app create --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
     if (!$AzAadApp) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
         Write-Warning "Exiting script"
     }
-    <#
-    $error.Clear()
-    $ReTry = 0
-    do
-    {
-        $AzAadApp = az ad app create --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
-        if (!($AzAadApp)) {
-            write-output "no app found"
-            $error
-            #Write-output $error[1]
-            If ($error[1].Exception.Message -eq "ERROR: Insufficient privileges to complete the operation.") {
-                Write-Warning "Failed setting Azure AD App: $($error[1].Exception.Message)"
-                $SwitchAcc = Read-Host "Do you want to login to Az Cli with another account? (y/n)"
-                If ($SwitchAcc -eq "y") {
-                    Write-Output "Please login with an account that has permissions to create applications(Opens in new tab)"
-                    $AzCliLogin = az login --tenant $TenantGuid --allow-no-subscriptions | ConvertFrom-Json
-                } elseif ($SwitchAcc -eq "n") {
-                    write-warning "Exiting script"
-                    break
-                } else {
-                    write-warning "No input recived, exiting script"
-                    break
-                }
-            } elseif ($error[0].Exception.Message -eq "ERROR: No subscription found. Run 'az account set' to select a subscription.") {
-                Write-output "Az Cli is logged in but could not find an active subscription"
-                $AzCliLogin = az login --tenant $TenantGuid --allow-no-subscriptions | ConvertFrom-Json
-            } else {
-                Write-Warning "Failed setting Azure AD App: $($error[0].Exception.Message)"
-                #Write-Error $error[0].Exception.Message
-            }
-            Write-output "logged in as $($AzCliLogin[0].user.name)"
-        } else {
-            If ($AzCliLogin.user.name -ne $AzContext.Account) {
-                Write-output "logging out of Az Account $($AzCliLogin[0].user.name)"
-                az logout --username  ($AzCliLogin[0].user.name)
-            }
-        }
-        #pause
-        $ReTry++
-    }
-    until ($AzAadApp -or ($ReTry -ge 5))
-    If ($ReTry -ge 5) {
-        Write-Error -Exception "Attempted to create Az App more than 5 times, exiting script"
-        break
-    }
-        #>
     } Catch {
         Write-Error $_
         Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmADApplication" } Catch {}
     }
-
 } else {
     Write-Output "App Found"
     $AzAadApp = $AzAadApp | ConvertFrom-Json
@@ -551,10 +495,8 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup <#Get-AzADApplicati
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
         Write-Warning "Exiting script"
     }
-    #az ad app credential reset --id $setAzAppCred.appId --password $psadCredential.Password --end-date ($(get-date).AddYears(20)) --credential-description $DeploymentName
 }
 If ($AzAadApp) {
-    #$AzAadApp
     $AzAadApp = $AzAadApp | ConvertFrom-Json
     write-output $azAadApp | select displayName, ObjectId, identifierUris, homepage, appId, availableToOtherTenants, appPermissions, replyUrls, objectType
     Write-output ""
@@ -586,8 +528,6 @@ If ($AzAadApp) {
     Try { Invoke-Logger -Message "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx" -Severity I -Category "WebApplication" } Catch {}
 }
 Write-Output ""
-#Write-Output "Send this URL to Signup to allow read access to exflowdiagnostics container in $StorageName :"
-#Write-host "$SASUri" -ForegroundColor Green
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Completed in $(($Measure.Elapsed).TotalSeconds) seconds"
 Try { Invoke-Logger -Message "Completed in $(($Measure.Elapsed).TotalSeconds) seconds" -Severity I -Category "Summary" } Catch {}
