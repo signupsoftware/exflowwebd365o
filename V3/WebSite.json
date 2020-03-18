@@ -97,7 +97,7 @@
       }
     },
     "wAppHostnames": {
-      "type": "array",
+      "type": "string",
       "defaultValue": "",
       "metadata": {
         "description": "Hostnames found on app to add in Storage CORS rules"

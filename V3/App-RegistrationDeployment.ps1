@@ -526,6 +526,7 @@ If ($AzAadApp) {
     }
     If ($WebApp) {
         $CORSendpoints = $WebApp.HostNames | foreach {"https://$_"}
+        $CORSendpoints = ($CORSendpoints -join ",").ToString()
         $TemplateParameters.Add("wAppHostnames", $CORSendpoints)
     }
 
