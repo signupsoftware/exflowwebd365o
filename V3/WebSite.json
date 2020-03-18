@@ -249,7 +249,7 @@
             "aad_TenantId": "[parameters('aad_tenantId')]",
             "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
             "aad_ExternalApiId": "[parameters('Dynamics365Uri')]",
-            "security_Admins": "[variables('security_Admins')]"
+            "security_Admins": "[parameters('security_Admins')]"
           }
         },
         {
