@@ -390,7 +390,7 @@ If (-not($WebApp = Get-AzWebApp -Name $DeploymentName -ErrorAction SilentlyConti
         Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
         $dnsNameUnique = $false
     }
-    If (-not((Get-AzStorageAccountNameAvailability -Name $DeploymentName).NameAvailable)) {
+    If (-not((Get-AzStorageAccountNameAvailability -Name (Get-AlphaNumName -Name $DeploymentName.replace("exflow", "")) -MaxLength 24).NameAvailable)) {
         $Message = "A unique Az Storage Account name could not be automatically determined"
         Write-Warning $Message
         Try { Invoke-Logger -Message $Message -Severity I -Category "Deployment" } Catch {}
