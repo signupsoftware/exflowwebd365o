@@ -488,12 +488,16 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup) -eq "[]") {
     Write-Output "App Found"
     $AzAadApp = $AzAadApp | ConvertFrom-Json
     ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
-    $AzAadApp = az ad app create --id $AzAadApp.appId --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
+    $error.clear()
+    az ad app update --id $AzAadApp.appId --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
 
-    if (!$AzAadApp) { 
+    if ($error) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
         Write-Warning "Exiting script"
+        Write-Output $error
+    } else {
+        $AzAadApp = az ad app list --app-id $AzAadApp.appId
     }
 }
 If ($AzAadApp) {
