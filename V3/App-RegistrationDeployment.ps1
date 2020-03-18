@@ -283,6 +283,7 @@ If ($WebAppSubscriptionGuid) {
         $AzLogin
     } elseif ($AzContext.Subscription.id -ne $WebAppSubscriptionGuid) {
         Write-Output "Current context is not set to same subscription as specified in script"
+        Write-Output "Attempting to select subscription from current users available subscriptions..."
         $AvailableSubscriptions = Get-AzSubscription
         $selectSubscription = $AvailableSubscriptions | where {$_.subscriptionId -eq $WebAppSubscriptionGuid}
         If ($selectSubscription) {
@@ -318,7 +319,7 @@ $AzContext = Get-AzContext
 #$AzLogin
 If (!$AzContext) { Try { Invoke-Logger -Message "Logon to Azure failed" -Severity W -Category "Logon" } Catch {} ; return }
 else 
-{Write-Output "Logged in to subscription: $($AzContext.Subscription.Name) as user: $($AzContext.Account)"}
+{Write-Output "(Powershell) Logged in to subscription: $($AzContext.Subscription.Name) as user: $($AzContext.Account)"}
 $ErrorActionPreference = "SilentlyContinue"
 $AzCliLogin = az account show | ConvertFrom-Json
 If ($TenantGuid) {
@@ -356,7 +357,7 @@ If ($TenantGuid) {
 }
 If (!$AzCliLogin) { Try { Invoke-Logger -Message "Logon to Azure failed" -Severity W -Category "Logon" } Catch {} ; return }
 else 
-{Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"}
+{Write-Output "(AZ Cli) Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"}
 $ErrorActionPreference = "Continue"
 #region Set deployment name for resources based on DynamicsAXApiId name
 Write-Output ""
@@ -470,8 +471,7 @@ $psadCredential.Password = $psadKeyValue
 Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
 $requiredresourceaccesses = '[{"resourceAppId": "00000002-0000-0000-c000-000000000000","resourceAccess": [{"id": "311a71cc-e848-46a1-bdf8-97ff7156d8e6","type": "Scope"}]},{"resourceAppId": "00000015-0000-0000-c000-000000000000","resourceAccess": [{"id": "6397893c-2260-496b-a41d-2f1f15b16ff3","type": "Scope"},{"id": "a849e696-ce45-464a-81de-e5c5b45519c1","type": "Scope"},{"id": "ad8b4a5c-eecd-431a-a46f-33c060012ae1","type": "Scope"}]}]' | convertto-json
 If(($AzAadApp = az ad app list --display-name $ResourceGroup) -eq "[]") {
-    Write-Output "No App"
-    $AzAadApp
+    Write-Output "Creating new Azure AD Application"
     try {
     $ErrorActionPreference = "Continue"
     $AzAadApp = az ad app create --display-name $ResourceGroup --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
@@ -485,7 +485,7 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup) -eq "[]") {
         Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmADApplication" } Catch {}
     }
 } else {
-    Write-Output "App Found"
+    Write-Output "Found existing app, updating..."
     $AzAadApp = $AzAadApp | ConvertFrom-Json
     ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
     $error.clear()
@@ -523,6 +523,10 @@ If ($AzAadApp) {
 
     If ($Security_Admins) {
         $TemplateParameters.Add("Security_Admins", $Security_Admins)
+    }
+    If ($WebApp) {
+        $CORSendpoints = $WebApp.HostNames | foreach {"https://$_"}
+        $TemplateParameters.Add("wAppHostnames", $CORSendpoints)
     }
 
     "$($RepoURL)WebSite.json"

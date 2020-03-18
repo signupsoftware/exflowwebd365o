@@ -95,6 +95,13 @@
       "metadata": {
         "description": "The security_Admins"
       }
+    },
+    "wAppHostnames": {
+      "type": "array",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Hostnames found on app to add in Storage CORS rules"
+      }
     }
   },
   "variables": {
@@ -179,7 +186,7 @@
           "corsRules": [
             {
               "allowedOrigins": [
-                "[concat('https://',variables('uniqueString'),'.azurewebsites.net')]"
+                "[if(empty(parameters('wAppHostnames')), concat('https://',variables('uniqueString'),'.azurewebsites.net'), parameters('wAppHostnames'))]"
               ],
               "allowedMethods": ["GET"],
               "maxAgeInSeconds": 200,
