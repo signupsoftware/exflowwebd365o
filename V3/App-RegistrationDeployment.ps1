@@ -40,7 +40,7 @@ param(
     [string]$AppServicePlan,
 
     [Parameter(Mandatory = $False)]
-    [bool]$ShowAdvancedMenu = $false
+    [bool]$ShowAdvancedMenu
 
 )
 
