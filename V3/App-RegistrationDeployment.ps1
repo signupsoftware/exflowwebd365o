@@ -521,8 +521,12 @@ If ($AzAadApp) {
         Dynamics365Uri             = "https://$($DynamicsAXApiId)"
     }
 
+    If ($Security_Admins) {
+        $TemplateParameters.Add("Security_Admins", $Security_Admins)
+    }
+
     "$($RepoURL)WebSite.json"
-    New-AzResourceGroupDeployment -TemplateParameterObject $TemplateParameters -TemplateUri "$($RepoURL)WebSite.json" -Name "abc" -ResourceGroupName $ResourceGroup -Verbose
+    New-AzResourceGroupDeployment -TemplateParameterObject $TemplateParameters -TemplateUri "$($RepoURL)WebSite.json" -Name $DeploymentName -ResourceGroupName $ResourceGroup -Verbose
     $Measure.Stop()
 
     Write-Output ""

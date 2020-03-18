@@ -88,6 +88,13 @@
       "metadata": {
         "description": "The aad_tenant"
       }
+    },
+    "security_Admins": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The security_Admins"
+      }
     }
   },
   "variables": {
@@ -242,7 +249,7 @@
             "aad_TenantId": "[parameters('aad_tenantId')]",
             "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
             "aad_ExternalApiId": "[parameters('Dynamics365Uri')]",
-            "test": "test"
+            "security_Admins": "[variables('security_Admins')]"
           }
         },
         {
