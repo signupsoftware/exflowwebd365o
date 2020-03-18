@@ -40,7 +40,7 @@ param(
     [string]$AppServicePlan,
 
     [Parameter(Mandatory = $False)]
-    [bool]$ShowAdvancedMenu
+    [string]$ShowAdvancedMenu
 
 )
 
@@ -80,8 +80,7 @@ function Show-Menu
 
 
 Clear-Host
-$ShowAdvancedMenu
-If ($ShowAdvancedMenu) {
+If ($ShowAdvancedMenu -eq "true") {
     do
     {
         Show-Menu
