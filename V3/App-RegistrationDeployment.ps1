@@ -496,6 +496,7 @@ If(($AzAadApp = az ad app list --display-name $ResourceGroup) -eq "[]") {
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
         Write-Warning "Exiting script"
         Write-Output $error
+        break
     } else {
         $AzAadApp = az ad app list --app-id $AzAadApp.appId
     }
