@@ -423,7 +423,7 @@ Else {
 #endregion 
 If (-not($ResourceGroup)) {$ResourceGroup = $DeploymentName}
 If (-not($AppServicePlan)) {$AppServicePlan = $DeploymentName}
-If(-not(($WebApp) -and (Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue))) {
+If(-not((!$WebApp) -and (Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue))) {
     Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmResourceGroup"
