@@ -452,33 +452,33 @@ If(!($IsNewDeployment)) {
         Write-Warning "Resource group of existing webapp: $($WebApp.ResourceGroup) does not match with resourcegroup specified in parameters"
         Write-Warning "Specify parameter `$ResourceGroup = `"$($WebApp.ResourceGroup)`" to update webapp: $($WebApp.Name)"
         break
-    } elseif (-not(Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue)) {
-        Write-Output ""
-        Write-Output "--------------------------------------------------------------------------------"
-        Write-Output "Creating AzureRmResourceGroup"
-        Write-Output "--------------------------------------------------------------------------------"
-        Try {
-            New-AzResourceGroup -Name $ResourceGroup -Location $Location
-        } Catch {
-            Write-Error $_
-            Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmResourceGroup" } Catch {}
-            return
-        }
-        $x = 0
-        While ((-not(Get-AzResourceGroup -Name $ResourceGroup -Location $Location -ErrorAction SilentlyContinue)) -and ($X -lt 10)) {
-            Write-Host "SLEEP: $((Get-Date).ToString("hh:mm:ss")) - Awaiting AzureRmResourceGroup status for $(5*$x) seconds" -ForegroundColor "cyan"
-            Start-Sleep 5
-            $x++
-        }
-    
-        Write-Output $AzureRmResourceGroup
-        Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
-    } else {
-        Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
     }
     If (($WebApp.ServerFarmId -replace '(?s)^.*\/', '') -ne $AppServicePlan) {
         Write-Warning "App Service Plan of existing webapp: $($WebApp.ServerFarmId -replace '(?s)^.*\/', '') does not match with App Service Plan specified in parameters"
     }
+} elseif (-not(Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue)) {
+    Write-Output ""
+    Write-Output "--------------------------------------------------------------------------------"
+    Write-Output "Creating AzureRmResourceGroup"
+    Write-Output "--------------------------------------------------------------------------------"
+    Try {
+        New-AzResourceGroup -Name $ResourceGroup -Location $Location
+    } Catch {
+        Write-Error $_
+        Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmResourceGroup" } Catch {}
+        return
+    }
+    $x = 0
+    While ((-not(Get-AzResourceGroup -Name $ResourceGroup -Location $Location -ErrorAction SilentlyContinue)) -and ($X -lt 10)) {
+        Write-Host "SLEEP: $((Get-Date).ToString("hh:mm:ss")) - Awaiting AzureRmResourceGroup status for $(5*$x) seconds" -ForegroundColor "cyan"
+        Start-Sleep 5
+        $x++
+    }
+
+    Write-Output $AzureRmResourceGroup
+    Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
+} else {
+    Try { Invoke-Logger -Message $AzureRmResourceGroup -Severity I -Category "AzureRmResourceGroup" } Catch {}
 }
 
 Write-Output ""
