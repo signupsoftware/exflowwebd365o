@@ -423,7 +423,7 @@ Else {
 #endregion 
 If (-not($ResourceGroup)) {$ResourceGroup = $DeploymentName}
 If (-not($AppServicePlan)) {$AppServicePlan = $DeploymentName}
-If(-not(Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue)) {
+If(-not(($WebApp) -and (Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue))) {
     Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Creating AzureRmResourceGroup"
@@ -450,6 +450,8 @@ If(-not(Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue))
 If(!($IsNewDeployment)) {
     If ($WebApp.ResourceGroup -ne $ResourceGroup) {
         Write-Warning "Resource group of existing webapp: $($WebApp.ResourceGroup) does not match with resourcegroup specified in parameters"
+        Write-Warning "Specify parameter `$ResourceGroup = $($WebApp.ResourceGroup) to update webapp $($WebApp.Name)"
+        break
     }
     If (($WebApp.ServerFarmId -replace '(?s)^.*\/', '') -ne $AppServicePlan) {
         Write-Warning "App Service Plan of existing webapp: $($WebApp.ServerFarmId -replace '(?s)^.*\/', '') does not match with App Service Plan specified in parameters"
