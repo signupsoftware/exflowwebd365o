@@ -450,7 +450,7 @@ If(-not((!$WebApp) -and (Get-AzResourceGroup -Name $ResourceGroup -ErrorAction S
 If(!($IsNewDeployment)) {
     If ($WebApp.ResourceGroup -ne $ResourceGroup) {
         Write-Warning "Resource group of existing webapp: $($WebApp.ResourceGroup) does not match with resourcegroup specified in parameters"
-        Write-Warning "Specify parameter `$ResourceGroup = $($WebApp.ResourceGroup) to update webapp $($WebApp.Name)"
+        Write-Warning "Specify parameter `$ResourceGroup = `"$($WebApp.ResourceGroup)`" to update webapp: $($WebApp.Name)"
         break
     }
     If (($WebApp.ServerFarmId -replace '(?s)^.*\/', '') -ne $AppServicePlan) {
