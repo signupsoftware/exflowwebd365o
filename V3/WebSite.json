@@ -172,7 +172,8 @@
         "tier": "Standard"
       },
       "properties": {
-        "accessTier": "Hot"
+        "accessTier": "Hot",
+        "supportsHttpsTrafficOnly": true
       }
     },
     {
@@ -224,7 +225,8 @@
       ],
       "properties": {
         "name": "[variables('uniqueString')]",
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('AppServicePlanName'))]"
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('AppServicePlanName'))]",
+        "httpsOnly": true
       },
       "resources": [
         {
