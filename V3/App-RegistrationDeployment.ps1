@@ -496,8 +496,10 @@ $psadCredential.Password = $psadKeyValue
 Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
 $replyUrls = ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
 If ($WebApp) {
+    write-output "setting replyurls from webapp"
     $replyUrls = $WebApp.HostNames | foreach {"https://$_"}
-    $replyUrls = ($CORSendpoints -join ",").ToString()
+    $replyUrls = ($replyUrls -join ",").ToString()
+    write-output "Replyurls:"
     write-output $replyUrls #$TemplateParameters.Add("wAppHostnames", $CORSendpoints)
 }
 $requiredresourceaccesses = '[{"resourceAppId": "00000002-0000-0000-c000-000000000000","resourceAccess": [{"id": "311a71cc-e848-46a1-bdf8-97ff7156d8e6","type": "Scope"}]},{"resourceAppId": "00000015-0000-0000-c000-000000000000","resourceAccess": [{"id": "6397893c-2260-496b-a41d-2f1f15b16ff3","type": "Scope"},{"id": "a849e696-ce45-464a-81de-e5c5b45519c1","type": "Scope"},{"id": "ad8b4a5c-eecd-431a-a46f-33c060012ae1","type": "Scope"}]}]' | convertto-json
@@ -518,7 +520,7 @@ If(($AzAadApp = az ad app list --display-name $DeploymentName) -eq "[]") {
 } else {
     Write-Output "Found existing app, updating..."
     $AzAadApp = $AzAadApp | ConvertFrom-Json
-    ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
+    #("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
     $error.clear()
     az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
 
