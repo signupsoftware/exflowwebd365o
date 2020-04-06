@@ -494,12 +494,18 @@ $psadCredential.KeyId = [guid]::NewGuid()
 $psadKeyValue = Set-AesKey
 $psadCredential.Password = $psadKeyValue
 Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
+$replyUrls = ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
+If ($WebApp) {
+    $replyUrls = $WebApp.HostNames | foreach {"https://$_"}
+    $replyUrls = ($CORSendpoints -join ",").ToString()
+    #$TemplateParameters.Add("wAppHostnames", $CORSendpoints)
+}
 $requiredresourceaccesses = '[{"resourceAppId": "00000002-0000-0000-c000-000000000000","resourceAccess": [{"id": "311a71cc-e848-46a1-bdf8-97ff7156d8e6","type": "Scope"}]},{"resourceAppId": "00000015-0000-0000-c000-000000000000","resourceAccess": [{"id": "6397893c-2260-496b-a41d-2f1f15b16ff3","type": "Scope"},{"id": "a849e696-ce45-464a-81de-e5c5b45519c1","type": "Scope"},{"id": "ad8b4a5c-eecd-431a-a46f-33c060012ae1","type": "Scope"}]}]' | convertto-json
 If(($AzAadApp = az ad app list --display-name $DeploymentName) -eq "[]") {
     Write-Output "Creating new Azure AD Application"
     try {
     $ErrorActionPreference = "Continue"
-    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
+    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
     if (!$AzAadApp) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
@@ -514,7 +520,7 @@ If(($AzAadApp = az ad app list --display-name $DeploymentName) -eq "[]") {
     $AzAadApp = $AzAadApp | ConvertFrom-Json
     ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
     $error.clear()
-    az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
+    az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
 
     if ($error) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
