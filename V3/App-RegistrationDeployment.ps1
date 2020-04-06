@@ -521,13 +521,9 @@ If(($AzAadApp = az ad app list --display-name $DeploymentName) -eq "[]") {
     
     Write-Output "Found existing app, updating..."
     $AzAadApp = $AzAadApp | ConvertFrom-Json
-    $AzAadApp.appId
-    ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") 
-    $psadCredential.Password 
-    $replyUrls
     #("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
     $error.clear()
-    az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
+    az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls https://thbtestrun-exflowuat.exflowdev.cloud/inbox.aspx https://thbtestrun-exflowuat.azurewebsites.net/inbox.aspx --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
 
     if ($error) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
