@@ -518,8 +518,13 @@ If(($AzAadApp = az ad app list --display-name $DeploymentName) -eq "[]") {
         Try { Invoke-Logger -Message $_ -Severity E -Category "AzureRmADApplication" } Catch {}
     }
 } else {
+    
     Write-Output "Found existing app, updating..."
     $AzAadApp = $AzAadApp | ConvertFrom-Json
+    $AzAadApp.appId
+    ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") 
+    $psadCredential.Password 
+    $replyUrls
     #("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
     $error.clear()
     az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
