@@ -498,7 +498,7 @@ $replyUrls = ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/in
 If ($WebApp) {
     write-output "setting replyurls from webapp"
     $replyUrls = $WebApp.HostNames | foreach {"https://$_"}
-    $replyUrls = ($replyUrls -join ",").ToString()
+    $replyUrls = ($replyUrls -join " ").ToString()
     write-output "Replyurls:"
     write-output $replyUrls #$TemplateParameters.Add("wAppHostnames", $CORSendpoints)
 }
