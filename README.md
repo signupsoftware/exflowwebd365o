@@ -108,6 +108,22 @@ The following features are currently under development.
  * $PackageVersion = "201841" for 2018.4.1
  
 
+### Release 2020.3
+
+  * Improvements
+     *	The default column ordering have been changed so that Vendor is the leftmost column.
+     *	The calendar start day is now based on the current locale, previously it always started on Sunday.
+     *	Speeds up the performance while when getting the list of approvers that previously could take some time on documents with many          lines and approvers.
+     * Chat notifications show the "dots" when the list is empty.
+     * Improves the chat feature by scrolling to the first unread message.
+     * Improves performance by allowing more simultaneous and speeding up client calls.
+     * Adds support to download Inbox and search results to Excel.
+
+ * Bug Fixes
+    * Fixes an issue in the Feb release where the previous selected document opens when search is clicked.
+    * Addresses an issue in the Feb release where the list of approvers on a line only showed about 8 approvers.
+    * An issue with when deleting one or more lines have been fixed.
+
 ### Release 2020.2
 
   * Improvements
