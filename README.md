@@ -107,7 +107,22 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
+ 
+### Release 2020.4
 
+* Improvements
+   * Adds support for calling FO with application credentials when getting settings. This avoids that settings only gets partially
+     loaded when Assigned Organization is enabled. Note that you need to register the application id in FO. 
+   *	Dynamics will add links in email notifications in the upcoming releases.
+   *	This release adds better support for using multiple tabs in your browser.
+ 
+ * Bug Fixes
+    *	Fixes a chat issue for Android users.
+    * Fixes an issue with line column display.
+    * Fixes an issue with search when working with more than one tab.
+    * Fixes an issue where the wrong line could get reselected after a line was edited.
+    * Increases the number of characters in hold comments.
+    
 ### Release 2020.3
 
   * Improvements
