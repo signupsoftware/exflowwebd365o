@@ -107,7 +107,20 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
- 
+### Release 2020.5
+
+* Improvements
+   * New search criteria Order number.
+   * Documents that are classified will show with a lock icon in Dynamics FO 2020.Q2.
+   * Classified documents appear with a lock icon on the inbox along with search and sorting options.
+   * Adds the option to search by Purchase order number.
+   * Improves attachments by saving them directly to Dynamics FO. Attachments that you have uploaded can also be deleted. Available with      the FO Q2 release.
+   * Purchase order column will be available with Q2 release for FO. 
+   * For new users language selection have been improved to better match the browsers list of preferred languages.
+
+* Bug Fixes
+   * Fixed Chat button to close.
+
 ### Release 2020.4
 
 * Improvements
