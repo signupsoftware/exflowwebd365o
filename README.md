@@ -115,6 +115,7 @@ The following features are currently under development.
    * For Dynamics FO line VAT will recalculate based on changes on line coding and amount.
    * For Dynamics FO a new lock icon indicates if a document is classified. The search feature also adds the possibility to search for classified documents.
    * For Dynamics FO the Amount in standard currency (MST) is now displayed in the search and inbox results.
+   * Classified documents appear with a lock icon on the inbox along with search and sorting options. 
    
 * Bug Fixes
    * Fixes that the close button on the chat feature didn't work on some mobile browsers.
