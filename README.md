@@ -107,6 +107,22 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
+### Release 2020.6
+
+* Improvements
+   * Adds more FO document statuses in search.
+   * For Dynamics FO attachments are now saved directly to FO. Attachments can also be removed by the user that uploaded them.
+   * For Dynamics FO line VAT will recalculate based on changes on line coding and amount.
+   * For Dynamics FO a new lock icon indicates if a document is classified. The search feature also adds the possibility to search for classified documents.
+   * For Dynamics FO the Amount in standard currency (MST) is now displayed in the search and inbox results.
+   
+* Bug Fixes
+   * Fixes that the close button on the chat feature didn't work on some mobile browsers.
+   * Fixes an issue with overlapping toolbar buttons on mobile.
+   * Ticket SSO 
+      	* The code is now trimmed from extra white-space characters that is added by default when copying from Outlook. 
+
+
 ### Release 2020.5
 
 * Improvements
