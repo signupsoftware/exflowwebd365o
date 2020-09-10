@@ -234,8 +234,7 @@
           "name": "appsettings",
           "type": "config",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]",
-            "[concat('Microsoft.Web/Sites/', variables('uniqueString'), '/Extensions/MSDeploy')]"
+            "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]"
           ],
           "properties": {
             "aad_ClientId": "[parameters('aad_ClientId')]",
@@ -252,8 +251,7 @@
           "name": "connectionstrings",
           "type": "config",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]",
-            "[concat('Microsoft.Web/Sites/', variables('uniqueString'), '/Extensions/MSDeploy')]"
+            "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]"
           ],
           "properties": {
             "StorageConnection": {
