@@ -1,6 +1,6 @@
 # PowerShell script ExFlow Web for D365O version 2
 
-News in this version (V2) of the script: 
+News in this version (V3) of the script: 
 * Adds extended logging to a separate file.
 * Adds support for multifactor authentication
 * Adds support to install into a subscription that is connected to another directory/Azure AD. 
@@ -8,14 +8,14 @@ News in this version (V2) of the script:
 * Adds options ($UseApiName="true") to use the left part of the Dynamics URL as the name. For example, if the Dynamics URL is https://axtestdynamics365aos.cloudax.dynamics.com and $Prefix="exflow-" the URL becomes exflow-**axtestdynamics365aos**.azurewebsites.net.
 
 ## Installation and updates
-ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v2/Run-Deploy.ps1)) in *Powershell ISE*. 
+ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3/Run-Deploy.ps1)) in *Powershell ISE*. 
 
 
 ```powershell
 $Location                  = "westeurope" #Azure location such as northeurope,westeurope...
 $Security_Admins           = "ADMIN" #Dynamics user name of ExFlow Web administrators. Use comma to separate. Admins can translate texts, write welecome messages, ...
 $DynamicsAXApiId           = "https://axtestdynamics365aos.cloudax.dynamics.com" #URL to AX
-$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/" #URL to GitHub or the download location for example c:\folder\. 
+$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V3/" #URL to GitHub or the download location for example c:\folder\. 
 $ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
 $Prefix                    = "" #Optional prefix but recommended (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx].
 $PackageVersion            = "" #Optional version to install.  Leave blank for default behavior.
@@ -23,7 +23,9 @@ $MachineSize               = "" #App Service machine (AKA Service Plan) size F1=
 $TenantGuid                = "" #Optional tenant id when you have multiple tenants (advanced). 
 $WebAppSubscriptionGuid    = "" #Optional Subscription for the web app (advanced).
 $UseApiName                = "" #Optional. Set to "true" use the same name as the left part of $DynamicsAXApiId e.g. axtestdynamics365aos. 
-
+$ResourceGroup             = "" #Optional. Set a custom ResourceGroup name.
+$AppServicePlan            = "" #Optional. Set a custom ASP name.
+$AppControlMergeFile       = "App.AX.WS.xml?{ax365api1}=true;{UseDebugLog}=false;{Lines.RemoveOrginal}=true;{Lines.ChangeType}=true;{ForwardTo}=true;{ForwardTo.NoPrevious}=true;{Lang.All}=true;{Lines.UseLineTemplates}=true;{Lines.UseAsyncValidation}=true;{Labs.Vue.InAppSiteConfiguration}=true;" #Enables or disabled features in the web, leave as is for a standard deployment.
 
 
 $Webclient                       = New-Object System.Net.Webclient

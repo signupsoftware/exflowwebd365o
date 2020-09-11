@@ -102,6 +102,13 @@
       "metadata": {
         "description": "Hostnames found on app to add in Storage CORS rules"
       }
+    },
+    "AppControlMergeFile": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "ExFlow Web AppControlMergeFile"
+      }
     }
   },
   "variables": {
@@ -243,6 +250,7 @@
             "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
             "aad_ExternalApiId": "[parameters('Dynamics365Uri')]",
             "security_Admins": "[parameters('security_Admins')]",
+            "AppControlMergeFile": "[parameters('AppControlMergeFile')]",
             "WEBSITE_RUN_FROM_PACKAGE": "[parameters('PackageUri')]"
           }
         },
