@@ -131,9 +131,6 @@ function Get-AzCachedAccessToken() {
     $token = $profileClient.AcquireAccessToken($currentAzureContext.Tenant.TenantId)
     $token.AccessToken
 }
-write-output "appmergefile"
-write-output "$AppControlMergeFile"
-write-output $AppServicePlan
 #Web client download options
 $Webclient = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true
