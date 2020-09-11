@@ -47,6 +47,7 @@ param(
 
 )
 
+write-output "$AppControlMergeFile"
 Function Get-UrlStatusCode {
     Param
     (
