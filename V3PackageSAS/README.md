@@ -1,11 +1,12 @@
-# PowerShell script ExFlow Web for D365O version 2
+# PowerShell script ExFlow Web for D365O version 3
 
 News in this version (V3) of the script: 
-* Adds extended logging to a separate file.
-* Adds support for multifactor authentication
-* Adds support to install into a subscription that is connected to another directory/Azure AD. 
-* Removes the need to store app secret/credentials (used in updates) locally. 
-* Adds options ($UseApiName="true") to use the left part of the Dynamics URL as the name. For example, if the Dynamics URL is https://axtestdynamics365aos.cloudax.dynamics.com and $Prefix="exflow-" the URL becomes exflow-**axtestdynamics365aos**.azurewebsites.net.
+* Updated to use the new Azure Module (Az Module)
+* Removes local dependency of DLL's by using AZ Cli instead (requires install)
+* Connects webapp to a Signup Hosted storage account for automatic updates.
+    * Updates are now pushed to a storage account each month and will be automatically installed on the web app when restarted after time of release.
+* Adds support to install multiple web apps to one resource group (Parameter "ResourceGroup" below)
+* Adds support to install multiple web apps to one ASP when used together with the ResouceGroup parameter (Parameter "AppServicePlan" below) 
 
 ## Installation and updates
 ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3/Run-Deploy.ps1)) in *Powershell ISE*. 
@@ -44,7 +45,7 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 
 The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the D365O API (web services). **Note that to apply product updates you just run the script again.**
 
-## AzureRM Module
+## Az Module
 To successfully run the script you will need an updated PowerShell version. The script also depends on the Azure module, 
 written by Microsoft. PowerShell and the Azure Module update frequently and updates are rarely (never) backwards compatible. Also, all versions stack up making the environment a bit unstable/unpredictable. One way of avoiding this is to uninstall modules. 
 ```powershell
@@ -54,6 +55,12 @@ and then reinstall the module again
 ```powershell
 https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-4.6.1
 ```
+Install AZ cli:
+```powershell
+Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+
+https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest&tabs=azure-powershell
+
 Finally close and reopen the PowerShell ISE console.
 
 ### Instructions:
