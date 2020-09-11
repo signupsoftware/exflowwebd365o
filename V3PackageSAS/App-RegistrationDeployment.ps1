@@ -40,10 +40,10 @@ param(
     [string]$AppServicePlan,
 
     [Parameter(Mandatory = $False)]
-    [string]$ShowAdvancedMenu,
+    [string]$AppControlMergeFile,
 
     [Parameter(Mandatory = $False)]
-    [string]$AppControlMergeFile
+    [string]$ShowAdvancedMenu   
 
 )
 
