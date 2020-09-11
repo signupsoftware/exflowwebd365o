@@ -35,7 +35,7 @@ $Webclient.Encoding              = [System.Text.Encoding]::UTF8
 $Webclient.CachePolicy           = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
 
 $scriptPath = ($Webclient.DownloadString("$($RepoURL)App-RegistrationDeployment.ps1"))
-Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $Location,$Security_Admins,$DynamicsAXApiId,$RepoURL,$ExFlowUserSecret,$Prefix,$PackageVersion,$MachineSize,$TenantGuid,$WebAppSubscriptionGuid,$UseApiName
+Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $Location,$Security_Admins,$DynamicsAXApiId,$RepoURL,$ExFlowUserSecret,$Prefix,$PackageVersion,$MachineSize,$TenantGuid,$WebAppSubscriptionGuid,$UseApiName,$ResourceGroup,$AppServicePlan,$AppControlMergeFile
 
 
 
@@ -45,14 +45,14 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the D365O API (web services). **Note that to apply product updates you just run the script again.**
 
 ## AzureRM Module
-To successfully run the script you will need an updated PowerShell version. The script also depends on the AzureRM module, 
-written by Microsoft. PowerShell and the AzureRM update frequently and updates are rarely (never) backwards compatible. Also, all versions stack up making the environment a bit unstable/unpredictable. One way of avoiding this is to uninstall modules. 
+To successfully run the script you will need an updated PowerShell version. The script also depends on the Azure module, 
+written by Microsoft. PowerShell and the Azure Module update frequently and updates are rarely (never) backwards compatible. Also, all versions stack up making the environment a bit unstable/unpredictable. One way of avoiding this is to uninstall modules. 
 ```powershell
-Uninstall-Module -Name AzureRM -AllVersions
+https://docs.microsoft.com/bs-latn-ba/powershell/azure/uninstall-az-ps?view=azps-1.8.0
 ```
 and then reinstall the module again
 ```powershell
-Install-Module -Name AzureRM
+https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-4.6.1
 ```
 Finally close and reopen the PowerShell ISE console.
 
