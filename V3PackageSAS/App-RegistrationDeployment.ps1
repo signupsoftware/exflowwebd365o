@@ -46,8 +46,7 @@ param(
     [string]$AppControlMergeFile
 
 )
-write-output "appmergefile"
-write-output "$AppControlMergeFile"
+
 Function Get-UrlStatusCode {
     Param
     (
@@ -132,6 +131,8 @@ function Get-AzCachedAccessToken() {
     $token = $profileClient.AcquireAccessToken($currentAzureContext.Tenant.TenantId)
     $token.AccessToken
 }
+write-output "appmergefile"
+write-output "$AppControlMergeFile"
 #Web client download options
 $Webclient = New-Object System.Net.Webclient
 $Webclient.UseDefaultCredentials = $true
