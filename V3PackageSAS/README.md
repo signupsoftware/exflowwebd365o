@@ -49,11 +49,11 @@ The script downloads the latest ExFlow web release and installs all required Azu
 To successfully run the script you will need an updated PowerShell version. The script also depends on the Azure module, 
 written by Microsoft. PowerShell and the Azure Module update frequently and updates are rarely (never) backwards compatible. Also, all versions stack up making the environment a bit unstable/unpredictable. One way of avoiding this is to uninstall modules. 
 ```powershell
-https://docs.microsoft.com/bs-latn-ba/powershell/azure/uninstall-az-ps?view=azps-1.8.0
+https://docs.microsoft.com/bs-latn-ba/powershell/azure/uninstall-az-ps
 ```
 and then reinstall the module again
 ```powershell
-https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-4.6.1
+https://docs.microsoft.com/en-us/powershell/azure/install-az-ps
 ```
 Install AZ cli:
 ```powershell
