@@ -489,6 +489,7 @@ Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Creating AzureRmADApplication"
 Write-Output "--------------------------------------------------------------------------------"
+if (-not(Get-Module -Name Az.Resources)) {Import-Module Az.Resources}
 $psadCredential = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential
 $startDate = Get-Date
 $psadCredential.StartDate = $startDate
