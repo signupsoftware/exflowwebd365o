@@ -58,7 +58,7 @@ https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-4.6.1
 Install AZ cli:
 ```powershell
 Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
-
+```
 https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest&tabs=azure-powershell
 
 Finally close and reopen the PowerShell ISE console.
