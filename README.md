@@ -107,6 +107,20 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
  
+ 
+### Release 2020.8
+
+* Bug Fixes
+   * Coding text selection
+         * Fixes an issue where the line would update if you selected text in a textbox and released the mouse cursor outside the textbox.
+   * Coding autofill
+         * Addresses an autofill issue where values could go missing if autofill cleared the values, and the user then reapplied them.
+   * Change line-type error
+         * Fixes an exception when changing line-type and when the system has support for calculated VAT.
+   * Line-type selection list never closes
+         * When using the keyboard, the line-type selection list didn't close automatically.
+  
+
 ### Release 2020.6
 
 * Improvements
