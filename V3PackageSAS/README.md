@@ -3,6 +3,7 @@
 News in this version (V3) of the script: 
 * Updated to use the new Azure Module (Az Module)
 * Removes local dependency of DLL's by using AZ Cli instead (requires install)
+    * New Registry method allows for extended usability of the Service Principal.
 * Connects webapp to a Signup Hosted storage account for automatic updates.
     * Updates are now pushed to a storage account each month and will be automatically installed on the web app when restarted after time of release.
 * Adds support to install multiple web apps to one resource group (Parameter "ResourceGroup" below)

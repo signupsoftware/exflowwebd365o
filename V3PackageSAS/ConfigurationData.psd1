@@ -6,7 +6,7 @@
     AzCli                           = "2.0.80"
                                     
     RedistPath                      = ""
-    PackageURL                      = "https://exflowpackagemanagerpatch.azurewebsites.net/"
+    PackageURL                      = "https://exflowpackagemanager.azurewebsites.net/"
     LocalPath                       = $env:TEMP
 
     LogFile                         = "App-RegistrationDeployment.log"

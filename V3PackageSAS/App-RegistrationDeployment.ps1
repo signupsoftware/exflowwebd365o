@@ -255,9 +255,23 @@ If ($ExFlowUserSecret) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Checking package"
     Write-Output "--------------------------------------------------------------------------------"
+    
+    If (($DynamicsAXApiId -match "\.operations\.dynamics\.com") -and (($DynamicsAXApiId.split('.')).count -eq 4)) {
+        write-output "Detected Group2 by URL"
+        $PackageVersion = "group2"
+    }
+    ElseIf (($DynamicsAXApiId.split('.')).count -ge 5) {
+        write-output "Detected group1 by URL"
+        $PackageVersion = "group1"
+    }
+    else {
+        write-output "Unable to MATCH -> Assuming Prod"
+        $PackageVersion = "group2"
+    }
+    
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $packageURL = (New-Object System.Net.Webclient).DownloadString("$($ConfigurationData.PackageURL)/Packages?s=" + $ExFlowUserSecret + "&v=" + $PackageVersion)
-
+    
     Write-Output "Package URL: " 
     Write-Output $packageURL
     Write-Output ""
