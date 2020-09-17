@@ -64,8 +64,12 @@ $Webclient.Encoding = [System.Text.Encoding]::UTF8
 $Webclient.CachePolicy = New-Object System.Net.Cache.HttpRequestCachePolicy([System.Net.Cache.HttpRequestCacheLevel]::NoCacheNoStore)
 
 Write-Host "A new version of this script (V3) is available on github: " -ForegroundColor Green
-if (($md = (New-Object System.Net.Webclient).DownloadString("https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/V3/V3PackageSAS/README.md")) -join "`n" -match '\# PowerShell script ExFlow Web for D365O version 3([\s\S]*)\## Installation and updates') { $matches[1] }
-Write-Host "Additional details can be found at https://github.com/signupsoftware/exflowwebd365o/tree/V3/V3PackageSAS" -ForegroundColor Green
+if (($md = (New-Object System.Net.Webclient).DownloadString("https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V3/README.md")) -join "`n" -match '\# PowerShell script ExFlow Web for D365O version 3([\s\S]*)\## Installation and updates') { $matches[1] }
+Write-Host "Additional details can be found at https://github.com/signupsoftware/exflowwebd365o/tree/master/V3" -ForegroundColor Green
+Write-Warning "version you are currently running (v2) is using command from the Azure RM module which is being phased out by Microsoft."
+$runScript = $null
+$runScript = Read-Host "Do you want to continue running this script anyway? (y/n)"
+if ($runScript -eq "n") {Exit}
 #Start measuring time to complete script
 $Measure = [System.Diagnostics.Stopwatch]::StartNew()
 
