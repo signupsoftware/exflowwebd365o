@@ -113,7 +113,7 @@
   "variables": {
     "randomstring": "[parameters('ApplicationName')]",
     "uniqueString": "[variables('randomstring')]",
-    "storageAccount": "[take(replace(variables('uniqueString'), '-', '')),24]",
+    "storageAccount": "[take(replace(variables('uniqueString'), '-', ''),24)]",
     "AppServicePlanName": "[if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName'))]",
     "AppServicePlanSKU": {
       "F1 Free": {
