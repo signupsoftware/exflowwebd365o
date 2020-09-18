@@ -40,10 +40,7 @@ param(
     [string]$AppServicePlan,
 
     [Parameter(Mandatory = $False)]
-    [string]$AppControlMergeFile,
-
-    [Parameter(Mandatory = $False)]
-    [string]$ShowAdvancedMenu   
+    [string]$ShowAdvancedMenu
 
 )
 
@@ -78,7 +75,7 @@ function Show-Menu
      Write-Host "2 : Select App Service Plan Name"
      Write-Host "3 : I'm feeling lucky; specify your own deployment name"
      Write-Host "Q : Press 'Q' to quit."
-     #Write-Host "9 : Overwrite deployment; Reruns the template deployment as if new installation : Press '9' for this option."
+     Write-Host "9 : Overwrite deployment; Reruns the template deployment as if new installation : Press '9' for this option."
 }
 
 
@@ -255,23 +252,9 @@ If ($ExFlowUserSecret) {
     Write-Output "--------------------------------------------------------------------------------"
     Write-Output "Checking package"
     Write-Output "--------------------------------------------------------------------------------"
-    
-    If (($DynamicsAXApiId -match "\.operations\.dynamics\.com") -and (($DynamicsAXApiId.split('.')).count -eq 4)) {
-        write-output "Detected Group2 by URL"
-        $PackageVersion = "group2"
-    }
-    ElseIf (($DynamicsAXApiId.split('.')).count -ge 5) {
-        write-output "Detected group1 by URL"
-        $PackageVersion = "group1"
-    }
-    else {
-        write-output "Unable to MATCH -> Assuming Prod"
-        $PackageVersion = "group2"
-    }
-    
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $packageURL = (New-Object System.Net.Webclient).DownloadString("$($ConfigurationData.PackageURL)/Packages?s=" + $ExFlowUserSecret + "&v=" + $PackageVersion)
-    
+
     Write-Output "Package URL: " 
     Write-Output $packageURL
     Write-Output ""
@@ -503,7 +486,6 @@ Write-Output ""
 Write-Output "--------------------------------------------------------------------------------"
 Write-Output "Creating AzureRmADApplication"
 Write-Output "--------------------------------------------------------------------------------"
-if (-not(Get-Module -Name Az.Resources)) {Import-Module Az.Resources}
 $psadCredential = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential
 $startDate = Get-Date
 $psadCredential.StartDate = $startDate
@@ -538,6 +520,7 @@ If(($AzAadApp = az ad app list --display-name $DeploymentName) -eq "[]") {
     
     Write-Output "Found existing app, updating..."
     $AzAadApp = $AzAadApp | ConvertFrom-Json
+    #("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
     $error.clear()
     az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
 
@@ -562,15 +545,14 @@ If ($AzAadApp) {
     Write-Output "--------------------------------------------------------------------------------"
     $TemplateParameters = @{
         ApplicationName                = $DeploymentName
-        AppServicePlanSKU              = $MachineSize
-        PackageUri                     = $packageURL
+        AppServicePlanSKU             = $MachineSize
+        PackageUri                    = $packageURL
         AppServicePlanName             = $AppServicePlan
-        aad_ClientId                   = $AzAadApp.appId
-        aad_ClientSecret               = $psadCredential.Password
-        aad_TenantId                   = $TenantGuid
+        aad_ClientId                  = $AzAadApp.appId
+        aad_ClientSecret              = $psadCredential.Password
+        aad_TenantId                  = $TenantGuid
         #aad_PostLogoutRedirectUri     = "https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/close.aspx?signedout=yes"
-        Dynamics365Uri                 = "https://$($DynamicsAXApiId)"
-        AppControlMergeFile            = $AppControlMergeFile
+        Dynamics365Uri             = "https://$($DynamicsAXApiId)"
     }
 
     If ($Security_Admins) {

@@ -102,13 +102,6 @@
       "metadata": {
         "description": "Hostnames found on app to add in Storage CORS rules"
       }
-    },
-    "AppControlMergeFile": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "ExFlow Web AppControlMergeFile"
-      }
     }
   },
   "variables": {
@@ -237,11 +230,27 @@
       },
       "resources": [
         {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2018-02-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('uniqueString'))]"
+          ],
+          "properties": {
+            "packageUri": "[parameters('PackageUri')]",
+            "dbType": "None",
+            "connectionString": "",
+            "setParameters": {}
+          }
+        },
+        {
           "apiVersion": "2018-02-01",
           "name": "appsettings",
           "type": "config",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]"
+            "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]",
+            "[concat('Microsoft.Web/Sites/', variables('uniqueString'), '/Extensions/MSDeploy')]"
           ],
           "properties": {
             "aad_ClientId": "[parameters('aad_ClientId')]",
@@ -249,9 +258,7 @@
             "aad_TenantId": "[parameters('aad_tenantId')]",
             "aad_PostLogoutRedirectUri": "[concat('https://',variables('uniqueString'),'.azurewebsites.net/close.aspx?signedout=yes')]",
             "aad_ExternalApiId": "[parameters('Dynamics365Uri')]",
-            "security_Admins": "[parameters('security_Admins')]",
-            "AppControlMergeFile": "[parameters('AppControlMergeFile')]",
-            "WEBSITE_RUN_FROM_PACKAGE": "[parameters('PackageUri')]"
+            "security_Admins": "[parameters('security_Admins')]"
           }
         },
         {
@@ -259,7 +266,8 @@
           "name": "connectionstrings",
           "type": "config",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]"
+            "[resourceId('Microsoft.Web/Sites', variables('uniqueString'))]",
+            "[concat('Microsoft.Web/Sites/', variables('uniqueString'), '/Extensions/MSDeploy')]"
           ],
           "properties": {
             "StorageConnection": {
