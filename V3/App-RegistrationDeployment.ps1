@@ -260,7 +260,7 @@ If ($ExFlowUserSecret) {
         write-output "Detected Group2 by URL"
         $PackageVersion = "group2"
     }
-    ElseIf (($DynamicsAXApiId.split('.')).count -ge 5) {
+    ElseIf ((($DynamicsAXApiId.split('.')).count -ge 5) -or ($DynamicsAXApiId -match "\.cloudax\.dynamics\.com")) {
         write-output "Detected group1 by URL"
         $PackageVersion = "group1"
     }
