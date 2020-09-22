@@ -20,13 +20,14 @@ News in this version (V3) of the script:
 * Adds support to install multiple web apps to one ASP when used together with the ResouceGroup parameter. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3)
 * Adds support for Storage Account CORS rules when using custom domains. (Storage CORS will no longer be cleared when running the script again)
 * AppControlMergeFile settings are moved from Kudu to "Application Settings" in portal.
+* Adds support to run the script Azure Portal Cloud Shell. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3)
 
 
 
 ## Installation and updates
 ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3/Run-Deploy.ps1)) in *Powershell ISE*. 
 
-* Note: To update and existing V2 deployment simply install the new modules and change your current Scripts $RepoURL parameter to:
+* Note: To update and existing V2 deployment to V3 simply install the new modules and change your current Scripts $RepoURL parameter to:
   * $RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V3/" 
 
 ```powershell
@@ -59,7 +60,7 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 
 ```
 
-The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the Microsoft Dynamics 365 for Finance and Operations API (web services). **Note that to apply product updates you just run the script again.**
+The script installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the Microsoft Dynamics 365 for Finance and Operations API (web services). **Note that to apply product updates you just need to restart the app service when running V3**
 
 ## Az Module
 To successfully run the script you will need an updated PowerShell version. The script also depends on the Azure module, 
