@@ -104,7 +104,7 @@
     },
     "AppControlMergeFile": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "App.AX.WS.xml?{ax365api1}=true;{UseDebugLog}=false;{Lines.RemoveOrginal}=true;{Lines.ChangeType}=true;{ForwardTo}=true;{ForwardTo.NoPrevious}=true;{Lang.All}=true;{Lines.UseLineTemplates}=true;{Lines.UseAsyncValidation}=true;{Labs.Vue.InAppSiteConfiguration}=true;",
       "metadata": {
         "description": "ExFlow Web AppControlMergeFile"
       }
