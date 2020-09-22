@@ -8,6 +8,7 @@ News in this version (V3) of the script:
     * Updates are now pushed to a storage account each month and will be automatically installed on the web app when restarted after time of release.
 * Adds support to install multiple web apps to one resource group (Parameter "ResourceGroup" below)
 * Adds support to install multiple web apps to one ASP when used together with the ResouceGroup parameter (Parameter "AppServicePlan" below) 
+* Adds support for Storage Account CORS rules when using custom domains.
 
 ## Installation and updates
 ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3/Run-Deploy.ps1)) in *Powershell ISE*. 

@@ -8,25 +8,32 @@ ___
 ExFlow web for *Microsoft Dynamics 365 for Finance and Operations* runs in Azure as a fully scalable *Azure App Service*. ExFlow web is deployed into the tenant’s Azure environment as a Resource Group that contains a Web Site and a Storage account. The website is further connected to the Azure AD and Microsoft Dynamics 365 for Finance and Operations thru a so-called App Registration and communicates with Microsoft Dynamics 365 for Finance and Operations using the same security technology that Microsoft Dynamics 365 for Finance and Operations uses namely Azure AD and OAuth 2.0.
 
 ## PowerShell deployment script - NEW VERSION
-We have a new version of the script called [V2](https://github.com/signupsoftware/exflowwebd365o/tree/master/V2) that we recommend for new deployments. If you wish to continue using the original version of the script see [V1](https://github.com/signupsoftware/exflowwebd365o/tree/master/V1).
+We have a new version of the script called [V3](https://github.com/signupsoftware/exflowwebd365o/tree/master/V3) that we recommend for new deployments. If you wish to continue using the previous versions of the script see [V1](https://github.com/signupsoftware/exflowwebd365o/tree/master/V1) or [V2](https://github.com/signupsoftware/exflowwebd365o/tree/master/V2)
 
-New in this version (V2) of the script: 
-* Adds extended logging to a separate file.
-* Adds support for multifactor authentication
-* Adds support to install into a subscription that is connected to another directory/Azure AD. 
-* Removes the need to store app secret/credentials (used in updates) locally. 
-* Adds options ($UseApiName="true") to use the left part of the Dynamics URL as the name. For example, if the Dynamics URL is *axtestdynamics365aos*.cloudax.dynamics.com and $Prefix="exflow-" the URL becomes *exflow-axtestdynamics365aos*.azurewebsites.net.
-* Script will now prompt for subscription id when multiple subscriptions is found.
+News in this version (V3) of the script: 
+* Updated to use the new Azure Module. (Az Module - Requires install)
+* Removes local dependency of DLL's by using AZ Cli instead. (Requires install)
+    * New Registry method allows for extended usability of the Service Principal.
+* Connects webapp to a Signup Hosted storage account for automatic updates.
+    * Updates are now pushed to a storage account each month and will be automatically installed on your web app when restarted after time of release.
+* Adds support to install multiple web apps to one resource group. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3)
+* Adds support to install multiple web apps to one ASP when used together with the ResouceGroup parameter. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3)
+* Adds support for Storage Account CORS rules when using custom domains. (Storage CORS will no longer be cleared when running the script again)
+* AppControlMergeFile settings are moved from Kudu to "Application Settings" in portal.
+
+
 
 ## Installation and updates
-ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v2/Run-Deploy.ps1)) in *Powershell ISE*. 
+ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3/Run-Deploy.ps1)) in *Powershell ISE*. 
 
+* Note: To update and existing V2 deployment simply install the new modules and change your current Scripts $RepoURL parameter to:
+  * $RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V3/" 
 
 ```powershell
 $Location                  = "westeurope" #Azure location such as northeurope,westeurope...
 $Security_Admins           = "ADMIN" #Dynamics user name of ExFlow Web administrators. Use comma to separate. Admins can translate texts, write welecome messages, ...
 $DynamicsAXApiId           = "https://axtestdynamics365aos.cloudax.dynamics.com" #URL to AX
-$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/" #URL to GitHub or the download location for example c:\folder\. 
+$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V3/" #URL to GitHub or the download location for example c:\folder\. 
 $ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
 $Prefix                    = "" #(Optional) Name prefix (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx]. If UseApiName is used then name will be [$prefix][dynamics_sub_domain].azurewebsites.net
 $PackageVersion            = "" #(Optional) Version to install. Leave blank for default behavior.
@@ -34,7 +41,9 @@ $MachineSize               = "" #(Optional) App Service machine (AKA Service Pla
 $TenantGuid                = "" #(Optional) Tenant id when you have multiple tenants (advanced). 
 $WebAppSubscriptionGuid    = "" #(Optional) Subscription id when you have multiple subscriptions for the web app (advanced).
 $UseApiName                = "" #(Optional) Set to "true" use the same name as the left part of $DynamicsAXApiId e.g. axtestdynamics365aos. 
-
+$ResourceGroup             = "" #(Optional) Set a custom ResourceGroup name.
+$AppServicePlan            = "" #(Optional) Set a custom ASP name.
+$AppControlMergeFile       = "App.AX.WS.xml?{ax365api1}=true;{UseDebugLog}=false;{Lines.RemoveOrginal}=true;{Lines.ChangeType}=true;{ForwardTo}=true;{ForwardTo.NoPrevious}=true;{Lang.All}=true;{Lines.UseLineTemplates}=true;{Lines.UseAsyncValidation}=true;{Labs.Vue.InAppSiteConfiguration}=true;" #Enables or disabled features in the web, leave as is for a standard deployment.
 
 
 $Webclient                       = New-Object System.Net.Webclient
@@ -52,17 +61,23 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 
 The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the Microsoft Dynamics 365 for Finance and Operations API (web services). **Note that to apply product updates you just run the script again.**
 
-## AzureRM Modules
-To successfully run the script you will need an updated PowerShell version. The script also depends on the AzureRM module, 
-written by Microsoft. PowerShell and the AzureRM update frequently and updates are rarely (never) backward compatible. Also, all versions stack up making PowerShell a bit unpredictable. One way of avoiding this is to uninstall modules. 
+## Az Module
+To successfully run the script you will need an updated PowerShell version. The script also depends on the Azure module, 
+written by Microsoft. PowerShell and the Azure Module update frequently and updates are rarely (never) backwards compatible. Also, all versions stack up making the environment a bit unstable/unpredictable. One way of avoiding this is to uninstall modules. 
 ```powershell
-Uninstall-Module -Name AzureRM -AllVersions
+https://docs.microsoft.com/bs-latn-ba/powershell/azure/uninstall-az-ps
 ```
 and then reinstall the module again
 ```powershell
-Install-Module -Name AzureRM
+https://docs.microsoft.com/en-us/powershell/azure/install-az-ps
 ```
-Finally, close and reopen the PowerShell ISE console.
+Install AZ cli:
+```powershell
+Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+```
+https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest&tabs=azure-powershell
+
+Finally close and reopen the PowerShell ISE console.
 
 ## Instructions:
 1. Open PowerShell ISE
@@ -106,7 +121,90 @@ The following features are currently under development.
 * To install an older version, omit any dots and Zeros (0). e.i:
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
+
+### Release 2020.8
+
+* Bug Fixes
+   * Coding text selection
+       * Fixes an issue where the line would update if you selected text in a textbox and released the mouse cursor outside the textbox.
+   * Coding autofill
+       * Addresses an autofill issue where values could go missing if autofill cleared the values, and the user then reapplied them.
+   * Change line-type error
+       * Fixes an exception when changing line-type and when the system has support for calculated VAT.
+   * Line-type selection list never closes
+       * When using the keyboard, the line-type selection list didn't close automatically.
+  
+
+### Release 2020.6
+
+* Improvements
+   * Adds more FO document statuses in search.
+   * For Dynamics FO attachments are now saved directly to FO. Attachments can also be removed by the user that uploaded them.
+   * For Dynamics FO line VAT will recalculate based on changes on line coding and amount.
+   * For Dynamics FO a new lock icon indicates if a document is classified. The search feature also adds the possibility to search for classified documents.
+   * For Dynamics FO the Amount in standard currency (MST) is now displayed in the search and inbox results.
+   * Classified documents appear with a lock icon on the inbox along with search and sorting options. 
+   
+* Bug Fixes
+   * Fixes that the close button on the chat feature didn't work on some mobile browsers.
+   * Fixes an issue with overlapping toolbar buttons on mobile.
+   * Ticket SSO 
+      	* The code is now trimmed from extra white-space characters that is added by default when copying from Outlook. 
+
+
+### Release 2020.5
+
+* Improvements
+   * New search criteria Order number.
+   * Documents that are classified will show with a lock icon in Dynamics FO 2020.Q2.
+   * Classified documents appear with a lock icon on the inbox along with search and sorting options.
+   * Adds the option to search by Purchase order number.
+   * Improves attachments by saving them directly to Dynamics FO. Attachments that you have uploaded can also be deleted. Available with      the FO Q2 release.
+   * Purchase order column will be available with Q2 release for FO. 
+   * For new users language selection have been improved to better match the browsers list of preferred languages.
+
+* Bug Fixes
+   * Fixed Chat button to close.
+
+### Release 2020.4
+
+* Improvements
+   * Adds support for calling FO with application credentials when getting settings. This avoids that settings only gets partially
+     loaded when Assigned Organization is enabled. Note that you need to register the application id in FO. 
+   *	Dynamics will add links in email notifications in the upcoming releases.
+   *	This release adds better support for using multiple tabs in your browser.
  
+ * Bug Fixes
+    *	Fixes a chat issue for Android users.
+    * Fixes an issue with line column display.
+    * Fixes an issue with search when working with more than one tab.
+    * Fixes an issue where the wrong line could get reselected after a line was edited.
+    * Increases the number of characters in hold comments.
+    
+### Release 2020.3
+
+  * Improvements
+     *	The default column ordering have been changed so that Vendor is the leftmost column.
+     *	The calendar start day is now based on the current locale, previously it always started on Sunday.
+     *	Speeds up the performance while when getting the list of approvers that previously could take some time on documents with many          lines and approvers.
+     * Chat notifications show the "dots" when the list is empty.
+     * Improves the chat feature by scrolling to the first unread message.
+     * Improves performance by allowing more simultaneous and speeding up client calls.
+     * Adds support to download Inbox and search results to Excel.
+
+ * Bug Fixes
+    * Fixes an issue in the Feb release where the previous selected document opens when search is clicked.
+    * Addresses an issue in the Feb release where the list of approvers on a line only showed about 8 approvers.
+    * An issue with when deleting one or more lines have been fixed.
+
+### Release 2020.2
+
+  * Improvements
+     * Ticket SSO have been extended with variable email code length and improved security features such as the option to kill the SSO          ticket on sign out.
+     
+  * Bug Fixes
+     * Addresses an issue when using Azure AD and user switched between multiple accounts. 
+
 ### Release 2020.1
 
 **This release supports the Chrome 80 change to SameSite cookie behavior.**
