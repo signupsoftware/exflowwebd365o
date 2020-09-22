@@ -16,8 +16,8 @@ News in this version (V3) of the script:
     * New Registry method allows for extended usability of the Service Principal.
 * Connects webapp to a Signup Hosted storage account for automatic updates.
     * Updates are now pushed to a storage account each month and will be automatically installed on your web app when restarted after time of release.
-* Adds support to install multiple web apps to one resource group. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3)
-* Adds support to install multiple web apps to one ASP when used together with the ResouceGroup parameter. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3)
+* Adds support to install multiple web apps to one resource group. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3)
+* Adds support to install multiple web apps to one ASP when used together with the ResouceGroup parameter. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3)
 * Adds support for Storage Account CORS rules when using custom domains. (Storage CORS will no longer be cleared when running the script again)
 * AppControlMergeFile settings are moved from Kudu to "Application Settings" in portal.
 
