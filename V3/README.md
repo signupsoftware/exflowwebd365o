@@ -11,7 +11,7 @@ News in this version (V3) of the script:
 * Adds support for Storage Account CORS rules when using custom domains.
 
 ## Installation and updates
-ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3/Run-Deploy.ps1)) in *Powershell ISE*. 
+ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3/Run-Deploy.ps1)) in *Powershell ISE* or *Cloud shell*. 
 
 
 ```powershell
@@ -45,7 +45,7 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 ```
 
 
-The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the D365O API (web services). **Note that to apply product updates you just run the script again.**
+The script installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the D365O API (web services). **Note that to apply product updates you just need to restart the app service when running V3**
 
 ## Az Module
 To successfully run the script you will need an updated PowerShell version. The script also depends on the Azure module, 
