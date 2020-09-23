@@ -75,3 +75,14 @@ Finally close and reopen the PowerShell ISE console.
 7. Open URL and grant the app permissions 
 
 If the text in the command window turns red or the script aborts something went wrong, see below section on errors.
+
+
+### To run the script in Cloud shell:
+* Note: Only recommended to use when installing the Web App in a Subscription that is tied to the same Azure Tenant as Dynamics F&O is installed in.
+1. Open https://portal.azure.com
+2. login with an account that has Contributor on subscription and is Allowed to create Azure AD Applications.
+3. Open the Cloud Shell from the top-right menu and configure a storage account.
+4. Edit the parameter in [Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3/Run-Deploy.ps1)
+5. Copy and Paste the parameter script into the Cloud Shell window and run
+
+![](cloudshellrunv3.gif)
