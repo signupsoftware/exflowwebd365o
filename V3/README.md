@@ -86,3 +86,5 @@ If the text in the command window turns red or the script aborts something went 
 5. Copy and Paste the parameter script into the Cloud Shell window and run
 
 ![](cloudshellrunv3.gif)
+
+*Sometimes the output in cloud shell might bug and all information is not displayed, restart your cloud shell session if this happens*
