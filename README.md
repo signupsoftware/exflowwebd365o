@@ -8,25 +8,33 @@ ___
 ExFlow web for *Microsoft Dynamics 365 for Finance and Operations* runs in Azure as a fully scalable *Azure App Service*. ExFlow web is deployed into the tenant’s Azure environment as a Resource Group that contains a Web Site and a Storage account. The website is further connected to the Azure AD and Microsoft Dynamics 365 for Finance and Operations thru a so-called App Registration and communicates with Microsoft Dynamics 365 for Finance and Operations using the same security technology that Microsoft Dynamics 365 for Finance and Operations uses namely Azure AD and OAuth 2.0.
 
 ## PowerShell deployment script - NEW VERSION
-We have a new version of the script called [V2](https://github.com/signupsoftware/exflowwebd365o/tree/master/V2) that we recommend for new deployments. If you wish to continue using the original version of the script see [V1](https://github.com/signupsoftware/exflowwebd365o/tree/master/V1).
+We have a new version of the script called [V3](https://github.com/signupsoftware/exflowwebd365o/tree/master/V3) that we recommend for new deployments. If you wish to continue using the previous versions of the script see [V1](https://github.com/signupsoftware/exflowwebd365o/tree/master/V1) or [V2](https://github.com/signupsoftware/exflowwebd365o/tree/master/V2)
 
-New in this version (V2) of the script: 
-* Adds extended logging to a separate file.
-* Adds support for multifactor authentication
-* Adds support to install into a subscription that is connected to another directory/Azure AD. 
-* Removes the need to store app secret/credentials (used in updates) locally. 
-* Adds options ($UseApiName="true") to use the left part of the Dynamics URL as the name. For example, if the Dynamics URL is *axtestdynamics365aos*.cloudax.dynamics.com and $Prefix="exflow-" the URL becomes *exflow-axtestdynamics365aos*.azurewebsites.net.
-* Script will now prompt for subscription id when multiple subscriptions is found.
+News in this version (V3) of the script: 
+* Updated to use the new Azure Module. (Az Module - Requires install)
+* Removes local dependency of DLL's by using AZ Cli instead. (Requires install)
+    * New Registry method allows for extended usability of the Service Principal.
+* Connects webapp to a Signup Hosted storage account for automatic updates.
+    * Updates are now pushed to a storage account each month and will be automatically installed on your web app when restarted after time of release.
+* Adds support to install multiple web apps to one resource group. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3)
+* Adds support to install multiple web apps to one ASP when used together with the ResouceGroup parameter. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3)
+* Adds support for Storage Account CORS rules when using custom domains. (Storage CORS will no longer be cleared when running the script again)
+* AppControlMergeFile settings are moved from Kudu to "Application Settings" in portal.
+* Adds support to run the script Azure Portal Cloud Shell. [Details in V3](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3)
+
+
 
 ## Installation and updates
-ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v2/Run-Deploy.ps1)) in *Powershell ISE*. 
+ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/V3/Run-Deploy.ps1)) in *Powershell ISE*. 
 
+* Note: To update and existing V2 deployment to V3 simply install the new modules and change your current Scripts $RepoURL parameter to:
+  * $RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V3/" 
 
 ```powershell
 $Location                  = "westeurope" #Azure location such as northeurope,westeurope...
 $Security_Admins           = "ADMIN" #Dynamics user name of ExFlow Web administrators. Use comma to separate. Admins can translate texts, write welecome messages, ...
 $DynamicsAXApiId           = "https://axtestdynamics365aos.cloudax.dynamics.com" #URL to AX
-$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V2/" #URL to GitHub or the download location for example c:\folder\. 
+$RepoURL                   = "https://raw.githubusercontent.com/signupsoftware/exflowwebd365o/master/V3/" #URL to GitHub or the download location for example c:\folder\. 
 $ExFlowUserSecret          = "xxxxxxxxxxxxxxxxxxxxxx" #Your identity recieved by signupsoftware.com
 $Prefix                    = "" #(Optional) Name prefix (short using alphanumeric characters). Name will be exflow[$prefix][xxxxxxxxxxx]. If UseApiName is used then name will be [$prefix][dynamics_sub_domain].azurewebsites.net
 $PackageVersion            = "" #(Optional) Version to install. Leave blank for default behavior.
@@ -34,7 +42,9 @@ $MachineSize               = "" #(Optional) App Service machine (AKA Service Pla
 $TenantGuid                = "" #(Optional) Tenant id when you have multiple tenants (advanced). 
 $WebAppSubscriptionGuid    = "" #(Optional) Subscription id when you have multiple subscriptions for the web app (advanced).
 $UseApiName                = "" #(Optional) Set to "true" use the same name as the left part of $DynamicsAXApiId e.g. axtestdynamics365aos. 
-
+$ResourceGroup             = "" #(Optional) Set a custom ResourceGroup name.
+$AppServicePlan            = "" #(Optional) Set a custom ASP name.
+$AppControlMergeFile       = "App.AX.WS.xml?{ax365api1}=true;{UseDebugLog}=false;{Lines.RemoveOrginal}=true;{Lines.ChangeType}=true;{ForwardTo}=true;{ForwardTo.NoPrevious}=true;{Lang.All}=true;{Lines.UseLineTemplates}=true;{Lines.UseAsyncValidation}=true;{Labs.Vue.InAppSiteConfiguration}=true;" #Enables or disabled features in the web, leave as is for a standard deployment.
 
 
 $Webclient                       = New-Object System.Net.Webclient
@@ -50,19 +60,25 @@ Invoke-Command -ScriptBlock ([scriptblock]::Create($scriptPath)) -ArgumentList $
 
 ```
 
-The script downloads the latest ExFlow web release and installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the Microsoft Dynamics 365 for Finance and Operations API (web services). **Note that to apply product updates you just run the script again.**
+The script installs all required Azure components into an Azure Resource Group. During installation, the web app is registered to communicate with the Microsoft Dynamics 365 for Finance and Operations API (web services). **Note that to apply product updates you just need to restart the app service when running V3**
 
-## AzureRM Modules
-To successfully run the script you will need an updated PowerShell version. The script also depends on the AzureRM module, 
-written by Microsoft. PowerShell and the AzureRM update frequently and updates are rarely (never) backward compatible. Also, all versions stack up making PowerShell a bit unpredictable. One way of avoiding this is to uninstall modules. 
+## Az Module
+To successfully run the script you will need an updated PowerShell version. The script also depends on the Azure module, 
+written by Microsoft. PowerShell and the Azure Module update frequently and updates are rarely (never) backwards compatible. Also, all versions stack up making the environment a bit unstable/unpredictable. One way of avoiding this is to uninstall modules. 
 ```powershell
-Uninstall-Module -Name AzureRM -AllVersions
+https://docs.microsoft.com/bs-latn-ba/powershell/azure/uninstall-az-ps
 ```
 and then reinstall the module again
 ```powershell
-Install-Module -Name AzureRM
+https://docs.microsoft.com/en-us/powershell/azure/install-az-ps
 ```
-Finally, close and reopen the PowerShell ISE console.
+Install AZ cli:
+```powershell
+Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+```
+https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest&tabs=azure-powershell
+
+Finally close and reopen the PowerShell ISE console.
 
 ## Instructions:
 1. Open PowerShell ISE
@@ -106,8 +122,7 @@ The following features are currently under development.
 * To install an older version, omit any dots and Zeros (0). e.i:
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
- 
- 
+
 ### Release 2020.8
 
 * Bug Fixes
