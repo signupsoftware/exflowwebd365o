@@ -133,19 +133,19 @@ The following features are currently under development.
 
 * Bug Fixes
    * Disabled chat feature
-         * Fixes an issue with the detection of Dynamics capabilities that caused many new features to be disabled, such as chat.
+        * Fixes an issue with the detection of Dynamics capabilities that caused many new features to be disabled, such as chat.
    * Line-type selection list
-         * Fixes an issue with the line-type selection list where not all types appeared when using TAB.
+        * Fixes an issue with the line-type selection list where not all types appeared when using TAB.
    * Lines scrolling issues
-         * Multiple scroll related issues have been target by this release.
+        * Multiple scroll related issues have been target by this release.
    * Coding text selection
-         * Fixes an issue where the line would update if you selected text in a textbox and released the mouse cursor outside the textbox.
+        * Fixes an issue where the line would update if you selected text in a textbox and released the mouse cursor outside the textbox.
    * Coding autofill
-         * Addresses an autofill issue where values could go missing if autofill cleared the values, and the user then reapplied them.
+        * Addresses an autofill issue where values could go missing if autofill cleared the values, and the user then reapplied them.
    * Change line-type error
-         * Fixes an exception when changing line-type and when the system has support for calculated VAT.
+        * Fixes an exception when changing line-type and when the system has support for calculated VAT.
    * Line-type selection list never closes
-         * When using the keyboard, the line-type selection list didn't close automatically.
+        * When using the keyboard, the line-type selection list didn't close automatically.
   
 
 ### Release 2020.6
