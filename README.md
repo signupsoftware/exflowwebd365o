@@ -126,12 +126,14 @@ The following features are currently under development.
 ### Release 2020.9
 
 * Bug Fixes
+
    * Fixes an issue where the attachments list are shown on historical documents
    
 
 ### Release 2020.8
 
 * Bug Fixes
+
    * Disabled chat feature
         * Fixes an issue with the detection of Dynamics capabilities that caused many new features to be disabled, such as chat.
    * Line-type selection list
