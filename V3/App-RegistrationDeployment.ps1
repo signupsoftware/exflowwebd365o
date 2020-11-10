@@ -542,6 +542,7 @@ If(($AzAadApp = az ad app list --display-name $DeploymentName) -eq "[]") {
     $AzAadApp = $AzAadApp | ConvertFrom-Json
     $error.clear()
     az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
+    az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($(get-date).AddYears(20))
 
     if ($error) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
