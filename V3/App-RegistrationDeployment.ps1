@@ -442,6 +442,7 @@ Else {
 #endregion 
 If (-not($ResourceGroup)) {$ResourceGroup = $DeploymentName}
 If (-not($AppServicePlan)) {$AppServicePlan = $DeploymentName}
+If (-not($AppControlMergeFile)) {$AppControlMergeFile = "App.AX.WS.xml?{ax365api1}=true;{UseDebugLog}=false;{Lines.RemoveOrginal}=true;{Lines.ChangeType}=true;{ForwardTo}=true;{ForwardTo.NoPrevious}=true;{Lang.All}=true;{Lines.UseLineTemplates}=true;{Lines.UseAsyncValidation}=true;{Labs.Vue.InAppSiteConfiguration}=true;"}
 <#If(-not(Get-AzResourceGroup -Name $ResourceGroup -ErrorAction SilentlyContinue)) {
     Write-Output ""
     Write-Output "--------------------------------------------------------------------------------"
