@@ -371,9 +371,8 @@ If ($TenantGuid) {
         $answer = Read-Host -Prompt 'Enter tenant id:'
         az account set --subscription ($AzCliLoginList | where {$_.tenantId -eq $answer} | Select-Object -First 1).id
         $AzCliLogin = az account show | ConvertFrom-Json
-        $TenantGuid = $AzCliLogin.tenantId
-        #if ($AzCliLogin.tenantId -eq $answer) { $AzCliLogin =  }
     }
+    $TenantGuid = $AzCliLogin.tenantId
 }
 If (!$AzCliLogin) { Try { Invoke-Logger -Message "Logon to Azure failed" -Severity W -Category "Logon" } Catch {} ; return }
 else 
