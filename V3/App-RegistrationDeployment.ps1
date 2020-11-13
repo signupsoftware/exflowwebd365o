@@ -371,6 +371,7 @@ If ($TenantGuid) {
         $answer = Read-Host -Prompt 'Enter tenant id:'
         az account set --subscription ($AzCliLoginList | where {$_.tenantId -eq $answer} | Select-Object -First 1).id
         $AzCliLogin = az account show | ConvertFrom-Json
+        $TenantGuid = $AzCliLogin.tenantId
         #if ($AzCliLogin.tenantId -eq $answer) { $AzCliLogin =  }
     }
 }
