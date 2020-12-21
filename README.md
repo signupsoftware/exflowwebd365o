@@ -123,6 +123,24 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
 
+
+
+### Release 2020.12
+
+* Improvements
+
+   * FO line validation
+        * Line validation when forwarding is now optional.
+   * Add replacer
+        * Have been extended with a disable option.
+        
+* Bug Fixes
+
+   * Company in search
+       * System will now remember last selected company in the search feature.
+   * General bugfixes
+
+
 ### Release 2020.9
 
 * Bug Fixes
