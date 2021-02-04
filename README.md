@@ -125,17 +125,41 @@ The following features are currently under development.
 
 
 
+### Release 2021.01
+
+* Improvements
+   * Adds the possibility to notify users about scheduled maintenance (exflow.cloud).
+   * Line templates are now marked as favorite when the user clicks 'Keep'.
+   * Adds configuration options to the column setup expressions (used by FO proj intercompany).
+   * Adds support for project intercompany (FO).
+   * System will now automatically detect if Dynamics capabilities (endpoint detection) and turn on the new chat component.
+   * Project intercompany
+       * Adds support for working with project intercompany in Dynamics FO. 
+   * Mathematical formulas
+       * In the split-view and amount field, it is now possible to use simple mathematical formulas e.g. 399.33*4/5 
+   * Using % in amount field
+       * It is now possible use % of the total amount in the amount field and during split. 
+   * Set amount, quantity, and unit cost
+       * Users can now set amount, quantity, and unit cost in the amount field or split view by using the character "x" e.g. 10x100 gives quantity=10, 
+         unit cost=100, and amount=1000.
+
+* Bug Fixes
+   * Issue with detecting chat capability
+       * Fixes an issue where the site could revert to using the legacy chat if Dynamics failed to respond (during endpoint detection).
+   * Improves how the coding suggestion list is displayed
+   * Fixes a minor issue with split 
+   
+   
+
 ### Release 2020.12
 
 * Improvements
-
    * FO line validation
         * Line validation when forwarding is now optional.
    * Add replacer
         * Have been extended with a disable option.
         
 * Bug Fixes
-
    * Company in search
        * System will now remember last selected company in the search feature.
    * General bugfixes
