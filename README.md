@@ -125,6 +125,15 @@ The following features are currently under development.
 
 
 
+### Release 2021.02
+
+* Improvements
+   * Adds tooltips for document toolbar.
+
+* Bug Fixes
+   * Fixes an issue with the Discard-button when using line templates.
+
+
 ### Release 2021.01
 
 * Improvements
