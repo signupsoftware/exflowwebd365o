@@ -124,6 +124,15 @@ The following features are currently under development.
  * $PackageVersion = "201841" for 2018.4.1
 
 
+### Release 2021.03
+
+* Improvements
+   * Show line misc charge values for F&O under the line amount.
+   * Adds amount validation logic for line item charges.
+   * Adds/Improves German localization.
+   * Timezone improvements
+       * Improves the display of approval dates.
+
 
 ### Release 2021.02
 
