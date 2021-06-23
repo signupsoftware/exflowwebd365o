@@ -125,6 +125,12 @@ The following features are currently under development.
 
 
 
+### Release 2021.06
+
+* Bug Fixes
+   * Fixes an issue with line item charges validation.
+   
+
 ### Release 2021.05
 
 * Improvements
