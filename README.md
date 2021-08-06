@@ -124,6 +124,12 @@ The following features are currently under development.
  * $PackageVersion = "201841" for 2018.4.1
 
 
+### Release 2021.07
+
+* Bug Fixes
+
+   * Resolves the issue with PDF documents not showing text after Chrome updated to version 92.0.4515.107
+
 
 ### Release 2021.06
 
