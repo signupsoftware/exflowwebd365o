@@ -15,4 +15,4 @@
 * Grant Admin consent with the new permissions and remove the old one.
 
 # Updating after re-running V3 script:
-* ![Appservice](/MSGraphAPI/AppPermissionMigV3.png)
+ ![Appservice](/MSGraphAPI/AppPermissionMigV3.png)
