@@ -1,7 +1,18 @@
-# Required update to version 2020.1.0.0
-Important notice, in the next couple of days Google will ship version 80 of Chrome. Version 80 contains breaking changes to the cookie handling in Chrome. You can read more about it here, https://docs.microsoft.com/en-us/office365/troubleshoot/miscellaneous/chrome-behavior-affects-applications. THIS MEANS THAT SELF-HOSTED EXFLOW WEB APPLICATIONS NEEDS TO BE UPDATED. Customers running in exflow.cloud (SaaS) will be patched automatically and don't have to do anything. Also, note that it is only required to update the ExFlow web part i.e. you don't have to upgrade ExFlow in Dynamics. This notice applies to all versions of ExFlow web lower than 2020.1.0.0.
+# Changes to Azure AD Application permissions
+The API for Azure Active Directory Graph is being retired in June 30, 2022
+As of publishing of this notice both V2 and V3 scripts have been updated to use the new Microsoft Graph API when creating new applications.
 
-If you need assistance with the upgrade please contact us on signupsoftware.com/support. 
+According to [Microsofts documentation](https://docs.microsoft.com/en-us/graph/migrate-azure-ad-graph-app-registration) as well as correspondence from the Microsoft Support no changes should be needed to be done to the currently registered/consented applications.
+
+however we recommend that you update the permissions to reflect correctly with the new API.
+
+# V2
+Updating the API permissions on existing applications are not supported by the script.
+You can update the permissions and create a new consent by following this [guide]().
+
+# V3
+The application will apply the new permissions on existing application when running the script again, after the script is done please go to the azure portal and re-apply the Admin consent
+
 ___
 
 # ExFlow web for Microsoft Dynamics 365 for Finance and Operations
