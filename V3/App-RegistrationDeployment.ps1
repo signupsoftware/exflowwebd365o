@@ -55,9 +55,10 @@ Function Get-UrlStatusCode {
     )
     [int]$StatusCode = $null
     try {
-        $StatusCode = (Invoke-WebRequest -Uri $Url -UseBasicParsing -DisableKeepAlive).StatusCode
         if (-not( $Url.StartsWith("https://")) ) {
             $StatusCode = 200
+        } else {
+            $StatusCode = (Invoke-WebRequest -Uri $Url -UseBasicParsing -DisableKeepAlive).StatusCode
         }
     }
     catch [Net.WebException] {
@@ -522,7 +523,7 @@ If ($WebApp) {
     write-output "Replyurls:"
     write-output $replyUrls 
 }
-$requiredresourceaccesses = '[{"resourceAppId": "00000002-0000-0000-c000-000000000000","resourceAccess": [{"id": "311a71cc-e848-46a1-bdf8-97ff7156d8e6","type": "Scope"}]},{"resourceAppId": "00000015-0000-0000-c000-000000000000","resourceAccess": [{"id": "6397893c-2260-496b-a41d-2f1f15b16ff3","type": "Scope"},{"id": "a849e696-ce45-464a-81de-e5c5b45519c1","type": "Scope"},{"id": "ad8b4a5c-eecd-431a-a46f-33c060012ae1","type": "Scope"}]}]' | convertto-json
+$requiredresourceaccesses = @($ConfigurationData.RequiredResourceAccess, $ConfigurationData.RequiredResourceAccessAZ) | convertto-json -Depth 3 -Compress | ConvertTo-Json
 If(($AzAadApp = az ad app list --filter "displayname eq `'$DeploymentName`'") -eq "[]") {
     Write-Output "Creating new Azure AD Application"
     try {
