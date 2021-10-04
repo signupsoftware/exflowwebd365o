@@ -84,10 +84,10 @@
     }                                 
                                       
     RequiredResourceAccessAZ          = @{
-        "resourceAppId"               = "00000002-0000-0000-c000-000000000000"
+        "resourceAppId"               = "00000003-0000-0000-c000-000000000000"
         "resourceAccess"              = @(
             @{                        
-                "id"                  = "311a71cc-e848-46a1-bdf8-97ff7156d8e6"
+                "id"                  = "e1fe6dd8-ba31-4d61-89e7-88639da4683d"
                 "type"                = "Scope"
             }                         
         )                                  
