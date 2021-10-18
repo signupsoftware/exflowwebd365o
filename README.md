@@ -8,10 +8,10 @@ however we recommend that you update the permissions to reflect correctly with t
 
 # V2
 Updating the API permissions on existing applications are not supported by the script.
-You can update the permissions and create a new consent by following this [guide]().
+You can update the permissions and create a new consent by following this [guide](https://github.com/signupsoftware/exflowwebd365o/tree/master/MSGraphAPI).
 
 # V3
-The application will apply the new permissions on existing application when running the script again, after the script is done please go to the azure portal and re-apply the Admin consent
+The application will apply the new permissions on existing application when running the script again, after the script is done please go to the azure portal and re-apply the Admin consent or follow the guide for V2.
 
 ___
 
