@@ -524,11 +524,14 @@ If ($WebApp) {
     write-output $replyUrls 
 }
 $requiredresourceaccesses = @($ConfigurationData.RequiredResourceAccess, $ConfigurationData.RequiredResourceAccessAZ) | convertto-json -Depth 3 -Compress | ConvertTo-Json
+$SignedInUPN = az ad signed-in-user show --query 'userPrincipalName'
+$pos = $SignedInUPN.IndexOf("@")
+$CurrentTenantDomain = $SignedInUPN.Substring($pos+1).replace("`"", "")
 If(($AzAadApp = az ad app list --filter "displayname eq `'$DeploymentName`'") -eq "[]") {
     Write-Output "Creating new Azure AD Application"
     try {
     $ErrorActionPreference = "Continue"
-    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($psadCredential.EndDate)
+    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($psadCredential.EndDate)
     if (!$AzAadApp) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
@@ -543,8 +546,8 @@ If(($AzAadApp = az ad app list --filter "displayname eq `'$DeploymentName`'") -e
     Write-Output "Found existing app, updating..."
     $AzAadApp = $AzAadApp | ConvertFrom-Json
     $error.clear()
-    Write-Output "az ad app update --id $($AzAadApp.appId) --display-name $($DeploymentName) --identifier-uris $(("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")) --password $($psadCredential.Password) --reply-urls $($replyUrls) --required-resource-accesses $($requiredresourceaccesses) --end-date $($psadCredential.EndDate)"
-    az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($psadCredential.EndDate)
+    Write-Output "az ad app update --id $($AzAadApp.appId) --display-name $($DeploymentName) --identifier-uris $(("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx")) --password $($psadCredential.Password) --reply-urls $($replyUrls) --required-resource-accesses $($requiredresourceaccesses) --end-date $($psadCredential.EndDate)"
+    az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($psadCredential.EndDate)
 
     if ($error) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
