@@ -537,7 +537,7 @@ If(($AzAadApp = az ad app list --filter "displayname eq `'$DeploymentName`'") -e
     try {
     $ErrorActionPreference = "Continue"
     $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") <#--password $psadCredential.Password#> --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses <#-end-date ($psadCredential.EndDate)#>
-    $psadCredential = ad app credential reset --id ($AzAadApp | ConvertFrom-Json).appId --end-date $endDate | ConvertFrom-Json
+    $psadCredential = az ad app credential reset --id ($AzAadApp | ConvertFrom-Json).appId --end-date $endDate | ConvertFrom-Json
     if (!$AzAadApp) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
