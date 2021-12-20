@@ -508,13 +508,18 @@ Write-Output "------------------------------------------------------------------
 Write-Output "Creating AzureRmADApplication"
 Write-Output "--------------------------------------------------------------------------------"
 if (-not(Get-Module -Name Az.Resources)) {Import-Module Az.Resources}
-$psadCredential = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential
+<#$psadCredential = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential
 $startDate = Get-Date
 $psadCredential.StartDate = $startDate
 $psadCredential.EndDate = $startDate.AddYears($ConfigurationData.PSADCredential.Years)
 $psadCredential.KeyId = [guid]::NewGuid()
 $psadKeyValue = Set-AesKey
 $psadCredential.Password = $psadKeyValue
+#>
+$endDate = (Get-Date).AddYears($ConfigurationData.PSADCredential.Years)
+
+
+
 Try { Invoke-Logger -Message $psadCredential -Severity I -Category "PSADCredential" } Catch {}
 $replyUrls = ("https://$($DeploymentName).$($ConfigurationData.AzureRmDomain)/inbox.aspx")
 If ($WebApp) {
@@ -531,7 +536,8 @@ If(($AzAadApp = az ad app list --filter "displayname eq `'$DeploymentName`'") -e
     Write-Output "Creating new Azure AD Application"
     try {
     $ErrorActionPreference = "Continue"
-    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($psadCredential.EndDate)
+    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") <#--password $psadCredential.Password#> --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($psadCredential.EndDate)
+    $psadCredential = ad app credential reset --id ($AzAadApp | ConvertFrom-Json).appId --end-date $endDate | ConvertFrom-Json
     if (!$AzAadApp) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
@@ -547,8 +553,8 @@ If(($AzAadApp = az ad app list --filter "displayname eq `'$DeploymentName`'") -e
     $AzAadApp = $AzAadApp | ConvertFrom-Json
     $error.clear()
     Write-Output "az ad app update --id $($AzAadApp.appId) --display-name $($DeploymentName) --identifier-uris $(("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx")) --password $($psadCredential.Password) --reply-urls $($replyUrls) --required-resource-accesses $($requiredresourceaccesses) --end-date $($psadCredential.EndDate)"
-    az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($psadCredential.EndDate)
-
+    #az ad app update --id $AzAadApp.appId --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") --password $psadCredential.Password --reply-urls $replyUrls --required-resource-accesses $requiredresourceaccesses --end-date ($psadCredential.EndDate)
+    $psadCredential = az ad app credential reset --id $AzAadApp.appId --end-date $endDate | ConvertFrom-Json
     if ($error) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
