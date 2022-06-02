@@ -536,7 +536,7 @@ If(($AzAadApp = az ad app list --filter "displayname eq `'$DeploymentName`'") -e
     Write-Output "Creating new Azure AD Application"
     try {
     $ErrorActionPreference = "Continue"
-    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") <#--password $psadCredential.Password#> --web-redirect-uris $replyUrls --required-resource-accesses $requiredresourceaccesses <#-end-date ($psadCredential.EndDate)#>
+    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") <#--password $psadCredential.Password#> --web-redirect-uris $replyUrls --required-resource-accesses $requiredresourceaccesses --enable-id-token-issuance $true --sign-in-audience "AzureADMyOrg" <#-end-date ($psadCredential.EndDate)#>
     $psadCredential = az ad app credential reset --id ($AzAadApp | ConvertFrom-Json).appId --end-date $endDate | ConvertFrom-Json
     if (!$AzAadApp) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
