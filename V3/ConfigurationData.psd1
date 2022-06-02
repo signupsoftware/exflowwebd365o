@@ -3,7 +3,7 @@
     Prefix                          = "exflow"
     AzureRmDomain                   = "azurewebsites.net"
     PowerShellVersion               = "5.0.0"
-    AzCli                           = "2.0.80"
+    AzCli                           = "2.37.0"
                                     
     RedistPath                      = ""
     PackageURL                      = "https://exflowpackagemanager.azurewebsites.net/"
