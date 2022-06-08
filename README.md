@@ -134,6 +134,35 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
 
+### Release 202205
+
+* Improvements
+
+   * This is a small release containing only translations for Requisition.
+
+### Release 202204
+
+* Improvements
+
+   * Deployed new Web UI!
+   * (New UI) Extended PO information pop-up
+      * AppControlMergeFile setting: {FO.UsePurchaseOrderService}=true
+   * Added two document types to search (Quote & Order)
+   * Added additional support for resolving ExFlow User Email (Azure AD Sign-in)
+   * Fixed issue with approval list
+   * Fixed split issue in amount
+   * (New UI) Added Simple CSV export
+   * Added additional requirements for opening external links to PDF images.
+
+* Bug Fixes
+
+   * Fixed sign in Bug in Chrome version 97
+   * Fixed UI bug when approving last invoice
+   * Fixed issue when entering Job value manually
+   * Fixed issue with Line Templates & Old Comments not showing
+   * Fixed UI bug for Amount
+   * Implemented fix for invoices that would get stuck in draft-mode
+   * Fixed issue with Pdf rendering. Preview mode accepts quicker switching between documents. This could cause the pdf-viewer to display pages from two documents.
 
 ### Release 2021.09
 
