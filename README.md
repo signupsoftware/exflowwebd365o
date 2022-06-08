@@ -134,13 +134,13 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
 
-### Release 202205
+### Release 2022.05
 
 * Improvements
 
    * This is a small release containing only translations for Requisition.
 
-### Release 202204
+### Release 2022.04
 
 * Improvements
 
