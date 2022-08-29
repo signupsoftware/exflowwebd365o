@@ -1,3 +1,11 @@
+# Important! Do not use Powershell ISE
+Powershell ISE has been deprecated and some issues has started to appear for users attempting to run the deployment script with Powershell ISE.
+
+Use the regular Powershell console or VS Code for future deployments.
+
+For more information check out: [Microsofts documentation](https://docs.microsoft.com/en-us/powershell/scripting/windows-powershell/ise/introducing-the-windows-powershell-ise?view=powershell-7.2#support)
+
+
 # Changes to Azure AD Application permissions
 The API for Azure Active Directory Graph is being retired in June 30, 2022
 As of publishing of this notice both V2 and V3 scripts have been updated to use the new Microsoft Graph API when creating new applications.
