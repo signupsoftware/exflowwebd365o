@@ -142,6 +142,19 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
 
+### Release 2022.08
+
+* Bug Fixes
+
+   * Issue with cookies
+   * Fixed chat names with "dash" not getting bold in messages.
+
+### Release 2022.06
+* Bug Fixes
+
+   * Fixed sign-in issue that could result in an error if Web had lost connection to Dynamic previously.
+   * Fixed issue where multiple drop-downs could be opened.
+
 ### Release 2022.05
 
 * Improvements
