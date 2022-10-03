@@ -142,6 +142,19 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
 
+### Release 2022.09
+
+* Improvements
+
+   * Last payment information.
+     * The UI for the FO Last payment information have been improved
+   
+* Bug Fixes
+
+   * Improved coding value look-up
+     * For customers with a large number of coding values (or customizations), the coding value suggestion list has been improved.
+   * Implemented fix for invoices that would get stuck in draft-mode
+
 ### Release 2022.08
 
 * Bug Fixes
