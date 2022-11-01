@@ -142,6 +142,26 @@ The following features are currently under development.
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
 
+
+### Release 2022.10
+
+* Improvements
+
+
+  * Azure AD sign-in 
+    * Improves how changes to the user's properties are handled.  
+  * Improves positioning of the approval buttons
+     * The position previously varied with the length of the vendor name.
+  * Summarized invoices
+     * Adds support for Dynamics FO summarized invoices. Note: Preparation for an upcoming ExFlow F&O release. Read more about summarized invoices in future ExFlow FO        release notes.
+
+* Bug Fixes
+
+  * Improves loading of the approval form, in the preview, that sometimes failed.
+    * The preview will load the next document in the background and if a user approves the current document before it's loaded the UI could hang.
+  * Improves session timeout in the preview
+    * In preview mode, the landing page (inbox) could expire independently of the approval forms causing unwanted session timeouts.
+
 ### Release 2022.09
 
 * Improvements
