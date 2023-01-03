@@ -528,7 +528,7 @@ If ($WebApp) {
     write-output "Replyurls:"
     write-output $replyUrls 
 }
-$requiredresourceaccesses = @($ConfigurationData.RequiredResourceAccess, $ConfigurationData.RequiredResourceAccessAZ) | convertto-json -Depth 3 -Compress | ConvertTo-Json
+$requiredresourceaccesses = @($ConfigurationData.RequiredResourceAccess, $ConfigurationData.RequiredResourceAccessAZ) | convertto-json -Depth 5
 $SignedInUPN = az ad signed-in-user show --query 'userPrincipalName'
 $pos = $SignedInUPN.IndexOf("@")
 $CurrentTenantDomain = $SignedInUPN.Substring($pos+1).replace("`"", "")
@@ -536,12 +536,19 @@ If(($AzAadApp = az ad app list --filter "displayname eq `'$DeploymentName`'") -e
     Write-Output "Creating new Azure AD Application"
     try {
     $ErrorActionPreference = "Continue"
-    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") <#--password $psadCredential.Password#> --web-redirect-uris $replyUrls --required-resource-accesses $requiredresourceaccesses --enable-id-token-issuance $true --sign-in-audience "AzureADMyOrg" <#-end-date ($psadCredential.EndDate)#>
+    $AzAadApp = az ad app create --display-name $DeploymentName --identifier-uris ("https://$($DeploymentName).$CurrentTenantDomain/inbox.aspx") --web-redirect-uris $replyUrls --enable-id-token-issuance $true --sign-in-audience "AzureADMyOrg"
     $psadCredential = az ad app credential reset --id ($AzAadApp | ConvertFrom-Json).appId --end-date $endDate | ConvertFrom-Json
     if (!$AzAadApp) { 
         Write-Warning "Unable to create or Update Az App, verify that account logged in has correct permissions"
         Write-Output "Logged in to tenant: $($AzCliLogin[0].tenantId) as user: $($AzCliLogin[0].user.name)"
         Write-Warning "Exiting script"
+    } else {
+        $rraObj = $requiredresourceaccesses | ConvertFrom-Json
+        Foreach ($reqresources in $rraObj) {
+          Foreach ($reqresource in $reqresources.resourceAccess) {
+            az ad app permission add --id $(($AzAadApp | ConvertFrom-Json).appId) --api $reqresources.resourceAppId --api-permissions ($reqresource.id+"="+$reqresource.type)
+          }
+        }
     }
     } Catch {
         Write-Error $_
