@@ -528,7 +528,7 @@ If ($WebApp) {
     write-output "Replyurls:"
     write-output $replyUrls 
 }
-$requiredresourceaccesses = @($ConfigurationData.RequiredResourceAccess, $ConfigurationData.RequiredResourceAccessAZ) | convertto-json -Depth 3 -Compress | ConvertTo-Json
+$requiredresourceaccesses = @($ConfigurationData.RequiredResourceAccess, $ConfigurationData.RequiredResourceAccessAZ) | convertto-json -Depth 5
 Write-output "Az API Permissions:"
 $requiredresourceaccesses
 $SignedInUPN = az ad signed-in-user show --query 'userPrincipalName'
