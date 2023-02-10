@@ -124,24 +124,41 @@ We recommend creating a backup of this table before upgrading the application:
  
 To import the CSV file follow the same steps but instead choose “import” and select the exported .csv file.
 
-## Release notes
-Compared with version 3 the following features have been removed.
-* Support for all IE versions <11 is dropped. 
-* IE11 not supported in so-called **Compatibility mode**. 
-* Coding favorites have been deprecated and will be replaced by enhanced line templates.
-* IE11 on Windows Server using default security configuration where localStorage is disabled is not supported. 
-
-The following features are currently under development.
-* Boolean coding columns not supported.
-* Paging/"scroll for more" in lookups (account, items, ..) are under development. 
-* Line templates
-
 ## Specifying what version to install when running the script.
 * To use the latest version (below) run the script with variable $PackageVersion set to blank ($PackageVersion = "").
 * To install an older version, omit any dots and Zeros (0). e.i:
  * $PackageVersion = "201812" for 2018.12.0
  * $PackageVersion = "201841" for 2018.4.1
+ 
 
+## Release notes
+
+
+### Release 2023.01
+
+Available for non-production Webs: 09/02/2023
+
+Planned Production date: 16/02/2023
+
+* Improvements
+
+  * Coding value selection
+    * The new functionality allows users to quickly and easily select the best matching value by using the TAB key. This enhancement is expected to make the coding process more efficient and streamlined.
+   * Changes to labels for Danish and English
+
+* Bug Fixes
+
+  * Missing validation messages
+    * Adds extra tracing to find validation messages that are empty or malformatted in specific languages.
+  * Intercompany
+    * Changing Company Accounts sometimes didn't clean the previous coding. 
+  * Security fixes
+  * Split issue
+    * Fixes an issue during split while forwarding the line
+  * Fixes an issue with coding validation
+  * Missing document validation message
+    * In some regions (such as NO) when FO marks a document as invalid the validation message is empty. The system now shows a default message informing the user about the unknown validation issue.
+  * Fix for a display issue, where the lines were appearing blurry after committing
 
 ### Release 2022.10
 
