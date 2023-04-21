@@ -133,6 +133,34 @@ To import the CSV file follow the same steps but instead choose “import” and
 
 ## Release notes
 
+### Release 2023.04
+
+Available for non-production Webs: 20/04/2023
+
+Planned Production date: 27/04/2023
+
+* Improvements
+  * Added Japanese Language Support
+    * Expanded language options to include Japanese, enhancing usability and accessibility for Japanese-speaking users.
+
+* Bug Fixes
+  * Intercompany Configuration Update
+    * Adjusted the default setting for enabling intercompany functionality to ensure proper operation.
+  * Monitoring for Norwegian sites
+    * Implemented supplementary tracing features to improve diagnostics and monitoring for Norwegian site configurations.
+  * Addressed a problem where invoices might persist in the inbox even after approval.
+  * Improved Decimal Separator Display for Order Information
+    * Updated the system to accurately display the appropriate decimal separator in order information, ensuring better readability and consistency.
+  * Time Zone Awareness for Replacer Scheduling
+    * Enhanced the scheduling process for adding a replacer by incorporating time zone awareness, ensuring accurate and consistent timings across different regions.
+  * Improved Request Handling for Slow FO Operations
+    * Implemented a mechanism to abort slow FO operations, preventing requests from being delayed unnecessarily.
+  * Enhanced Coding Column Display
+    * Added functionality to display coding columns, like 'Cost Center,' ahead of columns related to the line type, such as 'Main Account,' for improved visibility and       organization.
+  * Fixes an issue where users was not able to attach word and excel files that contain unicode characters in name
+  
+ 
+
 
 ### Release 2023.01
 
