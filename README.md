@@ -137,7 +137,7 @@ To import the CSV file follow the same steps but instead choose “import” and
 
 Available for non-production Webs: 20/04/2023
 
-Planned Production date: 27/04/2023
+Planned Production date: 04/05/2023
 
 * Improvements
   * Added Japanese Language Support
