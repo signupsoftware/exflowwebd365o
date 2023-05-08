@@ -133,6 +133,15 @@ To import the CSV file follow the same steps but instead choose “import” and
 
 ## Release notes
 
+### Release 2023.05
+
+Available for non-production Webs: 04/05/2023
+
+Planned Production date: 12/05/2023
+
+* Bug Fixes
+  * Resolves the issue with PDF documents not showing text
+
 ### Release 2023.04
 
 Available for non-production Webs: 20/04/2023
