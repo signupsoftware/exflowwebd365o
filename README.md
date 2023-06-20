@@ -133,6 +133,24 @@ To import the CSV file follow the same steps but instead choose “import” and
 
 ## Release notes
 
+### Release 2023.05.2 
+Available for non-production Webs: 22/06/2023
+ 
+Planned Production date: 29/06/2023
+
+
+* Improvements
+   * Line comments counterImproves the display of line-level comments by showing a red bubble with the number of unique comments. 
+
+   * Enhanced Coding Verification
+       * We've refined the coding verification feature that analyzes configurations and confirms code accuracy. We've resolved the issues experienced in the past release where the default activation of this feature was causing complications. Now, it delivers more reliable and consistent performance, improving the overall coding experience.
+
+   * Adds FO Vendor Portal Support
+
+* Bug Fixes
+
+   * Fixes a file download naming issue with Unicode characters
+
 ### Release 2023.05
 
 Available for non-production Webs: 04/05/2023
