@@ -133,11 +133,17 @@ To import the CSV file follow the same steps but instead choose “import” and
 
 ## Release notes
 
-### Release 2023.08
-Available for non-production Webs: 29/08/2023
+### Release 2023.10
+Available for non-production Webs: 14/11/2023
  
-Planned Production date: 07/09/2023
+Planned Production date: 23/11/2023
 
+* Improvements
+
+   * View information about initiator on web 
+         * Has been prepared in the web application, view FO release notes for information on when it will be available.
+
+### Release 2023.08
 
 * Bug Fixes
 
