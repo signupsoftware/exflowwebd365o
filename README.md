@@ -140,8 +140,8 @@ Planned Production date: 24/01/2024
 
 * Improvements
 
-   * View information about initiator on web 
-         * Has been prepared in the web application, view FO release notes for information on when it will be available.
+   * Handling of special characters in comment fields.
+   * Improves the displaying the order number.
 
 ### Release 2023.10
 Available for non-production Webs: 14/11/2023
