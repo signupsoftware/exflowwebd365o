@@ -136,7 +136,7 @@ To import the CSV file follow the same steps but instead choose “import” and
 ### Release 2024.01
 Available for non-production Webs: 24/01/2024
  
-Planned Production date: 24/01/2024
+Planned Production date: 31/01/2024
 
 * Improvements
 
