@@ -44,7 +44,16 @@
         "P1 Premium",
         "P2 Premium",
         "P3 Premium",
-        "P4 Premium"
+        "P4 Premium",
+        "Premium v3 P0V3",
+        "Premium v3 P1V3",
+        "Premium v3 P1mv3",
+        "Premium v3 P2V3",
+        "Premium v3 P3V3",
+        "Premium v3 P2mv3",
+        "Premium v3 P3mv3",
+        "Premium v3 P4mv3",
+        "Premium v3 P5mv3"        
       ],
       "defaultValue": "B1 Basic",
       "metadata": {
@@ -116,56 +125,101 @@
     "storageAccountdash": "[take(replace(variables('uniqueString'), '-', ''),24)]",
     "storageAccount": "[take(replace(variables('storageAccountdash'), 'exflow', ''),24)]",
     "AppServicePlanName": "[if(empty(parameters('AppServicePlanName')), variables('uniqueString'), parameters('AppServicePlanName'))]",
-    "AppServicePlanSKU": {
-      "F1 Free": {
-        "name": "F1",
-        "capacity": "1"
-      },
-      "D1 Shared": {
-        "name": "D1",
-        "capacity": "2"
-      },
-      "B1 Basic": {
-        "name": "B1",
-        "capacity": "1"
-      },
-      "B2 Basic": {
-        "name": "B2",
-        "capacity": "2"
-      },
-      "B3 Basic": {
-        "name": "B3",
-        "capacity": "3"
-      },
-      "S1 Standard": {
-        "name": "S1",
-        "capacity": "1"
-      },
-      "S2 Standard": {
-        "name": "S2",
-        "capacity": "2"
-      },
-      "S3 Standard": {
-        "name": "S3",
-        "capacity": "3"
-      },
-      "P1 Premium": {
-        "name": "P1",
-        "capacity": "1"
-      },
-      "P2 Premium": {
-        "name": "P2",
-        "capacity": "2"
-      },
-      "P3 Premium": {
-        "name": "P3",
-        "capacity": "3"
-      },
-      "P4 Premium": {
-        "name": "P4",
-        "capacity": "4"
-      }
+  "AppServicePlanSKU": {
+    "F1 Free": {
+      "name": "F1",
+      "capacity": "1"
+    },
+    "D1 Shared": {
+      "name": "D1",
+      "capacity": "2"
+    },
+    "B1 Basic": {
+      "name": "B1",
+      "capacity": "1"
+    },
+    "B2 Basic": {
+      "name": "B2",
+      "capacity": "2"
+    },
+    "B3 Basic": {
+      "name": "B3",
+      "capacity": "3"
+    },
+    "S1 Standard": {
+      "name": "S1",
+      "capacity": "1"
+    },
+    "S2 Standard": {
+      "name": "S2",
+      "capacity": "2"
+    },
+    "S3 Standard": {
+      "name": "S3",
+      "capacity": "3"
+    },
+    "P1 Premium": {
+      "name": "P1",
+      "capacity": "1"
+    },
+    "P2 Premium": {
+      "name": "P2",
+      "capacity": "2"
+    },
+    "P3 Premium": {
+      "name": "P3",
+      "capacity": "3"
+    },
+    "P4 Premium": {
+      "name": "P4",
+      "capacity": "4"
+    },
+
+    "Premium v3 P0V3": {
+      "capacity": 1,
+      "name": "P0V3"
+    },
+
+    "Premium v3 P1V3": {
+      "capacity": 1,
+      "name": "P1V3"
+    },
+
+    "Premium v3 P1mv3": {
+      "capacity": 1,
+      "name": "P1mv3"
+    },
+
+    "Premium v3 P2V3": {
+      "capacity": 1,
+      "name": "P2V3"
+    },
+
+    "Premium v3 P3V3": {
+      "capacity": 1,
+      "name": "P3V3"
+    },
+
+    "Premium v3 P2mv3": {
+      "capacity": 1,
+      "name": "P2mv3"
+    },
+
+    "Premium v3 P3mv3": {
+      "capacity": 1,
+      "name": "P3mv3"
+    },
+
+    "Premium v3 P4mv3": {
+      "capacity": 1,
+      "name": "P4mv3"
+    },
+
+    "Premium v3 P5mv3": {
+      "capacity": 1,
+      "name": "P5mv3"
     }
+  }
   },
   "resources": [
     {
