@@ -11,7 +11,12 @@ News in this version (V3) of the script:
 * Adds support for Storage Account CORS rules when using custom domains.
 
 ## Installation and updates
-ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3/Run-Deploy.ps1)) in *Powershell ISE* or *Cloud shell*. 
+
+> [!IMPORTANT]  
+> Powershell ISE has been deprecated and some issues has started to appear for users attempting to run the deployment script with Powershell ISE.
+> Use the regular Powershell console or VS Code for future deployments.
+
+ExFlow web is installed by running the following PowerShell script. See also ([Run-Deploy.ps1](https://github.com/signupsoftware/exflowwebd365o/blob/master/v3/Run-Deploy.ps1)) in *Powershell consol* or *Cloud shell*. 
 
 
 ```powershell
