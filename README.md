@@ -132,6 +132,14 @@ To import the CSV file follow the same steps but instead choose “import” and
  
 
 ## Release notes
+### Note: version are now numbered 2023.xx, this is because 2024 is reserved for the new major version of the web application. Details on upgrading to the new version will be available at a later date.
+### Release 2023.14
+Available for non-production Webs: 26/06/2024
+ 
+Planned Production date: 26/06/2024
+* Bug Fixes
+
+   * General bugfixes
 
 ### Release 2024.01
 Available for non-production Webs: 24/01/2024
